@@ -1,9 +1,11 @@
+import 'dart:developer';
+
+import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitations.dart';
 import 'package:al_quran_audio/src/theme/colors.dart';
 import 'package:al_quran_audio/src/theme/theme_icon_button.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 class ChoiceDefaultRecitation extends StatefulWidget {
   const ChoiceDefaultRecitation({super.key});
@@ -45,15 +47,29 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
               margin: const EdgeInsets.only(bottom: 5),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.blue.shade700,
-                    foregroundColor: Colors.white,
-                    child: const Icon(Icons.play_arrow),
+                  SizedBox(
+                    height: 40,
+                    width: 40,
+                    child: IconButton(
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.blue.shade700,
+                        foregroundColor: Colors.white,
+                      ),
+                      tooltip: "Play Recitation from ${current.name}",
+                      icon: const Icon(Icons.play_arrow),
+                      onPressed: () async {
+                        await ManageQuranAudio.playSingleAyah(
+                          ayahNumber: 1,
+                          surahNumber: 1,
+                          reciter: current,
+                        );
+                        log("finished");
+                      },
+                    ),
                   ),
-                  const Gap(10),
                   Expanded(
                     child: SingleChildScrollView(
+                      padding: const EdgeInsets.only(left: 10),
                       scrollDirection: Axis.horizontal,
                       child: Text(
                         current.name
