@@ -10,7 +10,8 @@
     <application android:usesCleartextTraffic="true"
     android:label="Al Quran Audio"
     android:name="${applicationName}"
-    android:icon="@mipmap/ic_launcher">
+    android:icon="@mipmap/ic_launcher"
+		android:roundIcon="@mipmap/ic_launcher_round">
         <activity android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
             android:exported="true">
             <intent-filter android:label="flutter_web_auth_2">

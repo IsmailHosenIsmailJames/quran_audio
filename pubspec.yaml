@@ -39,6 +39,7 @@ dependencies:
   just_audio_windows: ^0.2.2
   just_audio_mpv: ^0.1.7
   just_audio: ^0.9.42
+  icons_launcher: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -62,15 +63,15 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
-  # assets:
+  # To add assets/AlQuranAudio.jpg:
+  # assets/AlQuranAudio.jpg:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
-  # For details regarding adding assets from package dependencies, see
+  # For details regarding adding assets/AlQuranAudio.jpge
   # https://flutter.dev/to/asset-from-package
 
   # To add custom fonts to your application, add a fonts section here,
@@ -92,3 +93,36 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+
+icons_launcher:
+  image_path: "assets/AlQuranAudio.jpg"
+  platforms:
+    android:
+      enable: true
+      image_path: "assets/AlQuranAudio.jpg"
+      notification_image: "assets/AlQuranAudio.jpg"
+      # adaptive_background_color: '#ffffff'
+      adaptive_background_image: "assets/AlQuranAudio.jpg"
+      adaptive_foreground_image: "assets/AlQuranAudio.jpg"
+      adaptive_round_image: "assets/AlQuranAudio.jpg"
+      adaptive_monochrome_image: "assets/AlQuranAudio.jpg"
+    ios:
+      enable: true
+      image_path: "assets/AlQuranAudio.jpg"
+      # For iOS 18+ (support dark and tinted)
+      dark_path: "assets/AlQuranAudio.jpg"
+      tinted_path: "assets/AlQuranAudio.jpg"
+    web:
+      enable: true
+      image_path: "assets/AlQuranAudio.jpg"
+      favicon_path: "assets/AlQuranAudio.jpg"
+    macos:
+      enable: false
+      image_path: "assets/AlQuranAudio.jpg"
+    windows:
+      enable: false
+      image_path: "assets/AlQuranAudio.jpg"
+    linux:
+      enable: false
+      image_path: "assets/AlQuranAudio.jpg"
