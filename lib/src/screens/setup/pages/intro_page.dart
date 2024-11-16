@@ -1,4 +1,6 @@
+import 'package:al_quran_audio/src/theme/theme_icon_button.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -12,6 +14,10 @@ class IntroPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [themeIconButton],
+          ),
           Center(
             child: Container(
               height: 280,
@@ -33,6 +39,7 @@ class IntroPage extends StatelessWidget {
               ),
             ),
           ),
+          const Gap(10),
           Container(
             padding: const EdgeInsets.only(left: 10, right: 10),
             alignment: Alignment.center,
@@ -42,7 +49,7 @@ class IntroPage extends StatelessWidget {
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
-           Container(
+          Container(
             padding: const EdgeInsets.only(left: 10, right: 10),
             alignment: Alignment.center,
             child: Text(

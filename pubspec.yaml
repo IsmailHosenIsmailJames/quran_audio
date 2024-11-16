@@ -43,6 +43,8 @@ dependencies:
   get: ^5.0.0-release-candidate-9.2.1
   url_launcher: ^6.3.1
   toastification: ^2.3.0
+  gap: ^3.0.1
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:
