@@ -1,6 +1,8 @@
 import 'package:al_quran_audio/src/screens/home/home_page.dart';
+import 'package:al_quran_audio/src/screens/setup/setup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
 Future<void> main() async {
@@ -10,6 +12,9 @@ Future<void> main() async {
     androidNotificationChannelName: 'Audio playback',
     androidNotificationOngoing: true,
   );
+
+  await Hive.initFlutter();
+  await Hive.openBox('info');
 
   runApp(const MyApp());
 }
@@ -21,11 +26,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Al Quran Audio',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const HomePage(), 
+      theme: ThemeData.light().copyWith(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.green.shade700,
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green.shade700,
+              foregroundColor: Colors.white,
+              shadowColor: Colors.transparent,
+            ),
+          )),
+      home: Hive.box('info').get('default_recitation') == null
+          ? const SetupPage()
+          : const HomePage(),
     );
   }
 }
