@@ -40,6 +40,9 @@ dependencies:
   just_audio_mpv: ^0.1.7
   just_audio: ^0.9.42
   icons_launcher: ^3.0.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  get: ^5.0.0-release-candidate-9.2.1
 
 dev_dependencies:
   flutter_test:
