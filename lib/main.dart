@@ -3,7 +3,6 @@ import 'package:al_quran_audio/src/screens/setup/setup_page.dart';
 import 'package:al_quran_audio/src/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio_background/just_audio_background.dart';

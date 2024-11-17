@@ -6,6 +6,9 @@ import 'package:al_quran_audio/src/core/recitation_info/recitations.dart';
 import 'package:al_quran_audio/src/theme/colors.dart';
 import 'package:al_quran_audio/src/theme/theme_icon_button.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../core/audio/controller/audio_controller.dart';
 
 class ChoiceDefaultRecitation extends StatefulWidget {
   const ChoiceDefaultRecitation({super.key});
@@ -17,7 +20,9 @@ class ChoiceDefaultRecitation extends StatefulWidget {
 
 class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
   int selectedIndex = 0;
-  int playingIndex = -1;
+
+  final audioControllerGetx = Get.put(AudioController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,19 +62,34 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                         foregroundColor: Colors.white,
                       ),
                       tooltip: "Play Recitation from ${current.name}",
-                      icon: Icon(playingIndex == index
-                          ? Icons.pause
-                          : Icons.play_arrow),
+                      icon: Obx(
+                        () => Icon(
+                            audioControllerGetx.currentIndex.value == index &&
+                                    audioControllerGetx.isPlaying.value == true
+                                ? Icons.pause
+                                : Icons.play_arrow),
+                      ),
                       onPressed: () async {
-                        setState(() {
-                          playingIndex = index;
-                        });
-                        await ManageQuranAudio.playMultipleAyahOfSurah(
-                          surahNumber: 1,
-                          reciter: current,
-                        );
-
-                        log("finished");
+                        if (audioControllerGetx.currentIndex.value == index &&
+                            audioControllerGetx.isPlaying.value == true) {
+                          audioControllerGetx.currentIndex.value = index;
+                          await ManageQuranAudio.audioPlayer.pause();
+                          log("Pause");
+                        } else if (audioControllerGetx.currentIndex.value ==
+                                index &&
+                            audioControllerGetx.isPlaying.value != true) {
+                          audioControllerGetx.currentIndex.value = index;
+                          await ManageQuranAudio.audioPlayer.play();
+                          log("Resume");
+                        } else {
+                          log("New Play");
+                          audioControllerGetx.isPlaying.value = true;
+                          audioControllerGetx.currentIndex.value = index;
+                          await ManageQuranAudio.playMultipleAyahOfSurah(
+                            surahNumber: 1,
+                            reciter: current,
+                          );
+                        }
                       },
                     ),
                   ),
