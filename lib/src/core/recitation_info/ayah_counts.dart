@@ -1,4 +1,4 @@
-List<int> ayahCount = [
+List<int> ayahCountOfAllSurah = [
   7,
   286,
   200,

@@ -17,6 +17,7 @@ class ChoiceDefaultRecitation extends StatefulWidget {
 
 class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
   int selectedIndex = 0;
+  int playingIndex = -1;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,13 +57,18 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                         foregroundColor: Colors.white,
                       ),
                       tooltip: "Play Recitation from ${current.name}",
-                      icon: const Icon(Icons.play_arrow),
+                      icon: Icon(playingIndex == index
+                          ? Icons.pause
+                          : Icons.play_arrow),
                       onPressed: () async {
-                        await ManageQuranAudio.playSingleAyah(
-                          ayahNumber: 1,
+                        setState(() {
+                          playingIndex = index;
+                        });
+                        await ManageQuranAudio.playMultipleAyahOfSurah(
                           surahNumber: 1,
                           reciter: current,
                         );
+
                         log("finished");
                       },
                     ),

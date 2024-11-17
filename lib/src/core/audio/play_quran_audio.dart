@@ -1,4 +1,5 @@
 import 'package:al_quran_audio/src/api/apis.dart';
+import 'package:al_quran_audio/src/core/recitation_info/ayah_counts.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
@@ -38,6 +39,38 @@ class ManageQuranAudio {
         tag: findMediaItem(ayahID: ayahID, reciter: reciter),
       ),
     );
+    await audioPlayer.play();
+  }
+
+  static Future<void> playMultipleAyahOfSurah({
+    required int surahNumber,
+    RecitationInfoModel? reciter,
+    MediaItem? mediaItem,
+  }) async {
+    int ayahCount = ayahCountOfAllSurah[surahNumber - 1];
+    List<AudioSource> audioResourceSource = [];
+    reciter ??= findRecitationModel();
+    for (int i = 0; i < ayahCount; i++) {
+      audioResourceSource.add(
+        LockCachingAudioSource(
+          Uri.parse(
+            makeAudioUrl(
+              reciter,
+              ayahIDFromNumber(i + 1, surahNumber),
+            ),
+          ),
+          tag: findMediaItem(
+              ayahID: ayahIDFromNumber(i + 1, surahNumber), reciter: reciter),
+        ),
+      );
+    }
+
+    ConcatenatingAudioSource playlist = ConcatenatingAudioSource(
+      shuffleOrder: DefaultShuffleOrder(),
+      children: audioResourceSource,
+    );
+    await audioPlayer.setAudioSource(playlist,
+        initialIndex: 0, initialPosition: Duration.zero);
     await audioPlayer.play();
   }
 
