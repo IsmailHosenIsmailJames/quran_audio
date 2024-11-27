@@ -39,14 +39,14 @@ class ManageQuranAudio {
     });
 
     audioPlayer.playerStateStream.listen((event) {
-      audioControllerGetx.isPlaying.value = event.playing;
+      if (audioControllerGetx.currentIndex.value != -1) {
+        audioControllerGetx.isPlaying.value = event.playing;
+      }
     });
 
     audioPlayer.playbackEventStream.listen((event) {
       if (event.processingState == ProcessingState.completed) {
-        if (audioControllerGetx.isPlaying.value) {
-          audioControllerGetx.isPlaying.value = false;
-        }
+        audioControllerGetx.isPlaying.value = false;
         audioControllerGetx.currentIndex.value = -1;
       }
     });
