@@ -1,40 +1,36 @@
 import 'dart:convert';
 
-class RecitationInfoModel {
-    final String subfolder;
-    final String name;
-    final String bitrate;
+class ReciterInfoModel {
+  final String name;
+  final String id;
 
-    RecitationInfoModel({
-        required this.subfolder,
-        required this.name,
-        required this.bitrate,
-    });
+  ReciterInfoModel({
+    required this.name,
+    required this.id,
+  });
 
-    RecitationInfoModel copyWith({
-        String? subfolder,
-        String? name,
-        String? bitrate,
-    }) => 
-        RecitationInfoModel(
-            subfolder: subfolder ?? this.subfolder,
-            name: name ?? this.name,
-            bitrate: bitrate ?? this.bitrate,
-        );
+  ReciterInfoModel copyWith({
+    String? name,
+    String? id,
+  }) =>
+      ReciterInfoModel(
+        name: name ?? this.name,
+        id: id ?? this.id,
+      );
 
-    factory RecitationInfoModel.fromJson(String str) => RecitationInfoModel.fromMap(json.decode(str));
+  factory ReciterInfoModel.fromJson(String str) =>
+      ReciterInfoModel.fromMap(json.decode(str));
 
-    String toJson() => json.encode(toMap());
+  String toJson() => json.encode(toMap());
 
-    factory RecitationInfoModel.fromMap(Map<String, dynamic> json) => RecitationInfoModel(
-        subfolder: json["subfolder"],
+  factory ReciterInfoModel.fromMap(Map<String, dynamic> json) =>
+      ReciterInfoModel(
         name: json["name"],
-        bitrate: json["bitrate"],
-    );
+        id: json["id"],
+      );
 
-    Map<String, dynamic> toMap() => {
-        "subfolder": subfolder,
+  Map<String, dynamic> toMap() => {
         "name": name,
-        "bitrate": bitrate,
-    };
+        "id": id,
+      };
 }

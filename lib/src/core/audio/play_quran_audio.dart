@@ -1,6 +1,5 @@
 import 'package:al_quran_audio/src/api/apis.dart';
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
-import 'package:al_quran_audio/src/core/recitation_info/ayah_counts.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -54,64 +53,32 @@ class ManageQuranAudio {
     audioControllerGetx.isStreamRegistered.value = true;
   }
 
-  static Future<void> playSingleAyah({
-    required int ayahNumber,
+  static Future<void> playSingleSurah({
     required int surahNumber,
-    RecitationInfoModel? reciter,
+    ReciterInfoModel? reciter,
     MediaItem? mediaItem,
   }) async {
     if (audioControllerGetx.isStreamRegistered.value == false) {
-      startListening();
+      await startListening();
     }
-    reciter ??= findRecitationModel();
-    String ayahID = ayahIDFromNumber(ayahNumber, surahNumber);
     audioPlayer.stop();
-    String audioUrl = makeAudioUrl(
-      reciter,
-      ayahIDFromNumber(ayahNumber, surahNumber),
-    );
-    await audioPlayer.setAudioSource(
-      LockCachingAudioSource(
-        Uri.parse(audioUrl),
-        tag: findMediaItem(ayahID: ayahID, reciter: reciter),
-      ),
-    );
-    await audioPlayer.play();
-  }
+    reciter ??= findRecitationModel();
 
-  static Future<void> playMultipleAyahOfSurah({
-    required int surahNumber,
-    RecitationInfoModel? reciter,
-    MediaItem? mediaItem,
-  }) async {
-    if (audioControllerGetx.isStreamRegistered.value == false) {
-      startListening();
-    }
-    audioPlayer.stop();
-    int ayahCount = ayahCountOfAllSurah[surahNumber - 1];
-    List<AudioSource> audioResourceSource = [];
-    reciter ??= findRecitationModel();
-    for (int i = 0; i < ayahCount; i++) {
-      audioResourceSource.add(
+    await audioPlayer.setAudioSource(
         LockCachingAudioSource(
           Uri.parse(
             makeAudioUrl(
               reciter,
-              ayahIDFromNumber(i + 1, surahNumber),
+              surahIDFromNumber(surahNumber),
             ),
           ),
-          tag: findMediaItem(
-              ayahID: ayahIDFromNumber(i + 1, surahNumber), reciter: reciter),
+          tag: MediaItem(
+            id: "${reciter.id}$surahNumber",
+            title: reciter.name,
+          ),
         ),
-      );
-    }
-
-    ConcatenatingAudioSource playlist = ConcatenatingAudioSource(
-      shuffleOrder: DefaultShuffleOrder(),
-      children: audioResourceSource,
-    );
-    await audioPlayer.setAudioSource(playlist,
-        initialIndex: 0, initialPosition: Duration.zero);
+        initialIndex: 0,
+        initialPosition: Duration.zero);
     await audioPlayer.play();
   }
 
@@ -124,8 +91,8 @@ class ManageQuranAudio {
   /// and the ayah number is 1, the generated URL will be:
   ///
   /// https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/001.mp3
-  static String makeAudioUrl(RecitationInfoModel reciter, String ayahID) {
-    return "${baseAPI}data/${reciter.subfolder}/$ayahID.mp3";
+  static String makeAudioUrl(ReciterInfoModel reciter, String surahID) {
+    return "$baseAPI/${reciter.id}/$surahID.mp3";
   }
 
   /// Retrieves the currently selected reciter from the 'info' box in hive.
@@ -133,31 +100,30 @@ class ManageQuranAudio {
   /// The currently selected reciter is stored as a JSON string in the
   /// 'reciter' key of the 'info' box in hive. When this function is called,
   /// it reads the JSON string from that key and parses it into a
-  /// [RecitationInfoModel] using the [RecitationInfoModel.fromJson] method.
-  /// The resulting [RecitationInfoModel] is then returned.
-  static RecitationInfoModel findRecitationModel() {
+  /// [ReciterInfoModel] using the [ReciterInfoModel.fromJson] method.
+  /// The resulting [ReciterInfoModel] is then returned.
+  static ReciterInfoModel findRecitationModel() {
     final jsonReciter = Hive.box('info').get('reciter');
-    return RecitationInfoModel.fromJson(jsonReciter);
+    return ReciterInfoModel.fromJson(jsonReciter);
   }
 
-  /// Returns a [MediaItem] with the given [ayahID] and [reciter].
+  /// Returns a [MediaItem] with the given [surahID] and [reciter].
   ///
   /// The [MediaItem] will have:
-  /// - [id] and [title] set to [ayahID].
-  /// - [displayTitle] set to [ayahID].
+  /// - [id] and [title] set to [surahID].
+  /// - [displayTitle] set to [surahID].
   /// - [album] set to [reciter]'s name.
   /// - [artist] set to [reciter]'s subfolder.
   /// - [artUri] set to the given [artUri] if not null, or null if null.
   static MediaItem findMediaItem(
-      {required String ayahID,
-      required RecitationInfoModel reciter,
+      {required String surahID,
+      required ReciterInfoModel reciter,
       Uri? artUri}) {
     return MediaItem(
-      id: ayahID,
-      title: ayahID,
-      displayTitle: ayahID,
+      id: surahID,
+      title: surahID,
+      displayTitle: surahID,
       album: reciter.name,
-      artist: reciter.subfolder,
       artUri: artUri,
     );
   }
@@ -170,7 +136,7 @@ class ManageQuranAudio {
   ///
   /// Returns a string representation of the ayah ID in the format 'SSSAAA'
   /// where 'SSS' is the zero-padded surah number and 'AAA' is the zero-padded ayah number.
-  static String ayahIDFromNumber(int ayahNumber, int surahNumber) {
-    return '${surahNumber.toString().padLeft(3, '0')}${ayahNumber.toString().padLeft(3, '0')}';
+  static String surahIDFromNumber(int surahNumber) {
+    return surahNumber.toString().padLeft(3, '0');
   }
 }

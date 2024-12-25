@@ -41,7 +41,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
             itemCount: recitationsInfoList.length,
             itemBuilder: (context, index) {
               final current =
-                  RecitationInfoModel.fromMap(recitationsInfoList[index]);
+                  ReciterInfoModel.fromMap(recitationsInfoList[index]);
               return GestureDetector(
                 onTap: () {
                   setState(() {
@@ -90,7 +90,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                               // start brand new audio
                               audioControllerGetx.isPlaying.value = true;
                               audioControllerGetx.currentIndex.value = index;
-                              await ManageQuranAudio.playMultipleAyahOfSurah(
+                              await ManageQuranAudio.playSingleSurah(
                                 surahNumber: 1,
                                 reciter: current,
                               );
@@ -102,11 +102,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                         child: SingleChildScrollView(
                           padding: const EdgeInsets.only(left: 10),
                           scrollDirection: Axis.horizontal,
-                          child: Text(
-                            current.name
-                                .replaceAll(".Com", "")
-                                .replaceAll(".Net", ""),
-                          ),
+                          child: Text(current.name),
                         ),
                       ),
                       if (index == selectedIndex)

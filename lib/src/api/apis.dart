@@ -1,1 +1,1 @@
-String baseAPI = "https://everyayah.com/";
+String baseAPI = "https://download.quranicaudio.com/quran/";

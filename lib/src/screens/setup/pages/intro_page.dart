@@ -44,7 +44,7 @@ class IntroPage extends StatelessWidget {
             padding: const EdgeInsets.only(left: 10, right: 10),
             alignment: Alignment.center,
             child: Text(
-              "The Quran Audio Recitation App brings together a curated collection of 79 reciters, providing an immersive auditory experience of the Quran. With a focus on simplicity, accessibility, and quality, the app caters to users of all ages and preferences. Whether you are at home, commuting, or meditating, this app lets you carry the soul of the Quran wherever you go.",
+              "The Quran Audio Recitation App brings together a curated collection of 76 reciters, providing an immersive auditory experience of the Quran. With a focus on simplicity, accessibility, and quality, the app caters to users of all ages and preferences. Whether you are at home, commuting, or meditating, this app lets you carry the soul of the Quran wherever you go.",
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall,
             ),
@@ -60,7 +60,7 @@ class IntroPage extends StatelessWidget {
           ),
           MediaQuery(
             data: MediaQuery.of(context).copyWith(
-              textScaler: const TextScaler.linear(0.8),
+              textScaler: const TextScaler.linear(0.7),
             ),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -74,7 +74,7 @@ class IntroPage extends StatelessWidget {
                       launchUrl(Uri.parse("https://quran.com/"),
                           mode: LaunchMode.externalApplication);
                     },
-                    child: const Text("quran.com"),
+                    child: const Text("Quran.com"),
                   ),
                   const Text("and"),
                   TextButton(
@@ -82,7 +82,7 @@ class IntroPage extends StatelessWidget {
                         launchUrl(Uri.parse("https://everyayah.com/"),
                             mode: LaunchMode.externalApplication);
                       },
-                      child: const Text("everyayah.com")),
+                      child: const Text("Quranicaudio.com")),
                 ],
               ),
             ),

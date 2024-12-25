@@ -1,350 +1,99 @@
 List<Map<String, dynamic>> recitationsInfoList = [
-  {
-    "subfolder": "Abdul_Basit_Murattal_64kbps",
-    "name": "Abdul Basit Murattal",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Abdul_Basit_Murattal_192kbps",
-    "name": "Abdul Basit Murattal",
-    "bitrate": "192kbps"
-  },
-  {
-    "subfolder": "Abdul_Basit_Mujawwad_128kbps",
-    "name": "Abdul Basit Mujawwad",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Abdullah_Basfar_32kbps",
-    "name": "Abdullah Basfar",
-    "bitrate": "32kbps"
-  },
-  {
-    "subfolder": "Abdullah_Basfar_64kbps",
-    "name": "Abdullah Basfar",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Abdullah_Basfar_192kbps",
-    "name": "Abdullah Basfar",
-    "bitrate": "192kbps"
-  },
-  {
-    "subfolder": "Abdurrahmaan_As-Sudais_64kbps",
-    "name": "Abdurrahmaan As-Sudais",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Abdurrahmaan_As-Sudais_192kbps",
-    "name": "Abdurrahmaan As-Sudais",
-    "bitrate": "192kbps"
-  },
-  {
-    "subfolder": "AbdulSamad_64kbps_QuranExplorer.Com",
-    "name": "AbdulSamad QuranExplorer.Com",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Abu_Bakr_Ash-Shaatree_64kbps",
-    "name": "Abu Bakr Ash-Shaatree",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Abu_Bakr_Ash-Shaatree_128kbps",
-    "name": "Abu Bakr Ash-Shaatree",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Ahmed_ibn_Ali_al-Ajamy_64kbps_QuranExplorer.Com",
-    "name": "Ahmed ibn Ali al-Ajamy QuranExplorer.Com",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net",
-    "name": "Ahmed ibn Ali al-Ajamy KetabAllah.Net",
-    "bitrate": "128kbps"
-  },
-  {"subfolder": "Alafasy_64kbps", "name": "Alafasy", "bitrate": "64kbps"},
-  {"subfolder": "Alafasy_128kbps", "name": "Alafasy", "bitrate": "128kbps"},
-  {"subfolder": "Ghamadi_40kbps", "name": "Ghamadi", "bitrate": "40kbps"},
-  {"subfolder": "Hani_Rifai_64kbps", "name": "Hani Rifai", "bitrate": "64kbps"},
-  {
-    "subfolder": "Hani_Rifai_192kbps",
-    "name": "Hani Rifai",
-    "bitrate": "192kbps"
-  },
-  {"subfolder": "Husary_64kbps", "name": "Husary", "bitrate": "64kbps"},
-  {"subfolder": "Husary_128kbps", "name": "Husary", "bitrate": "128kbps"},
-  {
-    "subfolder": "Husary_Mujawwad_64kbps",
-    "name": "Husary Mujawwad",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Husary_128kbps_Mujawwad",
-    "name": "Husary Mujawwad",
-    "bitrate": "128kbps"
-  },
-  {"subfolder": "Hudhaify_32kbps", "name": "Hudhaify", "bitrate": "32kbps"},
-  {"subfolder": "Hudhaify_64kbps", "name": "Hudhaify", "bitrate": "64kbps"},
-  {"subfolder": "Hudhaify_128kbps", "name": "Hudhaify", "bitrate": "128kbps"},
-  {
-    "subfolder": "Ibrahim_Akhdar_32kbps",
-    "name": "Ibrahim Akhdar",
-    "bitrate": "32kbps"
-  },
-  {
-    "subfolder": "Ibrahim_Akhdar_64kbps",
-    "name": "Ibrahim Akhdar",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Maher_AlMuaiqly_64kbps",
-    "name": "Maher Al Muaiqly",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "MaherAlMuaiqly128kbps",
-    "name": "Maher Al Muaiqly",
-    "bitrate": "128kbps"
-  },
-  {"subfolder": "Menshawi_16kbps", "name": "Menshawi", "bitrate": "16kbps"},
-  {"subfolder": "Menshawi_32kbps", "name": "Menshawi", "bitrate": "32kbps"},
-  {
-    "subfolder": "Minshawy_Mujawwad_64kbps",
-    "name": "Minshawy Mujawwad",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Minshawy_Mujawwad_192kbps",
-    "name": "Minshawy Mujawwad",
-    "bitrate": "192kbps"
-  },
-  {
-    "subfolder": "Minshawy_Murattal_128kbps",
-    "name": "Minshawy Murattal",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Mohammad_al_Tablaway_64kbps",
-    "name": "Mohammad al Tablaway",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Mohammad_al_Tablaway_128kbps",
-    "name": "Mohammad al Tablaway",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Muhammad_Ayyoub_128kbps",
-    "name": "Muhammad Ayyoub",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Muhammad_Ayyoub_64kbps",
-    "name": "Muhammad Ayyoub",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Muhammad_Ayyoub_32kbps",
-    "name": "Muhammad Ayyoub",
-    "bitrate": "32kbps"
-  },
-  {
-    "subfolder": "Muhammad_Jibreel_64kbps",
-    "name": "Muhammad Jibreel",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Muhammad_Jibreel_128kbps",
-    "name": "Muhammad Jibreel",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Mustafa_Ismail_48kbps",
-    "name": "Mustafa Ismail",
-    "bitrate": "48kbps"
-  },
-  {
-    "subfolder": "Saood_ash-Shuraym_64kbps",
-    "name": "Saood bin Ibraaheem Ash-Shuraym",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "Saood_ash-Shuraym_128kbps",
-    "name": "Saood bin Ibraaheem Ash-Shuraym",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "English\/Sahih_Intnl_Ibrahim_Walk_192kbps",
-    "name":
-        "(English) Translated by Sahih International Recited by Ibrahim Walk",
-    "bitrate": "192kbps"
-  },
-  {
-    "subfolder": "MultiLanguage\/Basfar_Walk_192kbps",
-    "name": "MultiLanguage\/Basfar Walk",
-    "bitrate": "192kbps"
-  },
-  {
-    "subfolder": "translations\/Makarem_Kabiri_16Kbps",
-    "name": "(Persian) Translated by Makarem Recited by Kabiri",
-    "bitrate": "64Kbps"
-  },
-  {
-    "subfolder": "translations\/Fooladvand_Hedayatfar_40Kbps",
-    "name": "(Persian) Translated by Fooladvand Recited by Hedayatfar",
-    "bitrate": "64Kbps"
-  },
-  {
-    "subfolder": "Parhizgar_48kbps",
-    "name": "Parhizgar_64Kbps",
-    "bitrate": "64Kbps"
-  },
-  {
-    "subfolder": "translations\/azerbaijani\/balayev",
-    "name": "Balayev",
-    "bitrate": "64Kbps"
-  },
-  {
-    "subfolder": "Salaah_AbdulRahman_Bukhatir_128kbps",
-    "name": "Salaah AbdulRahman Bukhatir",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Muhsin_Al_Qasim_192kbps",
-    "name": "Muhsin Al Qasim",
-    "bitrate": "192kbps"
-  },
-  {
-    "subfolder": "Abdullaah_3awwaad_Al-Juhaynee_128kbps",
-    "name": "Abdullaah 3awwaad Al-Juhaynee",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Salah_Al_Budair_128kbps",
-    "name": "Salah Al Budair",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Abdullah_Matroud_128kbps",
-    "name": "Abdullah Matroud",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Ahmed_Neana_128kbps",
-    "name": "Ahmed Neana",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Muhammad_AbdulKareem_128kbps",
-    "name": "Muhammad AbdulKareem",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "khalefa_al_tunaiji_64kbps",
-    "name": "Khalefa Al-Tunaiji",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "mahmoud_ali_al_banna_32kbps",
-    "name": "Mahmoud Ali Al-Banna",
-    "bitrate": "32kbps"
-  },
-  {
-    "subfolder": "warsh\/warsh_ibrahim_aldosary_128kbps",
-    "name": "(Warsh) Ibrahim Al-Dosary",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "warsh\/warsh_yassin_al_jazaery_64kbps",
-    "name": "(Warsh) Yassin Al-Jazaery",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "warsh\/warsh_Abdul_Basit_128kbps",
-    "name": "(Warsh) Abdul Basit",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "translations/urdu_shamshad_ali_khan_46kbps",
-    "name": "(Urdu) Shamshad Ali Khan",
-    "bitrate": "46kbps"
-  },
-  {
-    "subfolder": "Karim_Mansoori_40kbps",
-    "name": "Karim Mansoori (Iran)",
-    "bitrate": "40kbps"
-  },
-  {
-    "subfolder": "Husary_Muallim_128kbps",
-    "name": "Husary (Muallim)",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Khaalid_Abdullaah_al-Qahtaanee_192kbps",
-    "name": "Khalid Abdullah al-Qahtanee",
-    "bitrate": "192kbps"
-  },
-  {
-    "subfolder": "Yasser_Ad-Dussary_128kbps",
-    "name": "Yasser_Ad-Dussary",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Nasser_Alqatami_128kbps",
-    "name": "Nasser_Alqatami",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Ali_Hajjaj_AlSuesy_128kbps",
-    "name": "Ali_Hajjaj_AlSuesy",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Sahl_Yassin_128kbps",
-    "name": "Sahl_Yassin",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "ahmed_ibn_ali_al_ajamy_128kbps",
-    "name": "Ahmed Ibn Ali Al Ajamy",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "translations/besim_korkut_ajet_po_ajet",
-    "name": "Besim Korkut (Bosnian)",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "aziz_alili_128kbps",
-    "name": "Aziz Alili",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Yaser_Salamah_128kbps",
-    "name": "Yaser Salamah",
-    "bitrate": "128kbps"
-  },
-  {
-    "subfolder": "Akram_AlAlaqimy_128kbps",
-    "name": "Akram Al Alaqimy",
-    "bitrate": "128kbps"
-  },
-  {"subfolder": "Ali_Jaber_64kbps", "name": "Ali Jaber", "bitrate": "64kbps"},
-  {
-    "subfolder": "Fares_Abbad_64kbps",
-    "name": "Fares Abbad",
-    "bitrate": "64kbps"
-  },
-  {
-    "subfolder": "translations/urdu_farhat_hashmi",
-    "name": "Farhat Hashmi (Urdu word for word translation)",
-    "bitrate": "32kbps"
-  },
-  {
-    "subfolder": "Ayman_Sowaid_64kbps",
-    "name": "Ayman Sowaid",
-    "bitrate": "64kbps"
-  }
+  {"name": "Abdullah Awad al-Juhani", "id": "abdullaah_3awwaad_al-juhaynee"},
+  {"name": "Abdullah Basfar", "id": "abdullaah_basfar"},
+  {"name": "Abdur-Rahman as-Sudais", "id": "abdurrahmaan_as-sudays"},
+  {"name": "Ali Abdur-Rahman al-Huthaify", "id": "huthayfi"},
+  {"name": "AbdulMuhsin al-Qasim", "id": "abdul_muhsin_alqasim"},
+  {"name": "AbdulBari ath-Thubaity", "id": "thubaity"},
+  {"name": "Ahmed ibn Ali al-Ajmy", "id": "ahmed_ibn_3ali_al-3ajamy"},
+  {"name": "AbdulAzeez al-Ahmad", "id": "abdulazeez_al-ahmad"},
+  {"name": "AbdulBaset AbdulSamad [Murattal]", "id": "abdul_basit_murattal"},
+  {"name": "AbdulWadud Haneef", "id": "abdulwadood_haneef"},
+  {"name": "Aziz Alili", "id": "aziz_alili"},
+  {
+    "name": "AbdulBaset AbdulSamad [Mujawwad]",
+    "id": "alhusaynee_al3azazee_with_children"
+  },
+  {
+    "name": "Al-Hussayni Al-'Azazy (with Children)",
+    "id": "alhusaynee_al3azazee_with_children"
+  },
+  {
+    "name": "Abdur-Razaq bin Abtan al-Dulaimi [Mujawwad]",
+    "id": "abdulrazaq_bin_abtan_al_dulaimi"
+  },
+  {"name": "Abdullah Khayat", "id": "khayat"},
+  {"name": "Adel Kalbani", "id": "adel_kalbani"},
+  {"name": "AbdulKareem Al Hazmi", "id": "abdulkareem_al_hazmi"},
+  {"name": "Abdul-Mun'im Abdul-Mubdi'", "id": "abdulmun3im_abdulmubdi2"},
+  {"name": "Abdur-Rashid Sufi", "id": "abdurrashid_sufi"},
+  {"name": "Ahmad al-Huthaify", "id": "ahmad_alhuthayfi"},
+  {
+    "name": "Abu Bakr al-Shatri [Taraweeh]",
+    "id": "abu_bakr_ash-shatri_tarawee7"
+  },
+  {"name": "Abdullah Matroud", "id": "abdullah_matroud"},
+  {"name": "AbdulWadood Haneef", "id": "abdul_wadood_haneef_rare"},
+  {"name": "Ahmad Nauina", "id": "ahmad_nauina"},
+  {"name": "Akram Al-Alaqmi", "id": "akram_al_alaqmi"},
+  {"name": "Ali Hajjaj Alsouasi", "id": "ali_hajjaj_alsouasi"},
+  {"name": "Asim Abdul Aleem", "id": "asim_abdulaleem"},
+  {"name": "Abdallah Abdal", "id": "abdallah_abdal"},
+  {"name": "Abdullah Ali Jabir", "id": "ali_jaber"},
+  {"name": "Bandar Baleela", "id": "bandar_baleela/complete"},
+  {"name": "Dr. Shawqy Hamed [Murattal]", "id": "dr.shawqy_7amed/murattal"},
+  {"name": "Fares Abbad", "id": "fares"},
+  {"name": "Fatih Seferagic", "id": "fatih_seferagic"},
+  {"name": "Hani ar-Rifai", "id": "rifai"},
+  {"name": "Hamad Sinan", "id": "hamad_sinan"},
+  {"name": "Hatem Farid", "id": "hatem_farid/collection"},
+  {"name": "Ibrahim Al-Jibrin", "id": "jibreen"},
+  {"name": "Imad Zuhair Hafez", "id": "imad_zuhair_hafez"},
+  {"name": "Ibrahim Al Akhdar", "id": "ibrahim_al_akhdar"},
+  {"name": "Idrees Abkar", "id": "idrees_akbar"},
+  {"name": "Khalid al-Qahtani", "id": "khaalid_al-qahtaanee"},
+  {"name": "Khalid Al Ghamdi", "id": "khalid_alghamdi/009.mp3"},
+  {"name": "Khalifah Taniji", "id": "khalifah_taniji"},
+  {"name": "Mishari Rashid al-`Afasy", "id": "mishaari_raashid_al_3afaasee"},
+  {
+    "name": "Muhammad Siddiq al-Minshawi",
+    "id": "muhammad_siddeeq_al-minshaawee"
+  },
+  {"name": "Muhammad Jibreel", "id": "muhammad_jibreel/complete"},
+  {"name": "Muhammad al-Mehysni", "id": "mehysni"},
+  {"name": "Muhammad Siddiq al-Minshawi [Mujawwad]", "id": "minshawi_mujawwad"},
+  {"name": "Muhammad al-Luhaidan", "id": "muhammad_alhaidan"},
+  {"name": "Muhammad Abdul-Kareem", "id": "muhammad_abdulkareem"},
+  {"name": "Mustafa al-`Azawi", "id": "mustafa_al3azzawi"},
+  {"name": "Muhammad Hassan", "id": "mu7ammad_7assan"},
+  {"name": "Mostafa Ismaeel", "id": "mostafa_ismaeel"},
+  {"name": "Muhammad Sulaiman Patel", "id": "muhammad_patel"},
+  {"name": "Mohammad Al-Tablawi", "id": "mohammad_ismaeel_almuqaddim"},
+  {"name": "Mohammad Ismaeel Al-Muqaddim", "id": "mohammad_ismaeel_almuqaddim"},
+  {"name": "Muhammad Ayyoob [Taraweeh]", "id": "muhammad_ayyoob_hq"},
+  {"name": "Masjid Quba Taraweeh 1434", "id": "masjid_quba_1434"},
+  {"name": "Muhammad Khaleel", "id": "muhammad_khaleel"},
+  {
+    "name": "Mahmoud Khaleel Al-Husary",
+    "id": "mahmood_khaleel_al-husaree_iza3a"
+  },
+  {"name": "Mahmood Ali Al-Bana", "id": "mahmood_ali_albana"},
+  {"name": "Maher al-Muaiqly", "id": "maher_almu3aiqly/year1440"},
+  {"name": "Nabil ar-Rifai", "id": "nabil_rifa3i"},
+  {"name": "Nasser Al Qatami", "id": "nasser_bin_ali_alqatami"},
+  {"name": "Sa`ud ash-Shuraym", "id": "sa3ood_al-shuraym"},
+  {"name": "Saad al-Ghamdi", "id": "sa3d_al-ghaamidi/complete"},
+  {"name": "Sahl Yasin", "id": "sahl_yaaseen"},
+  {"name": "Salah Bukhatir", "id": "salaah_bukhaatir"},
+  {"name": "Sudais and Shuraym", "id": "sodais_and_shuraim"},
+  {"name": "Saleh al Taleb", "id": "saleh_al_taleb"},
+  {"name": "Salah al-Budair", "id": "salahbudair"},
+  {"name": "Sadaqat `Ali", "id": "sadaqat_ali"},
+  {"name": "Salah Al-Hashim", "id": "salah_alhashim"},
+  {
+    "name": "Tawfeeq ibn Sa`id as-Sawa'igh",
+    "id": "tawfeeq_bin_saeed-as-sawaaigh"
+  },
+  {"name": "Wadee Hammadi Al Yamani", "id": "wadee_hammadi_al-yamani"},
+  {"name": "Yasser ad-Dussary", "id": "yasser_ad-dussary"}
 ];
