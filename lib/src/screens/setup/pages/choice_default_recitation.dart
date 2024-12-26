@@ -91,6 +91,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                                         )
                                       : const Icon(Icons.play_arrow),
                               onPressed: () async {
+                                audioControllerGetx.currentSurah.value = 1;
                                 if (audioControllerGetx.currentIndex.value ==
                                         index &&
                                     audioControllerGetx.isPlaying.value ==

@@ -25,16 +25,20 @@ class ManageQuranAudio {
   static Future<void> startListening() async {
     audioPlayer.durationStream.listen((event) {
       if (event != null) {
-        audioControllerGetx.duration.value = event.inMilliseconds;
+        audioControllerGetx.totalDuration.value = event;
       }
     });
 
     audioPlayer.positionStream.listen((event) {
-      audioControllerGetx.progress.value = event.inMilliseconds;
+      audioControllerGetx.progress.value = event;
     });
 
     audioPlayer.speedStream.listen((event) {
       audioControllerGetx.speed.value = event;
+    });
+
+    audioPlayer.bufferedPositionStream.listen((event) {
+      audioControllerGetx.bufferPosition.value = event;
     });
 
     audioPlayer.playerStateStream.listen((event) {

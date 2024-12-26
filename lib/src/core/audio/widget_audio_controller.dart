@@ -1,4 +1,11 @@
+import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
+import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
+import 'package:al_quran_audio/src/theme/colors.dart';
+import 'package:al_quran_audio/src/theme/theme_controller.dart';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class WidgetAudioController extends StatefulWidget {
   const WidgetAudioController({super.key});
@@ -24,20 +31,106 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
     super.initState();
   }
 
+  final audioController = Get.put(AudioController());
+  final themeController = Get.put(AppThemeData());
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-        animation: animationController,
-        builder: (context, value) {
-          return Container(
-            height: 50,
-            width: animation.value * MediaQuery.of(context).size.width * 0.8,
-            margin: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(100),
-              color: Colors.grey.shade600.withValues(alpha: 0.6),
-            ),
-          );
-        });
+      animation: animationController,
+      builder: (context, value) {
+        return Obx(
+          () {
+            bool isDark = (themeController.isDark.value == true ||
+                (themeController.themeModeName.value == "system" &&
+                    MediaQuery.of(context).platformBrightness ==
+                        Brightness.dark));
+            Color colorToApply =
+                isDark ? Colors.white : MyColors.secondaryColor;
+            return Container(
+              height: 85,
+              width: animation.value * MediaQuery.of(context).size.width * 1,
+              margin: const EdgeInsets.all(10),
+              padding: const EdgeInsets.only(left: 10, right: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(7),
+                color: isDark ? Colors.grey.shade800 : Colors.white,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ProgressBar(
+                    progress: audioController.progress.value,
+                    buffered: audioController.bufferPosition.value,
+                    total: audioController.totalDuration.value,
+                    progressBarColor: Colors.green,
+                    baseBarColor: Colors.white,
+                    bufferedBarColor: Colors.green.shade200,
+                    thumbColor: MyColors.secondaryColor,
+                    barHeight: 5.0,
+                    thumbRadius: 7.0,
+                    timeLabelLocation: TimeLabelLocation.sides,
+                    onSeek: (duration) {
+                      ManageQuranAudio.audioPlayer.seek(duration);
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          FluentIcons.skip_back_10_24_regular,
+                          color: colorToApply,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.skip_previous_rounded,
+                          color: colorToApply,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          audioController.isPlaying.value
+                              ? Icons.play_arrow_rounded
+                              : Icons.pause_rounded,
+                          color: colorToApply,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.skip_next_rounded,
+                          color: colorToApply,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          FluentIcons.skip_forward_10_24_regular,
+                          color: colorToApply,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: colorToApply,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }
