@@ -40,6 +40,11 @@ class ManageQuranAudio {
     audioPlayer.playerStateStream.listen((event) {
       if (audioControllerGetx.currentIndex.value != -1) {
         audioControllerGetx.isPlaying.value = event.playing;
+        if (event.processingState == ProcessingState.loading) {
+          audioControllerGetx.isLoading.value = true;
+        } else {
+          audioControllerGetx.isLoading.value = false;
+        }
       }
     });
 

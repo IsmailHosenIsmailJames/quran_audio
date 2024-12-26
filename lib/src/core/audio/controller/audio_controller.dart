@@ -7,4 +7,5 @@ class AudioController extends GetxController {
   RxInt duration = 0.obs;
   RxDouble speed = 1.0.obs;
   RxBool isStreamRegistered = false.obs;
+  RxBool isLoading = false.obs;
 }

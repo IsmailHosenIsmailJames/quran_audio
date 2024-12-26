@@ -1,5 +1,4 @@
 List<Map<String, dynamic>> recitationsInfoList = [
-  {"name": "Abdullah Awad al-Juhani", "id": "abdullaah_3awwaad_al-juhaynee"},
   {"name": "Abdullah Basfar", "id": "abdullaah_basfar"},
   {"name": "Abdur-Rahman as-Sudais", "id": "abdurrahmaan_as-sudays"},
   {"name": "Ali Abdur-Rahman al-Huthaify", "id": "huthayfi"},
@@ -95,5 +94,6 @@ List<Map<String, dynamic>> recitationsInfoList = [
     "id": "tawfeeq_bin_saeed-as-sawaaigh"
   },
   {"name": "Wadee Hammadi Al Yamani", "id": "wadee_hammadi_al-yamani"},
-  {"name": "Yasser ad-Dussary", "id": "yasser_ad-dussary"}
+  {"name": "Yasser ad-Dussary", "id": "yasser_ad-dussary"},
+  {"name": "Abdullah Awad al-Juhani", "id": "abdullaah_3awwaad_al-juhaynee"},
 ];

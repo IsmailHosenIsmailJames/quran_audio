@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
@@ -51,7 +53,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey.withOpacity(0.2),
+                    color: Colors.grey.withValues(alpha: 0.2),
                   ),
                   padding: const EdgeInsets.all(5),
                   margin: const EdgeInsets.only(bottom: 5),
@@ -60,41 +62,64 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                       SizedBox(
                         height: 40,
                         width: 40,
-                        child: IconButton(
-                          style: IconButton.styleFrom(
-                            backgroundColor: Colors.blue.shade700,
-                            foregroundColor: Colors.white,
-                          ),
-                          tooltip: "Play Recitation from ${current.name}",
-                          icon: Obx(
-                            () => Icon(audioControllerGetx.currentIndex.value ==
+                        child: Obx(
+                          () {
+                            log(audioControllerGetx.isLoading.value
+                                ? "Loading"
+                                : "Not loading");
+                            log(audioControllerGetx.currentIndex.value
+                                .toString());
+                            return IconButton(
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.blue.shade700,
+                                foregroundColor: Colors.white,
+                              ),
+                              tooltip: "Play Recitation from ${current.name}",
+                              icon: audioControllerGetx.currentIndex.value ==
+                                          index &&
+                                      audioControllerGetx.isPlaying.value ==
+                                          true
+                                  ? const Icon(Icons.pause)
+                                  : (audioControllerGetx.currentIndex.value ==
+                                              index &&
+                                          audioControllerGetx.isLoading.value)
+                                      ? CircularProgressIndicator(
+                                          color: Colors.white,
+                                          backgroundColor: Colors.white
+                                              .withValues(alpha: 0.2),
+                                          strokeWidth: 2,
+                                        )
+                                      : const Icon(Icons.play_arrow),
+                              onPressed: () async {
+                                if (audioControllerGetx.currentIndex.value ==
                                         index &&
-                                    audioControllerGetx.isPlaying.value == true
-                                ? Icons.pause
-                                : Icons.play_arrow),
-                          ),
-                          onPressed: () async {
-                            if (audioControllerGetx.currentIndex.value ==
-                                    index &&
-                                audioControllerGetx.isPlaying.value == true) {
-                              // pause audio
-                              audioControllerGetx.currentIndex.value = index;
-                              await ManageQuranAudio.audioPlayer.pause();
-                            } else if (audioControllerGetx.currentIndex.value ==
-                                    index &&
-                                audioControllerGetx.isPlaying.value != true) {
-                              // resume audio
-                              audioControllerGetx.currentIndex.value = index;
-                              await ManageQuranAudio.audioPlayer.play();
-                            } else {
-                              // start brand new audio
-                              audioControllerGetx.isPlaying.value = true;
-                              audioControllerGetx.currentIndex.value = index;
-                              await ManageQuranAudio.playSingleSurah(
-                                surahNumber: 1,
-                                reciter: current,
-                              );
-                            }
+                                    audioControllerGetx.isPlaying.value ==
+                                        true) {
+                                  // pause audio
+                                  audioControllerGetx.currentIndex.value =
+                                      index;
+                                  await ManageQuranAudio.audioPlayer.pause();
+                                } else if (audioControllerGetx
+                                            .currentIndex.value ==
+                                        index &&
+                                    audioControllerGetx.isPlaying.value !=
+                                        true) {
+                                  // resume audio
+                                  audioControllerGetx.currentIndex.value =
+                                      index;
+                                  await ManageQuranAudio.audioPlayer.play();
+                                } else {
+                                  // start brand new audio
+                                  audioControllerGetx.isPlaying.value = true;
+                                  audioControllerGetx.currentIndex.value =
+                                      index;
+                                  await ManageQuranAudio.playSingleSurah(
+                                    surahNumber: 1,
+                                    reciter: current,
+                                  );
+                                }
+                              },
+                            );
                           },
                         ),
                       ),
@@ -114,7 +139,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                             boxShadow: [
                               BoxShadow(
                                 color: const Color.fromARGB(255, 132, 119, 119)
-                                    .withOpacity(0.4),
+                                    .withValues(alpha: 0.4),
                                 spreadRadius: 5,
                                 blurRadius: 5,
                               ),

@@ -35,7 +35,7 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
             margin: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
-              color: Colors.grey.shade600.withOpacity(0.6),
+              color: Colors.grey.shade600.withValues(alpha: 0.6),
             ),
           );
         });

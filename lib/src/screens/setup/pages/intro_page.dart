@@ -26,7 +26,7 @@ class IntroPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(1000),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.green.withOpacity(0.6),
+                    color: Colors.green.withValues(alpha: 0.6),
                     spreadRadius: 10,
                     blurRadius: 40,
                   ),
