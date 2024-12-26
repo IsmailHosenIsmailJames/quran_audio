@@ -51,7 +51,7 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
               height: 85,
               width: animation.value * MediaQuery.of(context).size.width * 1,
               margin: const EdgeInsets.all(10),
-              padding: const EdgeInsets.only(left: 10, right: 10),
+              padding: const EdgeInsets.only(left: 5, right: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(7),
                 color: isDark ? Colors.grey.shade800 : Colors.white,
@@ -79,18 +79,43 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      CircleAvatar(
+                        radius: 13,
+                        child: Text(
+                          audioController.currentSurah.value.toString(),
+                          style: TextStyle(color: colorToApply),
+                        ),
+                      ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          int toSeek =
+                              audioController.progress.value.inSeconds - 10;
+                          if (toSeek < 0) {
+                            toSeek = 0;
+                          }
+                          ManageQuranAudio.audioPlayer
+                              .seek(Duration(seconds: toSeek));
+                        },
                         icon: Icon(
                           FluentIcons.skip_back_10_24_regular,
                           color: colorToApply,
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: audioController.currentSurah.value <= 1
+                            ? null
+                            : () {
+                                audioController.currentSurah.value -= 1;
+                                ManageQuranAudio.playSingleSurah(
+                                  surahNumber:
+                                      audioController.currentSurah.value,
+                                );
+                              },
                         icon: Icon(
                           Icons.skip_previous_rounded,
-                          color: colorToApply,
+                          color: audioController.currentSurah.value <= 1
+                              ? Colors.grey
+                              : colorToApply,
                         ),
                       ),
                       IconButton(
@@ -103,14 +128,34 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: audioController.currentSurah.value >= 114
+                            ? null
+                            : () {
+                                audioController.currentSurah.value += 1;
+                                ManageQuranAudio.playSingleSurah(
+                                  surahNumber:
+                                      audioController.currentSurah.value,
+                                );
+                              },
                         icon: Icon(
                           Icons.skip_next_rounded,
-                          color: colorToApply,
+                          color: audioController.currentSurah.value >= 114
+                              ? Colors.grey
+                              : colorToApply,
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          int toSeek =
+                              audioController.progress.value.inSeconds + 10;
+                          if (toSeek >
+                              audioController.totalDuration.value.inSeconds) {
+                            toSeek =
+                                audioController.totalDuration.value.inSeconds;
+                          }
+                          ManageQuranAudio.audioPlayer
+                              .seek(Duration(seconds: toSeek));
+                        },
                         icon: Icon(
                           FluentIcons.skip_forward_10_24_regular,
                           color: colorToApply,

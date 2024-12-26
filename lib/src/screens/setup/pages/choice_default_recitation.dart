@@ -8,6 +8,7 @@ import 'package:al_quran_audio/src/theme/colors.dart';
 import 'package:al_quran_audio/src/theme/theme_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../core/audio/controller/audio_controller.dart';
 
@@ -91,6 +92,8 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                                         )
                                       : const Icon(Icons.play_arrow),
                               onPressed: () async {
+                                await Hive.box("info")
+                                    .put("reciter", current.toJson());
                                 audioControllerGetx.currentSurah.value = 1;
                                 if (audioControllerGetx.currentIndex.value ==
                                         index &&
