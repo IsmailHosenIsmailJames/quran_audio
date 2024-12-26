@@ -5,6 +5,7 @@ import 'package:al_quran_audio/src/theme/theme_controller.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
 class WidgetAudioController extends StatefulWidget {
@@ -80,12 +81,13 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       CircleAvatar(
-                        radius: 13,
+                        radius: 15,
                         child: Text(
                           audioController.currentSurah.value.toString(),
                           style: TextStyle(color: colorToApply),
                         ),
                       ),
+                      const Gap(5),
                       IconButton(
                         onPressed: () {
                           int toSeek =
@@ -119,11 +121,17 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          if (audioController.isPlaying.value) {
+                            await ManageQuranAudio.audioPlayer.pause();
+                          } else {
+                            await ManageQuranAudio.audioPlayer.play();
+                          }
+                        },
                         icon: Icon(
                           audioController.isPlaying.value
-                              ? Icons.play_arrow_rounded
-                              : Icons.pause_rounded,
+                              ? Icons.pause_rounded
+                              : Icons.play_arrow_rounded,
                           color: colorToApply,
                         ),
                       ),
@@ -158,13 +166,6 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                         },
                         icon: Icon(
                           FluentIcons.skip_forward_10_24_regular,
-                          color: colorToApply,
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.close_rounded,
                           color: colorToApply,
                         ),
                       ),

@@ -47,6 +47,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                   ReciterInfoModel.fromMap(recitationsInfoList[index]);
               return GestureDetector(
                 onTap: () {
+                  Hive.box("info").put("reciter", current.toJson());
                   setState(() {
                     selectedIndex = index;
                   });
