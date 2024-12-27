@@ -24,6 +24,13 @@ class _HomePageState extends State<HomePage> {
   final homeController = Get.put(HomeController());
   final audioControllerGetx = Get.put(AudioController());
   @override
+  void initState() {
+    ManageQuranAudio.audioControllerGetx = audioControllerGetx;
+    ManageQuranAudio.startListening();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
