@@ -11,4 +11,5 @@ class AudioController extends GetxController {
   RxBool isStreamRegistered = false.obs;
   RxBool isLoading = false.obs;
   RxInt currentSurah = (-1).obs;
+  RxBool isSurahAyahMode = true.obs;
 }

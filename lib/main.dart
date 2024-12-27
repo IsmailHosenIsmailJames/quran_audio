@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: Hive.box('info').get('default_recitation') == null
+      home: Hive.box('info').get('default_reciter') == null
           ? const SetupPage()
           : const HomePage(),
       onInit: () async {

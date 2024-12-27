@@ -159,7 +159,11 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
               alignment: const Alignment(1, 0.8),
               child: (audioControllerGetx.isPlaying.value == true ||
                       audioControllerGetx.currentIndex.value != -1)
-                  ? const WidgetAudioController()
+                  ? const WidgetAudioController(
+                      showSurahNumber: true,
+                      showQuranAyahMode: false,
+                      surahNumber: 1,
+                    )
                   : null,
             ),
           ),

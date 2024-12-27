@@ -64,7 +64,7 @@ class _SetupPageState extends State<SetupPage> {
                           final reciter = recitationsInfoList[
                               setupPageController.selectedIndex.value];
                           await Hive.box("info")
-                              .put("default_recitation", jsonEncode(reciter));
+                              .put("default_reciter", jsonEncode(reciter));
                           await Hive.box("info")
                               .put("reciter", jsonEncode(reciter));
 
