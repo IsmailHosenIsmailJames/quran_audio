@@ -12,7 +12,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../../core/audio/controller/audio_controller.dart';
 
 class ChoiceDefaultRecitation extends StatefulWidget {
-  const ChoiceDefaultRecitation({super.key});
+  final bool? forChangeReciter;
+  const ChoiceDefaultRecitation({super.key, this.forChangeReciter});
 
   @override
   State<ChoiceDefaultRecitation> createState() =>
@@ -26,9 +27,11 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Choice Default Reciter"),
+        title: widget.forChangeReciter == true
+            ? const Text("Change Reciter")
+            : const Text("Choice Default Reciter"),
         actions: [
-          themeIconButton,
+          if (widget.forChangeReciter == false) themeIconButton,
         ],
       ),
       body: Stack(
@@ -42,9 +45,10 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                   ReciterInfoModel.fromMap(recitationsInfoList[index]);
               return GestureDetector(
                 behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  Hive.box("info").put("reciter", current.toJson());
+                onTap: () async {
+                  await Hive.box("info").put("reciter", current.toJson());
                   setupPageController.selectedIndex.value = index;
+                  Get.back(result: current);
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -55,68 +59,82 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                   margin: const EdgeInsets.only(bottom: 5),
                   child: Row(
                     children: [
-                      SizedBox(
-                        height: 40,
-                        width: 40,
-                        child: Obx(
-                          () {
-                            return IconButton(
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.blue.shade700,
-                                foregroundColor: Colors.white,
-                              ),
-                              tooltip: "Play Recitation from ${current.name}",
-                              icon: audioControllerGetx.currentIndex.value ==
-                                          index &&
-                                      audioControllerGetx.isPlaying.value ==
-                                          true
-                                  ? const Icon(Icons.pause)
-                                  : (audioControllerGetx.currentIndex.value ==
+                      (widget.forChangeReciter == true)
+                          ? const SizedBox(
+                              height: 30,
+                            )
+                          : SizedBox(
+                              height: 40,
+                              width: 40,
+                              child: Obx(
+                                () {
+                                  return IconButton(
+                                    style: IconButton.styleFrom(
+                                      backgroundColor: Colors.blue.shade700,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                    tooltip:
+                                        "Play Recitation from ${current.name}",
+                                    icon: audioControllerGetx
+                                                    .currentIndex.value ==
+                                                index &&
+                                            audioControllerGetx
+                                                    .isPlaying.value ==
+                                                true
+                                        ? const Icon(Icons.pause)
+                                        : (audioControllerGetx
+                                                        .currentIndex.value ==
+                                                    index &&
+                                                audioControllerGetx
+                                                    .isLoading.value)
+                                            ? CircularProgressIndicator(
+                                                color: Colors.white,
+                                                backgroundColor: Colors.white
+                                                    .withValues(alpha: 0.2),
+                                                strokeWidth: 2,
+                                              )
+                                            : const Icon(Icons.play_arrow),
+                                    onPressed: () async {
+                                      await Hive.box("info")
+                                          .put("reciter", current.toJson());
+                                      audioControllerGetx.currentSurah.value =
+                                          1;
+                                      if (audioControllerGetx
+                                                  .currentIndex.value ==
                                               index &&
-                                          audioControllerGetx.isLoading.value)
-                                      ? CircularProgressIndicator(
-                                          color: Colors.white,
-                                          backgroundColor: Colors.white
-                                              .withValues(alpha: 0.2),
-                                          strokeWidth: 2,
-                                        )
-                                      : const Icon(Icons.play_arrow),
-                              onPressed: () async {
-                                await Hive.box("info")
-                                    .put("reciter", current.toJson());
-                                audioControllerGetx.currentSurah.value = 1;
-                                if (audioControllerGetx.currentIndex.value ==
-                                        index &&
-                                    audioControllerGetx.isPlaying.value ==
-                                        true) {
-                                  // pause audio
-                                  audioControllerGetx.currentIndex.value =
-                                      index;
-                                  await ManageQuranAudio.audioPlayer.pause();
-                                } else if (audioControllerGetx
-                                            .currentIndex.value ==
-                                        index &&
-                                    audioControllerGetx.isPlaying.value !=
-                                        true) {
-                                  // resume audio
-                                  audioControllerGetx.currentIndex.value =
-                                      index;
-                                  await ManageQuranAudio.audioPlayer.play();
-                                } else {
-                                  // start brand new audio
-                                  audioControllerGetx.isPlaying.value = true;
-                                  audioControllerGetx.currentIndex.value =
-                                      index;
-                                  await ManageQuranAudio.playSingleSurah(
-                                    surahNumber: 1,
-                                    reciter: current,
+                                          audioControllerGetx.isPlaying.value ==
+                                              true) {
+                                        // pause audio
+                                        audioControllerGetx.currentIndex.value =
+                                            index;
+                                        await ManageQuranAudio.audioPlayer
+                                            .pause();
+                                      } else if (audioControllerGetx
+                                                  .currentIndex.value ==
+                                              index &&
+                                          audioControllerGetx.isPlaying.value !=
+                                              true) {
+                                        // resume audio
+                                        audioControllerGetx.currentIndex.value =
+                                            index;
+                                        await ManageQuranAudio.audioPlayer
+                                            .play();
+                                      } else {
+                                        // start brand new audio
+                                        audioControllerGetx.isPlaying.value =
+                                            true;
+                                        audioControllerGetx.currentIndex.value =
+                                            index;
+                                        await ManageQuranAudio.playSingleSurah(
+                                          surahNumber: 1,
+                                          reciter: current,
+                                        );
+                                      }
+                                    },
                                   );
-                                }
-                              },
-                            );
-                          },
-                        ),
-                      ),
+                                },
+                              ),
+                            ),
                       Expanded(
                         child: SingleChildScrollView(
                           padding: const EdgeInsets.only(left: 10),

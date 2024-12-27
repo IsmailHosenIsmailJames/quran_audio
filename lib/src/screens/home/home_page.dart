@@ -1,9 +1,11 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
+import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
 import 'package:al_quran_audio/src/core/surah_ayah_count.dart';
 import 'package:al_quran_audio/src/screens/home/controller/home_controller.dart';
 import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
+import 'package:al_quran_audio/src/screens/setup/pages/choice_default_recitation.dart';
 import 'package:al_quran_audio/src/theme/theme_icon_button.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
@@ -37,78 +39,7 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             onPressed: () {
-              showModalBottomSheet(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(7),
-                ),
-                context: context,
-                builder: (context) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            const Icon(FluentIcons.settings_24_regular),
-                            const Gap(5),
-                            const Text("Settings"),
-                            const Spacer(),
-                            themeIconButton,
-                            IconButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              icon: const Icon(
-                                Icons.close,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Gap(15),
-                      const Row(
-                        children: [
-                          Gap(15),
-                          Icon(FluentIcons.text_font_16_filled),
-                          Gap(10),
-                          Text(
-                            "Font Size",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      Obx(
-                        () => Row(
-                          children: [
-                            Expanded(
-                              child: Slider(
-                                value: homeController.fontSizeArabic.value,
-                                min: 10,
-                                max: 50,
-                                divisions: 40,
-                                onChanged: (value) {
-                                  homeController.fontSizeArabic.value = value;
-                                  Hive.box("info").put("fontSizeArabic", value);
-                                },
-                              ),
-                            ),
-                            const Gap(5),
-                            Text(
-                              homeController.fontSizeArabic.value
-                                  .round()
-                                  .toString(),
-                            ),
-                            const Gap(10),
-                          ],
-                        ),
-                      )
-                    ],
-                  );
-                },
-              );
+              showSettings(context);
             },
             icon: const Icon(
               FluentIcons.settings_24_regular,
@@ -154,7 +85,21 @@ class _HomePageState extends State<HomePage> {
                                     const Color.fromARGB(255, 200, 250, 200),
                                 foregroundColor: Colors.green.shade800,
                               ),
-                              onPressed: () {},
+                              onPressed: () async {
+                                final result = await Get.to(() =>
+                                    const ChoiceDefaultRecitation(
+                                        forChangeReciter: true));
+                                if (result.runtimeType == ReciterInfoModel) {
+                                  homeController.reciter.value =
+                                      result as ReciterInfoModel;
+                                  if (homeController.currentSurah.value != -1) {
+                                    await ManageQuranAudio.playSingleSurah(
+                                      surahNumber:
+                                          homeController.currentSurah.value + 1,
+                                    );
+                                  }
+                                }
+                              },
                               child: const Text("Change"),
                             ),
                           ),
@@ -314,6 +259,78 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    );
+  }
+
+  void showSettings(BuildContext context) {
+    showModalBottomSheet(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(7),
+      ),
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  const Icon(FluentIcons.settings_24_regular),
+                  const Gap(5),
+                  const Text("Settings"),
+                  const Spacer(),
+                  themeIconButton,
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(
+                      Icons.close,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Gap(15),
+            const Row(
+              children: [
+                Gap(15),
+                Icon(FluentIcons.text_font_16_filled),
+                Gap(10),
+                Text(
+                  "Font Size",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            Obx(
+              () => Row(
+                children: [
+                  Expanded(
+                    child: Slider(
+                      value: homeController.fontSizeArabic.value,
+                      min: 10,
+                      max: 50,
+                      divisions: 40,
+                      onChanged: (value) {
+                        homeController.fontSizeArabic.value = value;
+                        Hive.box("info").put("fontSizeArabic", value);
+                      },
+                    ),
+                  ),
+                  const Gap(5),
+                  Text(
+                    homeController.fontSizeArabic.value.round().toString(),
+                  ),
+                  const Gap(10),
+                ],
+              ),
+            )
+          ],
+        );
+      },
     );
   }
 }
