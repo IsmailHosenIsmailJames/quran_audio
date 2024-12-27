@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitations.dart';
+import 'package:al_quran_audio/src/screens/setup/controller/setup_controller.dart';
 import 'package:al_quran_audio/src/theme/colors.dart';
 import 'package:al_quran_audio/src/theme/theme_icon_button.dart';
 import 'package:flutter/material.dart';
@@ -21,14 +20,10 @@ class ChoiceDefaultRecitation extends StatefulWidget {
 }
 
 class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
-  int selectedIndex = 0;
-
   final audioControllerGetx = Get.put(AudioController());
-
+  final setupPageController = Get.put(SetupController());
   @override
   Widget build(BuildContext context) {
-    print(audioControllerGetx.currentIndex.value);
-    print(audioControllerGetx.isPlaying.value == true);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Choice Default Reciter"),
@@ -46,11 +41,10 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
               final current =
                   ReciterInfoModel.fromMap(recitationsInfoList[index]);
               return GestureDetector(
+                behavior: HitTestBehavior.translucent,
                 onTap: () {
                   Hive.box("info").put("reciter", current.toJson());
-                  setState(() {
-                    selectedIndex = index;
-                  });
+                  setupPageController.selectedIndex.value = index;
                 },
                 child: Container(
                   decoration: BoxDecoration(
@@ -66,11 +60,6 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                         width: 40,
                         child: Obx(
                           () {
-                            log(audioControllerGetx.isLoading.value
-                                ? "Loading"
-                                : "Not loading");
-                            log(audioControllerGetx.currentIndex.value
-                                .toString());
                             return IconButton(
                               style: IconButton.styleFrom(
                                 backgroundColor: Colors.blue.shade700,
@@ -135,26 +124,30 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                           child: Text(current.name),
                         ),
                       ),
-                      if (index == selectedIndex)
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: MyColors.mainColor,
-                            borderRadius: BorderRadius.circular(50),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color.fromARGB(255, 132, 119, 119)
-                                    .withValues(alpha: 0.4),
-                                spreadRadius: 5,
-                                blurRadius: 5,
+                      Obx(
+                        () => (index != setupPageController.selectedIndex.value)
+                            ? const SizedBox()
+                            : Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: MyColors.mainColor,
+                                  borderRadius: BorderRadius.circular(50),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color.fromARGB(
+                                              255, 132, 119, 119)
+                                          .withValues(alpha: 0.4),
+                                      spreadRadius: 5,
+                                      blurRadius: 5,
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.done,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.done,
-                            color: Colors.white,
-                          ),
-                        ),
+                      ),
                     ],
                   ),
                 ),
