@@ -1,3 +1,4 @@
+import 'package:al_quran_audio/src/functions/get_uthmani_tajweed.dart';
 import 'package:al_quran_audio/src/screens/home/home_page.dart';
 import 'package:al_quran_audio/src/screens/setup/setup_page.dart';
 import 'package:al_quran_audio/src/theme/colors.dart';
@@ -70,7 +71,7 @@ class MyApp extends StatelessWidget {
           : const HomePage(),
       onInit: () async {
         final appTheme = Get.put(AppThemeData());
-
+        getUthmaniTajweed();
         appTheme.initTheme();
       },
     );
