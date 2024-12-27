@@ -1,6 +1,7 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/surah_ayah_count.dart';
+import 'package:al_quran_audio/src/screens/home/controller/home_controller.dart';
 import 'package:al_quran_audio/src/theme/colors.dart';
 import 'package:al_quran_audio/src/theme/theme_controller.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
@@ -14,11 +15,13 @@ class WidgetAudioController extends StatefulWidget {
   final bool showSurahNumber;
   final bool showQuranAyahMode;
   final int surahNumber;
+  final HomeController? homeController;
   const WidgetAudioController({
     super.key,
     required this.showSurahNumber,
     required this.showQuranAyahMode,
     required this.surahNumber,
+    this.homeController,
   });
 
   @override
@@ -56,221 +59,230 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
       builder: (context, value) {
         return Obx(
           () {
-            bool isDark = (themeController.isDark.value == true ||
+            bool isDark = (themeController.themeModeName.value == "dark" ||
                 (themeController.themeModeName.value == "system" &&
                     MediaQuery.of(context).platformBrightness ==
                         Brightness.dark));
             Color colorToApply =
                 isDark ? Colors.white : MyColors.secondaryColor;
+            int latestSurahNumber =
+                widget.homeController?.currentSurah.value ?? widget.surahNumber;
+
             return Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (audioController.isSurahAyahMode.value)
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      child: Scrollbar(
-                        controller: scrollController,
-                        thickness: 5,
-                        thumbVisibility: true,
-                        radius: const Radius.circular(7),
-                        interactive: true,
-                        child: ListView.builder(
-                            controller: scrollController,
-                            padding: const EdgeInsets.all(10),
-                            itemCount: (surahAyahCount[widget.surahNumber] / 10)
-                                .ceil(),
-                            itemBuilder: (context, index) {
-                              int ayahCount =
-                                  surahAyahCount[widget.surahNumber];
-                              int start = index * 10 + 1;
-                              int end = (index + 1) * 10;
-                              if (end > ayahCount) {
-                                end = ayahCount;
-                              }
-
-                              List<InlineSpan> listOfAyahsSpanText = [];
-
-                              for (int currentAyahNumber = start;
-                                  currentAyahNumber <= end;
-                                  currentAyahNumber++) {
-                                listOfAyahsSpanText.addAll(getTajweedTexSpan(
-                                    infoBox.get(
-                                        "uthmani_tajweed/${widget.surahNumber + 1}:$currentAyahNumber")));
-                              }
-                              return Text.rich(
-                                TextSpan(children: listOfAyahsSpanText),
-                              );
-                            }),
-                      ),
-                    ),
-                  ),
-                Container(
-                  height: 85,
-                  width:
-                      animation.value * MediaQuery.of(context).size.width * 1,
-                  margin:
-                      const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                  padding: const EdgeInsets.only(left: 5, right: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(7),
-                    color: isDark ? Colors.grey.shade800 : Colors.white,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ProgressBar(
-                        progress: audioController.progress.value,
-                        buffered: audioController.bufferPosition.value,
-                        total: audioController.totalDuration.value,
-                        progressBarColor: Colors.green,
-                        baseBarColor: colorToApply.withValues(alpha: 0.2),
-                        bufferedBarColor: Colors.green.shade200,
-                        thumbColor: MyColors.secondaryColor,
-                        barHeight: 5.0,
-                        thumbRadius: 7.0,
-                        timeLabelLocation: TimeLabelLocation.sides,
-                        onSeek: (duration) {
-                          ManageQuranAudio.audioPlayer.seek(duration);
-                        },
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if (widget.showSurahNumber)
-                            CircleAvatar(
-                              radius: 15,
-                              child: Text(
-                                audioController.currentSurah.value.toString(),
-                                style: TextStyle(color: colorToApply),
-                              ),
-                            ),
-                          const Gap(5),
-                          IconButton(
-                            onPressed: () {
-                              int toSeek =
-                                  audioController.progress.value.inSeconds - 10;
-                              if (toSeek < 0) {
-                                toSeek = 0;
-                              }
-                              ManageQuranAudio.audioPlayer
-                                  .seek(Duration(seconds: toSeek));
-                            },
-                            icon: Icon(
-                              FluentIcons.skip_back_10_24_regular,
-                              color: colorToApply,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: audioController.currentSurah.value <= 1
-                                ? null
-                                : () {
-                                    audioController.currentSurah.value -= 1;
-                                    ManageQuranAudio.playSingleSurah(
-                                      surahNumber:
-                                          audioController.currentSurah.value,
-                                    );
-                                  },
-                            icon: Icon(
-                              Icons.skip_previous_rounded,
-                              color: audioController.currentSurah.value <= 1
-                                  ? Colors.grey
-                                  : colorToApply,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () async {
-                              if (audioController.isLoading.value) {
-                                return;
-                              }
-                              if (audioController.isPlaying.value) {
-                                await ManageQuranAudio.audioPlayer.pause();
-                              } else {
-                                await ManageQuranAudio.audioPlayer.play();
-                              }
-                            },
-                            icon: audioController.isLoading.value
-                                ? SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      color: MyColors.secondaryColor,
-                                      strokeWidth: 3,
-                                    ),
-                                  )
-                                : Icon(
-                                    audioController.isPlaying.value
-                                        ? Icons.pause_rounded
-                                        : Icons.play_arrow_rounded,
-                                    color: colorToApply,
-                                  ),
-                          ),
-                          IconButton(
-                            onPressed: audioController.currentSurah.value >= 114
-                                ? null
-                                : () {
-                                    audioController.currentSurah.value += 1;
-                                    ManageQuranAudio.playSingleSurah(
-                                      surahNumber:
-                                          audioController.currentSurah.value,
-                                    );
-                                  },
-                            icon: Icon(
-                              Icons.skip_next_rounded,
-                              color: audioController.currentSurah.value >= 114
-                                  ? Colors.grey
-                                  : colorToApply,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              int toSeek =
-                                  audioController.progress.value.inSeconds + 10;
-                              if (toSeek >
-                                  audioController
-                                      .totalDuration.value.inSeconds) {
-                                toSeek = audioController
-                                    .totalDuration.value.inSeconds;
-                              }
-                              ManageQuranAudio.audioPlayer
-                                  .seek(Duration(seconds: toSeek));
-                            },
-                            icon: Icon(
-                              FluentIcons.skip_forward_10_24_regular,
-                              color: colorToApply,
-                            ),
-                          ),
-                          if (widget.showQuranAyahMode)
-                            IconButton(
-                              onPressed: () {
-                                audioController.isSurahAyahMode.value =
-                                    !audioController.isSurahAyahMode.value;
-                              },
-                              icon: Icon(
-                                audioController.isSurahAyahMode.value
-                                    ? FluentIcons
-                                        .full_screen_minimize_24_regular
-                                    : FluentIcons
-                                        .full_screen_maximize_24_regular,
-                                color: colorToApply,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                  getSurahView(latestSurahNumber, isDark),
+                getControllers(context, isDark, colorToApply),
               ],
             );
           },
         );
       },
+    );
+  }
+
+  Container getControllers(
+      BuildContext context, bool isDark, Color colorToApply) {
+    return Container(
+      height: 85,
+      width: animation.value * MediaQuery.of(context).size.width * 1,
+      margin: EdgeInsets.only(
+          left: 10,
+          top: 10,
+          right: 10,
+          bottom: widget.showQuranAyahMode ? 10 : 70),
+      padding: const EdgeInsets.only(left: 5, right: 5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(7),
+        color: isDark ? Colors.grey.shade800 : Colors.white,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ProgressBar(
+            progress: audioController.progress.value,
+            buffered: audioController.bufferPosition.value,
+            total: audioController.totalDuration.value,
+            progressBarColor: Colors.green,
+            baseBarColor: colorToApply.withValues(alpha: 0.2),
+            bufferedBarColor: Colors.green.shade200,
+            thumbColor: MyColors.secondaryColor,
+            barHeight: 5.0,
+            thumbRadius: 7.0,
+            timeLabelLocation: TimeLabelLocation.sides,
+            onSeek: (duration) {
+              ManageQuranAudio.audioPlayer.seek(duration);
+            },
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (widget.showSurahNumber)
+                CircleAvatar(
+                  radius: 15,
+                  child: Text(
+                    audioController.currentSurah.value.toString(),
+                    style: TextStyle(color: colorToApply),
+                  ),
+                ),
+              const Gap(5),
+              IconButton(
+                onPressed: () {
+                  int toSeek = audioController.progress.value.inSeconds - 10;
+                  if (toSeek < 0) {
+                    toSeek = 0;
+                  }
+                  ManageQuranAudio.audioPlayer.seek(Duration(seconds: toSeek));
+                },
+                icon: Icon(
+                  FluentIcons.skip_back_10_24_regular,
+                  color: colorToApply,
+                ),
+              ),
+              IconButton(
+                onPressed: audioController.currentSurah.value <= 1
+                    ? null
+                    : () {
+                        audioController.currentSurah.value -= 1;
+                        widget.homeController?.currentSurah.value -= 1;
+                        ManageQuranAudio.playSingleSurah(
+                          surahNumber: audioController.currentSurah.value,
+                        );
+                      },
+                icon: Icon(
+                  Icons.skip_previous_rounded,
+                  color: audioController.currentSurah.value <= 1
+                      ? Colors.grey
+                      : colorToApply,
+                ),
+              ),
+              IconButton(
+                onPressed: () async {
+                  if (audioController.isLoading.value) {
+                    return;
+                  }
+                  if (audioController.isPlaying.value) {
+                    await ManageQuranAudio.audioPlayer.pause();
+                  } else {
+                    await ManageQuranAudio.audioPlayer.play();
+                  }
+                },
+                icon: audioController.isLoading.value
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: MyColors.secondaryColor,
+                          strokeWidth: 3,
+                        ),
+                      )
+                    : Icon(
+                        audioController.isPlaying.value
+                            ? Icons.pause_rounded
+                            : Icons.play_arrow_rounded,
+                        color: colorToApply,
+                      ),
+              ),
+              IconButton(
+                onPressed: audioController.currentSurah.value >= 114
+                    ? null
+                    : () {
+                        audioController.currentSurah.value += 1;
+                        widget.homeController?.currentSurah.value += 1;
+                        ManageQuranAudio.playSingleSurah(
+                          surahNumber: audioController.currentSurah.value,
+                        );
+                      },
+                icon: Icon(
+                  Icons.skip_next_rounded,
+                  color: audioController.currentSurah.value >= 114
+                      ? Colors.grey
+                      : colorToApply,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  int toSeek = audioController.progress.value.inSeconds + 10;
+                  if (toSeek > audioController.totalDuration.value.inSeconds) {
+                    toSeek = audioController.totalDuration.value.inSeconds;
+                  }
+                  ManageQuranAudio.audioPlayer.seek(Duration(seconds: toSeek));
+                },
+                icon: Icon(
+                  FluentIcons.skip_forward_10_24_regular,
+                  color: colorToApply,
+                ),
+              ),
+              if (widget.showQuranAyahMode)
+                IconButton(
+                  onPressed: () {
+                    audioController.isSurahAyahMode.value =
+                        !audioController.isSurahAyahMode.value;
+                  },
+                  icon: Icon(
+                    audioController.isSurahAyahMode.value
+                        ? FluentIcons.full_screen_minimize_24_regular
+                        : FluentIcons.full_screen_maximize_24_regular,
+                    color: colorToApply,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Expanded getSurahView(int latestSurahNumber, bool isDark) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: isDark ? Colors.grey.shade800 : Colors.white,
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: Scrollbar(
+          controller: scrollController,
+          thickness: 5,
+          thumbVisibility: true,
+          radius: const Radius.circular(7),
+          interactive: true,
+          child: ListView.builder(
+              controller: scrollController,
+              padding: const EdgeInsets.all(10),
+              itemCount: (surahAyahCount[(latestSurahNumber)] / 10).ceil(),
+              itemBuilder: (context, index) {
+                int ayahCount = surahAyahCount[(latestSurahNumber)];
+                int start = index * 10 + 1;
+                int end = (index + 1) * 10;
+                if (end > ayahCount) {
+                  end = ayahCount;
+                }
+
+                List<InlineSpan> listOfAyahsSpanText = [];
+
+                for (int currentAyahNumber = start;
+                    currentAyahNumber <= end;
+                    currentAyahNumber++) {
+                  listOfAyahsSpanText.addAll(
+                    getTajweedTexSpan(
+                      infoBox.get(
+                        "uthmani_tajweed/${(latestSurahNumber) + 1}:$currentAyahNumber",
+                        defaultValue: "",
+                      ),
+                    ),
+                  );
+                }
+                return Text.rich(TextSpan(children: listOfAyahsSpanText),
+                    style: TextStyle(
+                      fontSize: widget.homeController?.fontSizeArabic.value,
+                    ));
+              }),
+        ),
+      ),
     );
   }
 

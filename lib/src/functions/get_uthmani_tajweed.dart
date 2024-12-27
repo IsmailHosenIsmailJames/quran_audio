@@ -38,24 +38,29 @@ Future<List<String>?> getUthmaniTajweed({int? surah, int? ayah}) async {
 }
 
 Future<bool> getDownloadUthmaniTajweed() async {
-  final infoBox = Hive.box("info");
+  try {
+    final infoBox = Hive.box("info");
 
-  log("Getting uthmani_tajweed");
-  final response = await http.get(Uri.parse(getUthmaniTajweedAPI));
+    log("Getting uthmani_tajweed");
+    final response = await http.get(Uri.parse(getUthmaniTajweedAPI));
 
-  log("get uthmani tajweed successful");
-  if (response.statusCode == 200) {
-    final data = Map<String, dynamic>.from(jsonDecode(response.body));
-    List verses = List.from(data['verses']);
+    log("get uthmani tajweed successful");
+    if (response.statusCode == 200) {
+      final data = Map<String, dynamic>.from(jsonDecode(response.body));
+      List verses = List.from(data['verses']);
 
-    log("saving all uthmani_tajweed");
-    for (int i = 0; i < verses.length; i++) {
-      infoBox.put("uthmani_tajweed/${verses[i]['verse_key']}",
-          verses[i]['text_uthmani_tajweed']);
+      log("saving all uthmani_tajweed");
+      for (int i = 0; i < verses.length; i++) {
+        infoBox.put("uthmani_tajweed/${verses[i]['verse_key']}",
+            verses[i]['text_uthmani_tajweed']);
+      }
+      log("uthmani_tajweed saved");
+      return true;
+    } else {
+      return false;
     }
-    log("uthmani_tajweed saved");
-    return true;
-  } else {
+  } catch (e) {
+    log("Unable to download : $e");
     return false;
   }
 }

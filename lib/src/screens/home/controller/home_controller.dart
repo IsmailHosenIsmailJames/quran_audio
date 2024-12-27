@@ -7,4 +7,7 @@ class HomeController extends GetxController {
     Hive.box('info').get('default_reciter'),
   ).obs;
   RxInt currentSurah = (-1).obs;
+  RxDouble fontSizeArabic =
+      (Hive.box("info").get("fontSizeArabic", defaultValue: 16.0) as double)
+          .obs;
 }

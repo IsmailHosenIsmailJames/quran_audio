@@ -5,9 +5,11 @@ import 'package:al_quran_audio/src/core/surah_ayah_count.dart';
 import 'package:al_quran_audio/src/screens/home/controller/home_controller.dart';
 import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
 import 'package:al_quran_audio/src/theme/theme_icon_button.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -33,7 +35,85 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         actions: [
-          themeIconButton,
+          IconButton(
+            onPressed: () {
+              showModalBottomSheet(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                context: context,
+                builder: (context) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            const Icon(FluentIcons.settings_24_regular),
+                            const Gap(5),
+                            const Text("Settings"),
+                            const Spacer(),
+                            themeIconButton,
+                            IconButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              icon: const Icon(
+                                Icons.close,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Gap(15),
+                      const Row(
+                        children: [
+                          Gap(15),
+                          Icon(FluentIcons.text_font_16_filled),
+                          Gap(10),
+                          Text(
+                            "Font Size",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      Obx(
+                        () => Row(
+                          children: [
+                            Expanded(
+                              child: Slider(
+                                value: homeController.fontSizeArabic.value,
+                                min: 10,
+                                max: 50,
+                                divisions: 40,
+                                onChanged: (value) {
+                                  homeController.fontSizeArabic.value = value;
+                                  Hive.box("info").put("fontSizeArabic", value);
+                                },
+                              ),
+                            ),
+                            const Gap(5),
+                            Text(
+                              homeController.fontSizeArabic.value
+                                  .round()
+                                  .toString(),
+                            ),
+                            const Gap(10),
+                          ],
+                        ),
+                      )
+                    ],
+                  );
+                },
+              );
+            },
+            icon: const Icon(
+              FluentIcons.settings_24_regular,
+            ),
+          ),
         ],
       ),
       body: Stack(
@@ -98,6 +178,7 @@ class _HomePageState extends State<HomePage> {
                     itemCount: surahInfo.length,
                     itemBuilder: (context, index) {
                       return Card(
+                        elevation: 0,
                         margin: const EdgeInsets.only(bottom: 5),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(7)),
@@ -152,15 +233,13 @@ class _HomePageState extends State<HomePage> {
                                       foregroundColor: Colors.white,
                                     ),
                                     tooltip: "Play or Pause",
-                                    icon: audioControllerGetx
-                                                    .currentIndex.value ==
+                                    icon: homeController.currentSurah.value ==
                                                 index &&
                                             audioControllerGetx
                                                     .isPlaying.value ==
                                                 true
                                         ? const Icon(Icons.pause)
-                                        : (audioControllerGetx
-                                                        .currentIndex.value ==
+                                        : (homeController.currentSurah.value ==
                                                     index &&
                                                 audioControllerGetx
                                                     .isLoading.value)
@@ -228,6 +307,7 @@ class _HomePageState extends State<HomePage> {
                       showSurahNumber: false,
                       showQuranAyahMode: true,
                       surahNumber: homeController.currentSurah.value,
+                      homeController: homeController,
                     )
                   : null,
             ),
