@@ -23,7 +23,7 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
   @override
   void initState() {
     animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
     animation =
@@ -66,7 +66,7 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                     buffered: audioController.bufferPosition.value,
                     total: audioController.totalDuration.value,
                     progressBarColor: Colors.green,
-                    baseBarColor: Colors.white,
+                    baseBarColor: colorToApply.withValues(alpha: 0.2),
                     bufferedBarColor: Colors.green.shade200,
                     thumbColor: MyColors.secondaryColor,
                     barHeight: 5.0,
@@ -122,18 +122,30 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                       ),
                       IconButton(
                         onPressed: () async {
+                          if (audioController.isLoading.value) {
+                            return;
+                          }
                           if (audioController.isPlaying.value) {
                             await ManageQuranAudio.audioPlayer.pause();
                           } else {
                             await ManageQuranAudio.audioPlayer.play();
                           }
                         },
-                        icon: Icon(
-                          audioController.isPlaying.value
-                              ? Icons.pause_rounded
-                              : Icons.play_arrow_rounded,
-                          color: colorToApply,
-                        ),
+                        icon: audioController.isLoading.value
+                            ? SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: MyColors.secondaryColor,
+                                  strokeWidth: 3,
+                                ),
+                              )
+                            : Icon(
+                                audioController.isPlaying.value
+                                    ? Icons.pause_rounded
+                                    : Icons.play_arrow_rounded,
+                                color: colorToApply,
+                              ),
                       ),
                       IconButton(
                         onPressed: audioController.currentSurah.value >= 114
