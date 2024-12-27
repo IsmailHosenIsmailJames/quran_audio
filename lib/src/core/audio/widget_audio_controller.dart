@@ -1,6 +1,7 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/surah_ayah_count.dart';
+import 'package:al_quran_audio/src/functions/get_uthmani_tajweed.dart';
 import 'package:al_quran_audio/src/screens/home/controller/home_controller.dart';
 import 'package:al_quran_audio/src/theme/colors.dart';
 import 'package:al_quran_audio/src/theme/theme_controller.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:toastification/toastification.dart';
 
 class WidgetAudioController extends StatefulWidget {
   final bool showSurahNumber;
@@ -241,8 +243,9 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
       child: Container(
         margin: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey.shade800 : Colors.white,
+          color: isDark ? const Color.fromARGB(255, 29, 29, 29) : Colors.white,
           borderRadius: BorderRadius.circular(7),
+          border: Border.all(color: Colors.grey.shade400, width: 0.7),
         ),
         child: Scrollbar(
           controller: scrollController,
@@ -275,6 +278,44 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                       ),
                     ),
                   );
+                }
+                if (listOfAyahsSpanText.isEmpty) {
+                  if (index == 0) {
+                    return Column(
+                      children: [
+                        Text(
+                          "Unable to load",
+                          style: TextStyle(
+                            fontSize:
+                                widget.homeController?.fontSizeArabic.value,
+                          ),
+                        ),
+                        const Gap(10),
+                        ElevatedButton.icon(
+                          onPressed: () async {
+                            toastification.show(
+                              context: context,
+                              title: const Text("Trying to download"),
+                              description:
+                                  const Text("Wait a bit until it's done"),
+                            );
+                            await getUthmaniTajweed();
+                            toastification.show(
+                              context: context,
+                              title: const Text("Trying to download"),
+                              description:
+                                  const Text("Wait a bit until it's done"),
+                            );
+
+                            setState(() {});
+                          },
+                          icon:
+                              const Icon(FluentIcons.arrow_download_24_regular),
+                          label: const Text("Download"),
+                        ),
+                      ],
+                    );
+                  }
                 }
                 return Text.rich(TextSpan(children: listOfAyahsSpanText),
                     style: TextStyle(
