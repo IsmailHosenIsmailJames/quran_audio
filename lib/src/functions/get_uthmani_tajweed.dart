@@ -62,5 +62,5 @@ Future<bool> getDownloadUthmaniTajweed() async {
 
 bool isUthmaniTajweedExist() {
   final infoBox = Hive.box("info");
-  return infoBox.containsKey("uthmani_tajweed/001001");
+  return infoBox.containsKey("uthmani_tajweed/1:1");
 }
