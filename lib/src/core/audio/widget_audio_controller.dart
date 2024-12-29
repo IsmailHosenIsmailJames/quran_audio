@@ -2,7 +2,6 @@ import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/surah_ayah_count.dart';
 import 'package:al_quran_audio/src/functions/get_uthmani_tajweed.dart';
-import 'package:al_quran_audio/src/screens/home/controller/home_controller.dart';
 import 'package:al_quran_audio/src/theme/colors.dart';
 import 'package:al_quran_audio/src/theme/theme_controller.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
@@ -17,13 +16,11 @@ class WidgetAudioController extends StatefulWidget {
   final bool showSurahNumber;
   final bool showQuranAyahMode;
   final int surahNumber;
-  final HomeController? homeController;
   const WidgetAudioController({
     super.key,
     required this.showSurahNumber,
     required this.showQuranAyahMode,
     required this.surahNumber,
-    this.homeController,
   });
 
   @override
@@ -67,8 +64,7 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                         Brightness.dark));
             Color colorToApply =
                 isDark ? Colors.white : MyColors.secondaryColor;
-            int latestSurahNumber =
-                widget.homeController?.currentSurah.value ?? widget.surahNumber;
+            int latestSurahNumber = audioController.currentPlayingSurah.value;
 
             return Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -126,7 +122,7 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                 CircleAvatar(
                   radius: 15,
                   child: Text(
-                    audioController.currentSurah.value.toString(),
+                    audioController.currentPlayingSurah.value.toString(),
                     style: TextStyle(color: colorToApply),
                   ),
                 ),
@@ -145,18 +141,19 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                 ),
               ),
               IconButton(
-                onPressed: audioController.currentSurah.value <= 1
+                onPressed: audioController.currentPlayingSurah.value <= 1
                     ? null
                     : () {
-                        audioController.currentSurah.value -= 1;
-                        widget.homeController?.currentSurah.value -= 1;
+                        audioController.currentPlayingSurah.value -= 1;
+                        audioController.currentPlayingSurah.value -= 1;
                         ManageQuranAudio.playSingleSurah(
-                          surahNumber: audioController.currentSurah.value,
+                          surahNumber:
+                              audioController.currentPlayingSurah.value,
                         );
                       },
                 icon: Icon(
                   Icons.skip_previous_rounded,
-                  color: audioController.currentSurah.value <= 1
+                  color: audioController.currentPlayingSurah.value <= 1
                       ? Colors.grey
                       : colorToApply,
                 ),
@@ -189,18 +186,19 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                       ),
               ),
               IconButton(
-                onPressed: audioController.currentSurah.value >= 114
+                onPressed: audioController.currentPlayingSurah.value >= 114
                     ? null
                     : () {
-                        audioController.currentSurah.value += 1;
-                        widget.homeController?.currentSurah.value += 1;
+                        audioController.currentPlayingSurah.value += 1;
+                        audioController.currentPlayingSurah.value += 1;
                         ManageQuranAudio.playSingleSurah(
-                          surahNumber: audioController.currentSurah.value,
+                          surahNumber:
+                              audioController.currentPlayingSurah.value,
                         );
                       },
                 icon: Icon(
                   Icons.skip_next_rounded,
-                  color: audioController.currentSurah.value >= 114
+                  color: audioController.currentPlayingSurah.value >= 114
                       ? Colors.grey
                       : colorToApply,
                 ),
@@ -290,8 +288,7 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                             Text(
                               "Unable to load",
                               style: TextStyle(
-                                fontSize:
-                                    widget.homeController?.fontSizeArabic.value,
+                                fontSize: audioController.fontSizeArabic.value,
                               ),
                             ),
                             const Gap(10),
@@ -323,7 +320,7 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                     }
                     return Text.rich(TextSpan(children: listOfAyahsSpanText),
                         style: TextStyle(
-                          fontSize: widget.homeController?.fontSizeArabic.value,
+                          fontSize: audioController.fontSizeArabic.value,
                         ));
                   }),
             ),

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitations.dart';
 import 'package:al_quran_audio/src/screens/home/home_page.dart';
-import 'package:al_quran_audio/src/screens/setup/controller/setup_controller.dart';
 import 'package:al_quran_audio/src/screens/setup/pages/choice_default_recitation.dart';
 import 'package:al_quran_audio/src/screens/setup/pages/intro_page.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class SetupPage extends StatefulWidget {
 class _SetupPageState extends State<SetupPage> {
   int pageIndex = 0;
   PageController pageController = PageController();
-  final setupPageController = Get.put(SetupController());
+  final AudioController audioController = Get.put(AudioController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,31 +52,23 @@ class _SetupPageState extends State<SetupPage> {
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeIn);
                     } else {
-                      if (setupPageController.selectedIndex.value == -1) {
+                      try {
+                        final reciter = recitationsInfoList[
+                            audioController.currentReciterIndex.value];
+                        final box = Hive.box("info");
+                        await box.put("default_reciter", jsonEncode(reciter));
+                        await box.put("reciter", jsonEncode(reciter));
+                        await box.put("reciter_index",
+                            audioController.currentReciterIndex.value);
+
+                        Get.offAll(() => const HomePage());
+                      } catch (e) {
                         toastification.show(
                           context: context,
-                          title: const Text("Please select a reciter"),
+                          title: const Text("Something went wrong"),
                           type: ToastificationType.info,
                           autoCloseDuration: const Duration(seconds: 3),
                         );
-                      } else {
-                        try {
-                          final reciter = recitationsInfoList[
-                              setupPageController.selectedIndex.value];
-                          await Hive.box("info")
-                              .put("default_reciter", jsonEncode(reciter));
-                          await Hive.box("info")
-                              .put("reciter", jsonEncode(reciter));
-
-                          Get.offAll(() => const HomePage());
-                        } catch (e) {
-                          toastification.show(
-                            context: context,
-                            title: const Text("Something went wrong"),
-                            type: ToastificationType.info,
-                            autoCloseDuration: const Duration(seconds: 3),
-                          );
-                        }
                       }
                     }
                   },

@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:al_quran_audio/src/api/apis.dart';
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
+import 'package:al_quran_audio/src/core/recitation_info/recitations.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
@@ -8,7 +12,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 
 class ManageQuranAudio {
   static AudioPlayer audioPlayer = AudioPlayer();
-  static AudioController audioControllerGetx = Get.put(AudioController());
+  static AudioController audioController = Get.put(AudioController());
 
   /// Plays a single ayah audio using the specified ayah and surah numbers.
   ///
@@ -25,45 +29,52 @@ class ManageQuranAudio {
   static Future<void> startListening() async {
     audioPlayer.durationStream.listen((event) {
       if (event != null) {
-        audioControllerGetx.totalDuration.value = event;
+        audioController.totalDuration.value = event;
       }
     });
 
     audioPlayer.positionStream.listen((event) {
-      audioControllerGetx.progress.value = event;
+      audioController.progress.value = event;
     });
 
     audioPlayer.speedStream.listen((event) {
-      audioControllerGetx.speed.value = event;
+      audioController.speed.value = event;
     });
 
     audioPlayer.bufferedPositionStream.listen((event) {
-      audioControllerGetx.bufferPosition.value = event;
+      audioController.bufferPosition.value = event;
     });
 
     audioPlayer.playerStateStream.listen((event) {
-      if (audioControllerGetx.currentIndex.value != -1) {
-        audioControllerGetx.isPlaying.value = event.playing;
-        if (event.processingState == ProcessingState.loading) {
-          audioControllerGetx.isLoading.value = true;
-        } else {
-          audioControllerGetx.isLoading.value = false;
-        }
+      audioController.isPlaying.value = event.playing;
+      log("Is Playing" + event.playing.toString());
+      audioController.isPlayingCompleted.value =
+          event.processingState == ProcessingState.completed;
+
+      if (event.processingState == ProcessingState.loading) {
+        audioController.isLoading.value = true;
+      } else {
+        audioController.isLoading.value = false;
       }
     });
 
     audioPlayer.playbackEventStream.listen((event) {
-      if (event.processingState == ProcessingState.completed) {
-        audioControllerGetx.isPlaying.value = false;
-        audioControllerGetx.currentIndex.value = -1;
+      if (event.currentIndex != null) {
+        audioController.currentPlayingSurah.value = event.currentIndex!;
       }
+      audioController.isReadyToControl.value = true;
+      audioController.isPlayingCompleted.value =
+          event.processingState == ProcessingState.completed;
     });
 
-    audioControllerGetx.isStreamRegistered.value = true;
+    audioController.isStreamRegistered.value = true;
   }
 
-  static Future<void> playMultipuleSurahAsPlayList(
+  static Future<void> playMultipleSurahAsPlayList(
       {required int surahNumber, ReciterInfoModel? reciter}) async {
+    if (audioController.isStreamRegistered.value == false) {
+      await startListening();
+    }
     await audioPlayer.stop();
     reciter ??= findRecitationModel();
     List<LockCachingAudioSource> audioSources = [];
@@ -86,7 +97,7 @@ class ManageQuranAudio {
       ConcatenatingAudioSource(
         children: audioSources,
       ),
-      initialIndex: surahNumber - 1,
+      initialIndex: surahNumber,
       initialPosition: Duration.zero,
     );
     await audioPlayer.play();
@@ -97,7 +108,7 @@ class ManageQuranAudio {
     ReciterInfoModel? reciter,
     MediaItem? mediaItem,
   }) async {
-    if (audioControllerGetx.isStreamRegistered.value == false) {
+    if (audioController.isStreamRegistered.value == false) {
       await startListening();
     }
     audioPlayer.stop();
@@ -143,7 +154,12 @@ class ManageQuranAudio {
   /// [ReciterInfoModel] using the [ReciterInfoModel.fromJson] method.
   /// The resulting [ReciterInfoModel] is then returned.
   static ReciterInfoModel findRecitationModel() {
-    final jsonReciter = Hive.box('info').get('reciter');
+    final jsonReciter = Hive.box('info').get(
+      'default_reciter',
+      defaultValue: jsonEncode(
+        recitationsInfoList[0],
+      ),
+    );
     return ReciterInfoModel.fromJson(jsonReciter);
   }
 

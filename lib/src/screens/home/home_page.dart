@@ -3,7 +3,6 @@ import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
 import 'package:al_quran_audio/src/core/surah_ayah_count.dart';
-import 'package:al_quran_audio/src/screens/home/controller/home_controller.dart';
 import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
 import 'package:al_quran_audio/src/screens/setup/pages/choice_default_recitation.dart';
 import 'package:al_quran_audio/src/theme/theme_icon_button.dart';
@@ -21,11 +20,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final homeController = Get.put(HomeController());
   final audioControllerGetx = Get.put(AudioController());
   @override
   void initState() {
-    ManageQuranAudio.audioControllerGetx = audioControllerGetx;
+    ManageQuranAudio.audioController = audioControllerGetx;
     ManageQuranAudio.startListening();
     super.initState();
   }
@@ -97,12 +95,15 @@ class _HomePageState extends State<HomePage> {
                                     const ChoiceDefaultRecitation(
                                         forChangeReciter: true));
                                 if (result.runtimeType == ReciterInfoModel) {
-                                  homeController.reciter.value =
-                                      result as ReciterInfoModel;
-                                  if (homeController.currentSurah.value != -1) {
+                                  audioControllerGetx.currentReciterModel
+                                      .value = result as ReciterInfoModel;
+                                  if (audioControllerGetx
+                                          .currentPlayingSurah.value !=
+                                      -1) {
                                     await ManageQuranAudio.playSingleSurah(
-                                      surahNumber:
-                                          homeController.currentSurah.value + 1,
+                                      surahNumber: audioControllerGetx
+                                              .currentPlayingSurah.value +
+                                          1,
                                     );
                                   }
                                 }
@@ -116,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                         () => SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Text(
-                            homeController.reciter.value.name,
+                            audioControllerGetx.currentReciterModel.value.name,
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ),
@@ -185,13 +186,17 @@ class _HomePageState extends State<HomePage> {
                                       foregroundColor: Colors.white,
                                     ),
                                     tooltip: "Play or Pause",
-                                    icon: homeController.currentSurah.value ==
+                                    icon: audioControllerGetx
+                                                    .currentPlayingSurah
+                                                    .value ==
                                                 index &&
                                             audioControllerGetx
                                                     .isPlaying.value ==
                                                 true
                                         ? const Icon(Icons.pause)
-                                        : (homeController.currentSurah.value ==
+                                        : (audioControllerGetx
+                                                        .currentPlayingSurah
+                                                        .value ==
                                                     index &&
                                                 audioControllerGetx
                                                     .isLoading.value)
@@ -203,35 +208,36 @@ class _HomePageState extends State<HomePage> {
                                               )
                                             : const Icon(Icons.play_arrow),
                                     onPressed: () async {
-                                      audioControllerGetx.currentSurah.value =
-                                          index;
-                                      homeController.currentSurah.value = index;
+                                      audioControllerGetx
+                                          .currentPlayingSurah.value = index;
+                                      audioControllerGetx
+                                          .currentPlayingSurah.value = index;
                                       if (audioControllerGetx
-                                                  .currentIndex.value ==
+                                                  .currentReciterIndex.value ==
                                               index &&
                                           audioControllerGetx.isPlaying.value ==
                                               true) {
                                         // pause audio
-                                        audioControllerGetx.currentIndex.value =
-                                            index;
+                                        audioControllerGetx
+                                            .currentReciterIndex.value = index;
                                         await ManageQuranAudio.audioPlayer
                                             .pause();
                                       } else if (audioControllerGetx
-                                                  .currentIndex.value ==
+                                                  .currentReciterIndex.value ==
                                               index &&
                                           audioControllerGetx.isPlaying.value !=
                                               true) {
                                         // resume audio
-                                        audioControllerGetx.currentIndex.value =
-                                            index;
+                                        audioControllerGetx
+                                            .currentReciterIndex.value = index;
                                         await ManageQuranAudio.audioPlayer
                                             .play();
                                       } else {
                                         // start brand new audio
                                         audioControllerGetx.isPlaying.value =
                                             true;
-                                        audioControllerGetx.currentIndex.value =
-                                            index;
+                                        audioControllerGetx
+                                            .currentReciterIndex.value = index;
                                         await ManageQuranAudio.playSingleSurah(
                                           surahNumber: index + 1,
                                         );
@@ -254,12 +260,12 @@ class _HomePageState extends State<HomePage> {
             () => Align(
               alignment: const Alignment(1, 1),
               child: (audioControllerGetx.isPlaying.value == true ||
-                      audioControllerGetx.currentIndex.value != -1)
+                      audioControllerGetx.currentReciterIndex.value != -1)
                   ? WidgetAudioController(
                       showSurahNumber: false,
                       showQuranAyahMode: true,
-                      surahNumber: homeController.currentSurah.value,
-                      homeController: homeController,
+                      surahNumber:
+                          audioControllerGetx.currentPlayingSurah.value,
                     )
                   : null,
             ),
@@ -317,19 +323,19 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Expanded(
                     child: Slider(
-                      value: homeController.fontSizeArabic.value,
+                      value: audioControllerGetx.fontSizeArabic.value,
                       min: 10,
                       max: 50,
                       divisions: 40,
                       onChanged: (value) {
-                        homeController.fontSizeArabic.value = value;
+                        audioControllerGetx.fontSizeArabic.value = value;
                         Hive.box("info").put("fontSizeArabic", value);
                       },
                     ),
                   ),
                   const Gap(5),
                   Text(
-                    homeController.fontSizeArabic.value.round().toString(),
+                    audioControllerGetx.fontSizeArabic.value.round().toString(),
                   ),
                   const Gap(10),
                 ],

@@ -1,8 +1,9 @@
+import 'dart:developer';
+
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitations.dart';
-import 'package:al_quran_audio/src/screens/setup/controller/setup_controller.dart';
 import 'package:al_quran_audio/src/theme/colors.dart';
 import 'package:al_quran_audio/src/theme/theme_icon_button.dart';
 import 'package:flutter/material.dart';
@@ -22,9 +23,9 @@ class ChoiceDefaultRecitation extends StatefulWidget {
 
 class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
   final audioControllerGetx = Get.put(AudioController());
-  final setupPageController = Get.put(SetupController());
   @override
   Widget build(BuildContext context) {
+    log((audioControllerGetx.isPlaying.value == true).toString());
     return Scaffold(
       appBar: AppBar(
         title: widget.forChangeReciter == true
@@ -46,8 +47,9 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
               return GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () async {
-                  await Hive.box("info").put("reciter", current.toJson());
-                  setupPageController.selectedIndex.value = index;
+                  await Hive.box("info")
+                      .put("default_reciter", current.toJson());
+                  audioControllerGetx.setupSelectedReciterIndex.value = index;
                   Get.back(result: current);
                 },
                 child: Container(
@@ -66,74 +68,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                           : SizedBox(
                               height: 40,
                               width: 40,
-                              child: Obx(
-                                () {
-                                  return IconButton(
-                                    style: IconButton.styleFrom(
-                                      backgroundColor: Colors.blue.shade700,
-                                      foregroundColor: Colors.white,
-                                    ),
-                                    tooltip:
-                                        "Play Recitation from ${current.name}",
-                                    icon: audioControllerGetx
-                                                    .currentIndex.value ==
-                                                index &&
-                                            audioControllerGetx
-                                                    .isPlaying.value ==
-                                                true
-                                        ? const Icon(Icons.pause)
-                                        : (audioControllerGetx
-                                                        .currentIndex.value ==
-                                                    index &&
-                                                audioControllerGetx
-                                                    .isLoading.value)
-                                            ? CircularProgressIndicator(
-                                                color: Colors.white,
-                                                backgroundColor: Colors.white
-                                                    .withValues(alpha: 0.2),
-                                                strokeWidth: 2,
-                                              )
-                                            : const Icon(Icons.play_arrow),
-                                    onPressed: () async {
-                                      await Hive.box("info")
-                                          .put("reciter", current.toJson());
-                                      audioControllerGetx.currentSurah.value =
-                                          1;
-                                      if (audioControllerGetx
-                                                  .currentIndex.value ==
-                                              index &&
-                                          audioControllerGetx.isPlaying.value ==
-                                              true) {
-                                        // pause audio
-                                        audioControllerGetx.currentIndex.value =
-                                            index;
-                                        await ManageQuranAudio.audioPlayer
-                                            .pause();
-                                      } else if (audioControllerGetx
-                                                  .currentIndex.value ==
-                                              index &&
-                                          audioControllerGetx.isPlaying.value !=
-                                              true) {
-                                        // resume audio
-                                        audioControllerGetx.currentIndex.value =
-                                            index;
-                                        await ManageQuranAudio.audioPlayer
-                                            .play();
-                                      } else {
-                                        // start brand new audio
-                                        audioControllerGetx.isPlaying.value =
-                                            true;
-                                        audioControllerGetx.currentIndex.value =
-                                            index;
-                                        await ManageQuranAudio.playSingleSurah(
-                                          surahNumber: 1,
-                                          reciter: current,
-                                        );
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
+                              child: getPlayButton(current, index),
                             ),
                       Expanded(
                         child: SingleChildScrollView(
@@ -143,7 +78,9 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                         ),
                       ),
                       Obx(
-                        () => (index != setupPageController.selectedIndex.value)
+                        () => (index !=
+                                audioControllerGetx
+                                    .setupSelectedReciterIndex.value)
                             ? const SizedBox()
                             : Container(
                                 padding: const EdgeInsets.all(4),
@@ -175,8 +112,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
           Obx(
             () => Align(
               alignment: const Alignment(1, 0.8),
-              child: (audioControllerGetx.isPlaying.value == true ||
-                      audioControllerGetx.currentIndex.value != -1)
+              child: (audioControllerGetx.isReadyToControl.value == true)
                   ? const WidgetAudioController(
                       showSurahNumber: true,
                       showQuranAyahMode: false,
@@ -187,6 +123,76 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
           ),
         ],
       ),
+    );
+  }
+
+  Obx getPlayButton(ReciterInfoModel current, int index) {
+    return Obx(
+      () {
+        return IconButton(
+          style: IconButton.styleFrom(
+            backgroundColor: Colors.blue.shade700,
+            foregroundColor: Colors.white,
+          ),
+          tooltip: "Play Recitation from ${current.name}",
+          icon: audioControllerGetx.currentReciterIndex.value == index &&
+                  audioControllerGetx.isPlaying.value == true
+              ? const Icon(Icons.pause)
+              : (audioControllerGetx.currentReciterIndex.value == index &&
+                      audioControllerGetx.isLoading.value)
+                  ? CircularProgressIndicator(
+                      color: Colors.white,
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
+                      strokeWidth: 2,
+                    )
+                  : const Icon(Icons.play_arrow),
+          onPressed: () async {
+            if (audioControllerGetx.isPlaying.value == true &&
+                audioControllerGetx.currentReciterIndex.value == index) {
+              await ManageQuranAudio.audioPlayer.pause();
+            } else if ((audioControllerGetx.isPlaying.value == true ||
+                    audioControllerGetx.isLoading.value == true) &&
+                audioControllerGetx.currentReciterIndex.value != index) {
+              await ManageQuranAudio.audioPlayer.stop();
+              audioControllerGetx.currentReciterIndex.value = index;
+              await ManageQuranAudio.playMultipleSurahAsPlayList(
+                surahNumber: 0,
+                reciter: current,
+              );
+            } else if (audioControllerGetx.isPlaying.value == false &&
+                audioControllerGetx.currentReciterIndex.value == index) {
+              if (audioControllerGetx.isReadyToControl.value == false) {
+                await ManageQuranAudio.playMultipleSurahAsPlayList(
+                  surahNumber: 0,
+                  reciter: current,
+                );
+              } else {
+                await ManageQuranAudio.audioPlayer.play();
+              }
+            }
+            // audioControllerGetx.currentPlayingSurah.value = 0;
+            // if (audioControllerGetx.currentReciterIndex.value == index &&
+            //     audioControllerGetx.isPlaying.value == true) {
+            //   // pause audio
+            //   audioControllerGetx.currentReciterIndex.value = index;
+            //   await ManageQuranAudio.audioPlayer.pause();
+            // } else if (audioControllerGetx.currentReciterIndex.value == index &&
+            //     audioControllerGetx.isPlaying.value != true) {
+            //   // resume audio
+            //   audioControllerGetx.currentReciterIndex.value = index;
+            //   await ManageQuranAudio.audioPlayer.play();
+            // } else {
+            //   // start brand new audio
+            //   audioControllerGetx.isPlaying.value = true;
+            //   audioControllerGetx.currentReciterIndex.value = index;
+            //   await ManageQuranAudio.playMultipleSurahAsPlayList(
+            //     surahNumber: 1,
+            //     reciter: current,
+            //   );
+            // }
+          },
+        );
+      },
     );
   }
 }
