@@ -62,6 +62,36 @@ class ManageQuranAudio {
     audioControllerGetx.isStreamRegistered.value = true;
   }
 
+  static Future<void> playMultipuleSurahAsPlayList(
+      {required int surahNumber, ReciterInfoModel? reciter}) async {
+    await audioPlayer.stop();
+    reciter ??= findRecitationModel();
+    List<LockCachingAudioSource> audioSources = [];
+    for (var i = 0; i < 114; i++) {
+      audioSources.add(
+        LockCachingAudioSource(
+            Uri.parse(
+              makeAudioUrl(
+                reciter,
+                surahIDFromNumber(i + 1),
+              ),
+            ),
+            tag: MediaItem(
+              id: "${reciter.id}$i",
+              title: reciter.name,
+            )),
+      );
+    }
+    await audioPlayer.setAudioSource(
+      ConcatenatingAudioSource(
+        children: audioSources,
+      ),
+      initialIndex: surahNumber - 1,
+      initialPosition: Duration.zero,
+    );
+    await audioPlayer.play();
+  }
+
   static Future<void> playSingleSurah({
     required int surahNumber,
     ReciterInfoModel? reciter,
@@ -74,20 +104,21 @@ class ManageQuranAudio {
     reciter ??= findRecitationModel();
 
     await audioPlayer.setAudioSource(
-        LockCachingAudioSource(
-          Uri.parse(
-            makeAudioUrl(
-              reciter,
-              surahIDFromNumber(surahNumber),
-            ),
-          ),
-          tag: MediaItem(
-            id: "${reciter.id}$surahNumber",
-            title: reciter.name,
+      LockCachingAudioSource(
+        Uri.parse(
+          makeAudioUrl(
+            reciter,
+            surahIDFromNumber(surahNumber),
           ),
         ),
-        initialIndex: 0,
-        initialPosition: Duration.zero);
+        tag: MediaItem(
+          id: "${reciter.id}$surahNumber",
+          title: reciter.name,
+        ),
+      ),
+      initialIndex: 0,
+      initialPosition: Duration.zero,
+    );
     await audioPlayer.play();
   }
 
