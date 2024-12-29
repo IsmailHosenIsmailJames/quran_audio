@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
+import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitations.dart';
 import 'package:al_quran_audio/src/screens/home/home_page.dart';
 import 'package:al_quran_audio/src/screens/setup/pages/choice_default_recitation.dart';
@@ -60,6 +61,9 @@ class _SetupPageState extends State<SetupPage> {
                         await box.put("reciter", jsonEncode(reciter));
                         await box.put("reciter_index",
                             audioController.currentReciterIndex.value);
+
+                        await ManageQuranAudio.audioPlayer.stop();
+                        audioController.isReadyToControl.value = false;
 
                         Get.offAll(() => const HomePage());
                       } catch (e) {

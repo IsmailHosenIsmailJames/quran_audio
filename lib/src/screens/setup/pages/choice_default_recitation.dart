@@ -162,6 +162,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
             } else if (audioControllerGetx.isPlaying.value == false &&
                 audioControllerGetx.currentReciterIndex.value == index) {
               if (audioControllerGetx.isReadyToControl.value == false) {
+                audioControllerGetx.currentReciterIndex.value = index;
                 await ManageQuranAudio.playMultipleSurahAsPlayList(
                   surahNumber: 0,
                   reciter: current,
@@ -169,27 +170,15 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
               } else {
                 await ManageQuranAudio.audioPlayer.play();
               }
+            } else if (audioControllerGetx.isPlaying.value == false &&
+                audioControllerGetx.currentReciterIndex.value != index) {
+              audioControllerGetx.currentReciterIndex.value = index;
+              await ManageQuranAudio.playMultipleSurahAsPlayList(
+                surahNumber: 0,
+                reciter: current,
+              );
+              await ManageQuranAudio.audioPlayer.play();
             }
-            // audioControllerGetx.currentPlayingSurah.value = 0;
-            // if (audioControllerGetx.currentReciterIndex.value == index &&
-            //     audioControllerGetx.isPlaying.value == true) {
-            //   // pause audio
-            //   audioControllerGetx.currentReciterIndex.value = index;
-            //   await ManageQuranAudio.audioPlayer.pause();
-            // } else if (audioControllerGetx.currentReciterIndex.value == index &&
-            //     audioControllerGetx.isPlaying.value != true) {
-            //   // resume audio
-            //   audioControllerGetx.currentReciterIndex.value = index;
-            //   await ManageQuranAudio.audioPlayer.play();
-            // } else {
-            //   // start brand new audio
-            //   audioControllerGetx.isPlaying.value = true;
-            //   audioControllerGetx.currentReciterIndex.value = index;
-            //   await ManageQuranAudio.playMultipleSurahAsPlayList(
-            //     surahNumber: 1,
-            //     reciter: current,
-            //   );
-            // }
           },
         );
       },

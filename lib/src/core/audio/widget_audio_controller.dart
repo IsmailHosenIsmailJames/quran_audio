@@ -141,19 +141,14 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                 ),
               ),
               IconButton(
-                onPressed: audioController.currentPlayingSurah.value <= 1
+                onPressed: audioController.currentPlayingSurah.value <= 0
                     ? null
                     : () {
-                        audioController.currentPlayingSurah.value -= 1;
-                        audioController.currentPlayingSurah.value -= 1;
-                        ManageQuranAudio.playSingleSurah(
-                          surahNumber:
-                              audioController.currentPlayingSurah.value,
-                        );
+                        ManageQuranAudio.audioPlayer.seekToPrevious();
                       },
                 icon: Icon(
                   Icons.skip_previous_rounded,
-                  color: audioController.currentPlayingSurah.value <= 1
+                  color: audioController.currentPlayingSurah.value <= 0
                       ? Colors.grey
                       : colorToApply,
                 ),
@@ -186,19 +181,14 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                       ),
               ),
               IconButton(
-                onPressed: audioController.currentPlayingSurah.value >= 114
+                onPressed: audioController.currentPlayingSurah.value >= 113
                     ? null
                     : () {
-                        audioController.currentPlayingSurah.value += 1;
-                        audioController.currentPlayingSurah.value += 1;
-                        ManageQuranAudio.playSingleSurah(
-                          surahNumber:
-                              audioController.currentPlayingSurah.value,
-                        );
+                        ManageQuranAudio.audioPlayer.seekToNext();
                       },
                 icon: Icon(
                   Icons.skip_next_rounded,
-                  color: audioController.currentPlayingSurah.value >= 114
+                  color: audioController.currentPlayingSurah.value >= 113
                       ? Colors.grey
                       : colorToApply,
                 ),

@@ -22,13 +22,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final audioControllerGetx = Get.put(AudioController());
   @override
-  void initState() {
-    ManageQuranAudio.audioController = audioControllerGetx;
-    ManageQuranAudio.startListening();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -100,11 +93,10 @@ class _HomePageState extends State<HomePage> {
                                   if (audioControllerGetx
                                           .currentPlayingSurah.value !=
                                       -1) {
-                                    await ManageQuranAudio.playSingleSurah(
-                                      surahNumber: audioControllerGetx
-                                              .currentPlayingSurah.value +
-                                          1,
-                                    );
+                                    await ManageQuranAudio
+                                        .playMultipleSurahAsPlayList(
+                                            surahNumber: audioControllerGetx
+                                                .currentPlayingSurah.value);
                                   }
                                 }
                               },
@@ -178,74 +170,7 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(
                               height: 40,
                               width: 40,
-                              child: Obx(
-                                () {
-                                  return IconButton(
-                                    style: IconButton.styleFrom(
-                                      backgroundColor: Colors.blue.shade700,
-                                      foregroundColor: Colors.white,
-                                    ),
-                                    tooltip: "Play or Pause",
-                                    icon: audioControllerGetx
-                                                    .currentPlayingSurah
-                                                    .value ==
-                                                index &&
-                                            audioControllerGetx
-                                                    .isPlaying.value ==
-                                                true
-                                        ? const Icon(Icons.pause)
-                                        : (audioControllerGetx
-                                                        .currentPlayingSurah
-                                                        .value ==
-                                                    index &&
-                                                audioControllerGetx
-                                                    .isLoading.value)
-                                            ? CircularProgressIndicator(
-                                                color: Colors.white,
-                                                backgroundColor: Colors.white
-                                                    .withValues(alpha: 0.2),
-                                                strokeWidth: 2,
-                                              )
-                                            : const Icon(Icons.play_arrow),
-                                    onPressed: () async {
-                                      audioControllerGetx
-                                          .currentPlayingSurah.value = index;
-                                      audioControllerGetx
-                                          .currentPlayingSurah.value = index;
-                                      if (audioControllerGetx
-                                                  .currentReciterIndex.value ==
-                                              index &&
-                                          audioControllerGetx.isPlaying.value ==
-                                              true) {
-                                        // pause audio
-                                        audioControllerGetx
-                                            .currentReciterIndex.value = index;
-                                        await ManageQuranAudio.audioPlayer
-                                            .pause();
-                                      } else if (audioControllerGetx
-                                                  .currentReciterIndex.value ==
-                                              index &&
-                                          audioControllerGetx.isPlaying.value !=
-                                              true) {
-                                        // resume audio
-                                        audioControllerGetx
-                                            .currentReciterIndex.value = index;
-                                        await ManageQuranAudio.audioPlayer
-                                            .play();
-                                      } else {
-                                        // start brand new audio
-                                        audioControllerGetx.isPlaying.value =
-                                            true;
-                                        audioControllerGetx
-                                            .currentReciterIndex.value = index;
-                                        await ManageQuranAudio.playSingleSurah(
-                                          surahNumber: index + 1,
-                                        );
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
+                              child: getPlayButton(index),
                             ),
                           ],
                         ),
@@ -260,7 +185,7 @@ class _HomePageState extends State<HomePage> {
             () => Align(
               alignment: const Alignment(1, 1),
               child: (audioControllerGetx.isPlaying.value == true ||
-                      audioControllerGetx.currentReciterIndex.value != -1)
+                      audioControllerGetx.isReadyToControl.value == true)
                   ? WidgetAudioController(
                       showSurahNumber: false,
                       showQuranAyahMode: true,
@@ -272,6 +197,63 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+    );
+  }
+
+  Obx getPlayButton(int index) {
+    return Obx(
+      () {
+        return IconButton(
+          style: IconButton.styleFrom(
+            backgroundColor: Colors.blue.shade700,
+            foregroundColor: Colors.white,
+          ),
+          tooltip: "Play or Pause",
+          icon: (audioControllerGetx.currentPlayingSurah.value == index &&
+                  audioControllerGetx.isPlaying.value == true)
+              ? const Icon(Icons.pause)
+              : (audioControllerGetx.currentPlayingSurah.value == index &&
+                      audioControllerGetx.isLoading.value)
+                  ? CircularProgressIndicator(
+                      color: Colors.white,
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
+                      strokeWidth: 2,
+                    )
+                  : const Icon(Icons.play_arrow),
+          onPressed: () async {
+            if (audioControllerGetx.isPlaying.value == true &&
+                audioControllerGetx.currentPlayingSurah.value == index) {
+              await ManageQuranAudio.audioPlayer.pause();
+            } else if ((audioControllerGetx.isPlaying.value == true ||
+                    audioControllerGetx.isLoading.value == true) &&
+                audioControllerGetx.currentPlayingSurah.value != index) {
+              audioControllerGetx.currentPlayingSurah.value = index;
+              await ManageQuranAudio.audioPlayer.stop();
+              await ManageQuranAudio.playMultipleSurahAsPlayList(
+                surahNumber: index,
+                reciter: audioControllerGetx.currentReciterModel.value,
+              );
+            } else if (audioControllerGetx.isPlaying.value == false &&
+                audioControllerGetx.currentPlayingSurah.value == index) {
+              if (audioControllerGetx.isReadyToControl.value == false) {
+                await ManageQuranAudio.playMultipleSurahAsPlayList(
+                  surahNumber: index,
+                  reciter: audioControllerGetx.currentReciterModel.value,
+                );
+              } else {
+                await ManageQuranAudio.audioPlayer.play();
+              }
+            } else if (audioControllerGetx.isPlaying.value == false &&
+                audioControllerGetx.currentPlayingSurah.value != index) {
+              audioControllerGetx.currentPlayingSurah.value = index;
+              await ManageQuranAudio.playMultipleSurahAsPlayList(
+                surahNumber: index,
+                reciter: audioControllerGetx.currentReciterModel.value,
+              );
+            }
+          },
+        );
+      },
     );
   }
 

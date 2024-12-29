@@ -27,6 +27,7 @@ class ManageQuranAudio {
   /// [reciter] - (Optional) A specific reciter's information; defaults to the current recitation model if not provided.
   /// [mediaItem] - (Optional) A media item to set as the tag for the audio.
   static Future<void> startListening() async {
+    log("Listening to audio stream");
     audioPlayer.durationStream.listen((event) {
       if (event != null) {
         audioController.totalDuration.value = event;
@@ -47,7 +48,6 @@ class ManageQuranAudio {
 
     audioPlayer.playerStateStream.listen((event) {
       audioController.isPlaying.value = event.playing;
-      log("Is Playing" + event.playing.toString());
       audioController.isPlayingCompleted.value =
           event.processingState == ProcessingState.completed;
 
@@ -98,36 +98,6 @@ class ManageQuranAudio {
         children: audioSources,
       ),
       initialIndex: surahNumber,
-      initialPosition: Duration.zero,
-    );
-    await audioPlayer.play();
-  }
-
-  static Future<void> playSingleSurah({
-    required int surahNumber,
-    ReciterInfoModel? reciter,
-    MediaItem? mediaItem,
-  }) async {
-    if (audioController.isStreamRegistered.value == false) {
-      await startListening();
-    }
-    audioPlayer.stop();
-    reciter ??= findRecitationModel();
-
-    await audioPlayer.setAudioSource(
-      LockCachingAudioSource(
-        Uri.parse(
-          makeAudioUrl(
-            reciter,
-            surahIDFromNumber(surahNumber),
-          ),
-        ),
-        tag: MediaItem(
-          id: "${reciter.id}$surahNumber",
-          title: reciter.name,
-        ),
-      ),
-      initialIndex: 0,
       initialPosition: Duration.zero,
     );
     await audioPlayer.play();
