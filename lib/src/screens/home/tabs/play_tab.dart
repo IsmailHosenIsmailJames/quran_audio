@@ -1,9 +1,13 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:toastification/toastification.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/recitation_info/recitation_info_model.dart';
 import '../../../core/surah_ayah_count.dart';
@@ -133,27 +137,7 @@ class PlayTab extends StatelessWidget {
                       ],
                     ),
                     const Gap(5),
-                    PopupMenuButton(
-                      borderRadius: BorderRadius.circular(7),
-                      onSelected: (value) {},
-                      itemBuilder: (context) {
-                        return [];
-                      },
-                      child: Container(
-                        height: 40,
-                        width: 20,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade600.withValues(
-                            alpha: 0.2,
-                          ),
-                          borderRadius: BorderRadius.circular(7),
-                        ),
-                        child: const Icon(
-                          Icons.more_vert,
-                          size: 18,
-                        ),
-                      ),
-                    ),
+                    getPopUpButton(audioController, index, context),
                   ],
                 ),
               );
@@ -161,6 +145,107 @@ class PlayTab extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  PopupMenuButton<String> getPopUpButton(
+      AudioController audioController, int index, BuildContext context) {
+    return PopupMenuButton(
+      borderRadius: BorderRadius.circular(7),
+      onSelected: (value) async {
+        String url = ManageQuranAudio.makeAudioUrl(
+            audioController.currentReciterModel.value,
+            ManageQuranAudio.surahIDFromNumber(index + 1));
+
+        if (value == "Favorite") {
+          // Add to favorite
+          toastification.show(
+            context: context,
+            title: const Text("Added to Favorite"),
+            autoCloseDuration: const Duration(seconds: 2),
+          );
+        } else if (value == "Playlist") {
+          // Add to playlist
+          toastification.show(
+            context: context,
+            title: const Text("Added to Playlist"),
+            autoCloseDuration: const Duration(seconds: 2),
+          );
+        } else if (value == "Download") {
+          // Download
+          launchUrl(
+            Uri.parse(
+              url,
+            ),
+            mode: LaunchMode.externalApplication,
+          );
+        } else if (value == "Share") {
+          // Share
+          final reciter = audioController.currentReciterModel.value;
+
+          await Share.share(
+            "Reciter: ${reciter.name}\nSurah: ${surahInfo[index]['name_simple']}\nSurah Number: ${index + 1}\nURL: $url",
+          );
+        }
+      },
+      itemBuilder: (context) {
+        return [
+          const PopupMenuItem(
+            value: "Favorite",
+            child: Row(
+              children: [
+                Icon(Icons.favorite_rounded),
+                Gap(7),
+                Text("Add to Favorite"),
+              ],
+            ),
+          ),
+          const PopupMenuItem(
+            value: "Playlist",
+            child: Row(
+              children: [
+                Icon(Icons.playlist_add_rounded),
+                Gap(7),
+                Text("Add to Playlist"),
+              ],
+            ),
+          ),
+          const PopupMenuItem(
+            value: "Download",
+            child: Row(
+              children: [
+                Icon(Icons.download_rounded),
+                Gap(7),
+                Text("Download"),
+              ],
+            ),
+          ),
+          const PopupMenuItem(
+            value: "Share",
+            child: Row(
+              children: [
+                Icon(FluentIcons.share_24_filled),
+                Gap(7),
+                Text("Share"),
+              ],
+            ),
+          ),
+        ];
+      },
+      child: Container(
+        height: 40,
+        width: 20,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade600.withValues(
+            alpha: 0.2,
+          ),
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: const Icon(
+          Icons.more_vert,
+          size: 18,
+        ),
+      ),
     );
   }
 }

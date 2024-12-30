@@ -1,7 +1,9 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
+import 'package:al_quran_audio/src/screens/home/tabs/play_list_page.dart';
 import 'package:al_quran_audio/src/screens/home/tabs/play_tab.dart';
+import 'package:al_quran_audio/src/screens/home/tabs/profile_page.dart';
 import 'package:al_quran_audio/src/theme/theme_controller.dart';
 import 'package:al_quran_audio/src/theme/theme_icon_button.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
@@ -64,8 +66,8 @@ class _HomePageState extends State<HomePage> {
                 controller: tabController,
                 screens: [
                   const PlayTab(),
-                  Container(color: Colors.blue),
-                  Container(color: Colors.yellow)
+                  const PlayListPage(),
+                  const ProfilePage()
                 ],
                 items: [
                   PersistentBottomNavBarItem(
