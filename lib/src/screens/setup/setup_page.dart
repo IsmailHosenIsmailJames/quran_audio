@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
+import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitations.dart';
 import 'package:al_quran_audio/src/screens/home/home_page.dart';
 import 'package:al_quran_audio/src/screens/setup/pages/choice_default_recitation.dart';
@@ -21,7 +22,7 @@ class SetupPage extends StatefulWidget {
 class _SetupPageState extends State<SetupPage> {
   int pageIndex = 0;
   PageController pageController = PageController();
-  final AudioController audioController = Get.put(AudioController());
+  final AudioController audioController = ManageQuranAudio.audioController;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,16 +56,26 @@ class _SetupPageState extends State<SetupPage> {
                     } else {
                       try {
                         final reciter = recitationsInfoList[
-                            audioController.currentReciterIndex.value];
+                            audioController.setupSelectedReciterIndex.value];
                         final box = Hive.box("info");
                         await box.put("default_reciter", jsonEncode(reciter));
                         await box.put("reciter", jsonEncode(reciter));
                         await box.put("reciter_index",
-                            audioController.currentReciterIndex.value);
+                            audioController.setupSelectedReciterIndex.value);
 
-                        await ManageQuranAudio.audioPlayer.stop();
-                        audioController.isReadyToControl.value = false;
-
+                        if (audioController.isPlaying.value) {
+                          audioController.currentReciterIndex.value =
+                              audioController.setupSelectedReciterIndex.value;
+                          ManageQuranAudio.playMultipleSurahAsPlayList(
+                            surahNumber:
+                                audioController.currentPlayingSurah.value,
+                            reciter: ReciterInfoModel.fromMap(
+                              reciter,
+                            ),
+                          );
+                        } else {
+                          audioController.isReadyToControl.value = false;
+                        }
                         Get.offAll(() => const HomePage());
                       } catch (e) {
                         toastification.show(

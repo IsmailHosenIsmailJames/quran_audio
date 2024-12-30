@@ -1,4 +1,3 @@
-import 'package:al_quran_audio/src/theme/font_size_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -10,14 +9,6 @@ class AppThemeData extends GetxController {
   RxBool isDark = true.obs;
 
   void initTheme() async {
-
-   
-    final infoBox = Hive.box("info");
-    final fonSize = Get.put(FontSizeController());
-
-    fonSize.fontSizeArabic.value =
-        infoBox.get("fontSizeArabic", defaultValue: 24.0);
-
     final themePrefer = await Hive.openBox("theme");
     final String? userTheme = themePrefer.get('theme_preference');
     if (userTheme != null) {

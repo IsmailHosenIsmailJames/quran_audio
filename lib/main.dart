@@ -1,4 +1,5 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
+import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/functions/get_uthmani_tajweed.dart';
 import 'package:al_quran_audio/src/screens/home/home_page.dart';
 import 'package:al_quran_audio/src/screens/setup/setup_page.dart';
@@ -72,7 +73,8 @@ class MyApp extends StatelessWidget {
           : const HomePage(),
       onInit: () async {
         final appTheme = Get.put(AppThemeData());
-        final AudioController audioController = Get.put(AudioController());
+        final AudioController audioController =
+            ManageQuranAudio.audioController;
         final box = Hive.box('info');
         final reciterIndex = box.get("reciter_index", defaultValue: 0);
         audioController.currentReciterIndex.value = reciterIndex;

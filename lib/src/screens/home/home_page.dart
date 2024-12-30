@@ -20,7 +20,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final audioControllerGetx = Get.put(AudioController());
+  AudioController audioController = ManageQuranAudio.audioController;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,14 +88,14 @@ class _HomePageState extends State<HomePage> {
                                     const ChoiceDefaultRecitation(
                                         forChangeReciter: true));
                                 if (result.runtimeType == ReciterInfoModel) {
-                                  audioControllerGetx.currentReciterModel
-                                      .value = result as ReciterInfoModel;
-                                  if (audioControllerGetx
+                                  audioController.currentReciterModel.value =
+                                      result as ReciterInfoModel;
+                                  if (audioController
                                           .currentPlayingSurah.value !=
                                       -1) {
                                     await ManageQuranAudio
                                         .playMultipleSurahAsPlayList(
-                                            surahNumber: audioControllerGetx
+                                            surahNumber: audioController
                                                 .currentPlayingSurah.value);
                                   }
                                 }
@@ -109,7 +109,7 @@ class _HomePageState extends State<HomePage> {
                         () => SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Text(
-                            audioControllerGetx.currentReciterModel.value.name,
+                            audioController.currentReciterModel.value.name,
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ),
@@ -129,9 +129,10 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(7)),
                         child: Row(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: CircleAvatar(child: Text("${index + 1}")),
+                            SizedBox(
+                              height: 40,
+                              width: 40,
+                              child: getPlayButton(index),
                             ),
                             const Gap(10),
                             Column(
@@ -139,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  (surahInfo[index]['name_simple'] ?? "")
+                                  ("${index + 1}. ${surahInfo[index]['name_simple'] ?? ""}")
                                       .replaceAll("-", " "),
                                   style: Theme.of(context).textTheme.bodyLarge,
                                 ),
@@ -166,11 +167,27 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),
-                            const Gap(10),
-                            SizedBox(
-                              height: 40,
-                              width: 40,
-                              child: getPlayButton(index),
+                            const Gap(5),
+                            PopupMenuButton(
+                              borderRadius: BorderRadius.circular(7),
+                              onSelected: (value) {},
+                              itemBuilder: (context) {
+                                return [];
+                              },
+                              child: Container(
+                                height: 40,
+                                width: 20,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade600.withValues(
+                                    alpha: 0.2,
+                                  ),
+                                  borderRadius: BorderRadius.circular(7),
+                                ),
+                                child: const Icon(
+                                  Icons.more_vert,
+                                  size: 18,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -184,13 +201,12 @@ class _HomePageState extends State<HomePage> {
           Obx(
             () => Align(
               alignment: const Alignment(1, 1),
-              child: (audioControllerGetx.isPlaying.value == true ||
-                      audioControllerGetx.isReadyToControl.value == true)
+              child: (audioController.isPlaying.value == true ||
+                      audioController.isReadyToControl.value == true)
                   ? WidgetAudioController(
                       showSurahNumber: false,
                       showQuranAyahMode: true,
-                      surahNumber:
-                          audioControllerGetx.currentPlayingSurah.value,
+                      surahNumber: audioController.currentPlayingSurah.value,
                     )
                   : null,
             ),
@@ -209,11 +225,11 @@ class _HomePageState extends State<HomePage> {
             foregroundColor: Colors.white,
           ),
           tooltip: "Play or Pause",
-          icon: (audioControllerGetx.currentPlayingSurah.value == index &&
-                  audioControllerGetx.isPlaying.value == true)
+          icon: (audioController.currentPlayingSurah.value == index &&
+                  audioController.isPlaying.value == true)
               ? const Icon(Icons.pause)
-              : (audioControllerGetx.currentPlayingSurah.value == index &&
-                      audioControllerGetx.isLoading.value)
+              : (audioController.currentPlayingSurah.value == index &&
+                      audioController.isLoading.value)
                   ? CircularProgressIndicator(
                       color: Colors.white,
                       backgroundColor: Colors.white.withValues(alpha: 0.2),
@@ -221,34 +237,34 @@ class _HomePageState extends State<HomePage> {
                     )
                   : const Icon(Icons.play_arrow),
           onPressed: () async {
-            if (audioControllerGetx.isPlaying.value == true &&
-                audioControllerGetx.currentPlayingSurah.value == index) {
+            if (audioController.isPlaying.value == true &&
+                audioController.currentPlayingSurah.value == index) {
               await ManageQuranAudio.audioPlayer.pause();
-            } else if ((audioControllerGetx.isPlaying.value == true ||
-                    audioControllerGetx.isLoading.value == true) &&
-                audioControllerGetx.currentPlayingSurah.value != index) {
-              audioControllerGetx.currentPlayingSurah.value = index;
+            } else if ((audioController.isPlaying.value == true ||
+                    audioController.isLoading.value == true) &&
+                audioController.currentPlayingSurah.value != index) {
+              audioController.currentPlayingSurah.value = index;
               await ManageQuranAudio.audioPlayer.stop();
               await ManageQuranAudio.playMultipleSurahAsPlayList(
                 surahNumber: index,
-                reciter: audioControllerGetx.currentReciterModel.value,
+                reciter: audioController.currentReciterModel.value,
               );
-            } else if (audioControllerGetx.isPlaying.value == false &&
-                audioControllerGetx.currentPlayingSurah.value == index) {
-              if (audioControllerGetx.isReadyToControl.value == false) {
+            } else if (audioController.isPlaying.value == false &&
+                audioController.currentPlayingSurah.value == index) {
+              if (audioController.isReadyToControl.value == false) {
                 await ManageQuranAudio.playMultipleSurahAsPlayList(
                   surahNumber: index,
-                  reciter: audioControllerGetx.currentReciterModel.value,
+                  reciter: audioController.currentReciterModel.value,
                 );
               } else {
                 await ManageQuranAudio.audioPlayer.play();
               }
-            } else if (audioControllerGetx.isPlaying.value == false &&
-                audioControllerGetx.currentPlayingSurah.value != index) {
-              audioControllerGetx.currentPlayingSurah.value = index;
+            } else if (audioController.isPlaying.value == false &&
+                audioController.currentPlayingSurah.value != index) {
+              audioController.currentPlayingSurah.value = index;
               await ManageQuranAudio.playMultipleSurahAsPlayList(
                 surahNumber: index,
-                reciter: audioControllerGetx.currentReciterModel.value,
+                reciter: audioController.currentReciterModel.value,
               );
             }
           },
@@ -305,19 +321,20 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Expanded(
                     child: Slider(
-                      value: audioControllerGetx.fontSizeArabic.value,
+                      value: audioController.fontSizeArabic.value,
                       min: 10,
                       max: 50,
                       divisions: 40,
-                      onChanged: (value) {
-                        audioControllerGetx.fontSizeArabic.value = value;
+                      onChanged: (value) async {
+                        audioController.fontSizeArabic.value = value;
+                        setState(() {});
                         Hive.box("info").put("fontSizeArabic", value);
                       },
                     ),
                   ),
                   const Gap(5),
                   Text(
-                    audioControllerGetx.fontSizeArabic.value.round().toString(),
+                    audioController.fontSizeArabic.value.round().toString(),
                   ),
                   const Gap(10),
                 ],

@@ -22,7 +22,7 @@ class ChoiceDefaultRecitation extends StatefulWidget {
 }
 
 class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
-  final audioControllerGetx = Get.put(AudioController());
+  AudioController audioControllerGetx = ManageQuranAudio.audioController;
   @override
   Widget build(BuildContext context) {
     log((audioControllerGetx.isPlaying.value == true).toString());
