@@ -131,7 +131,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
       () {
         return IconButton(
           style: IconButton.styleFrom(
-            backgroundColor: Colors.blue.shade700,
+            backgroundColor: Colors.green.shade800,
             foregroundColor: Colors.white,
           ),
           tooltip: "Play Recitation from ${current.name}",

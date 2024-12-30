@@ -70,138 +70,7 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (audioController.isSurahAyahMode.value)
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(
-                              left: 10, right: 10, bottom: 10, top: 25),
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color.fromARGB(255, 29, 29, 29)
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(7),
-                            border: Border.all(
-                                color: Colors.grey.shade400, width: 0.7),
-                          ),
-                          child: Scrollbar(
-                            controller: scrollController,
-                            thickness: 5,
-                            thumbVisibility: true,
-                            radius: const Radius.circular(7),
-                            interactive: true,
-                            child: ListView.builder(
-                                controller: scrollController,
-                                padding: const EdgeInsets.all(10),
-                                itemCount:
-                                    (surahAyahCount[(latestSurahNumber)] / 10)
-                                        .ceil(),
-                                itemBuilder: (context, index) {
-                                  int ayahCount =
-                                      surahAyahCount[latestSurahNumber];
-                                  int start = index * 10 + 1;
-                                  int end = (index + 1) * 10;
-                                  if (end > ayahCount) {
-                                    end = ayahCount;
-                                  }
-
-                                  List<InlineSpan> listOfAyahsSpanText = [];
-
-                                  for (int currentAyahNumber = start;
-                                      currentAyahNumber <= end;
-                                      currentAyahNumber++) {
-                                    listOfAyahsSpanText.addAll(
-                                      getTajweedTexSpan(
-                                        infoBox.get(
-                                          "uthmani_tajweed/${(latestSurahNumber) + 1}:$currentAyahNumber",
-                                          defaultValue: "",
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                  if (listOfAyahsSpanText.isEmpty) {
-                                    if (index == 0) {
-                                      return Column(
-                                        children: [
-                                          Text(
-                                            "Unable to load",
-                                            style: TextStyle(
-                                              fontSize: audioController
-                                                  .fontSizeArabic.value,
-                                            ),
-                                          ),
-                                          const Gap(10),
-                                          ElevatedButton.icon(
-                                            onPressed: () async {
-                                              toastification.show(
-                                                context: context,
-                                                title: const Text(
-                                                    "Trying to download"),
-                                                description: const Text(
-                                                    "Wait a bit until it's done"),
-                                              );
-                                              await getUthmaniTajweed();
-                                              toastification.show(
-                                                context: context,
-                                                title: const Text(
-                                                    "Trying to download"),
-                                                description: const Text(
-                                                    "Wait a bit until it's done"),
-                                              );
-
-                                              setState(() {});
-                                            },
-                                            icon: const Icon(FluentIcons
-                                                .arrow_download_24_regular),
-                                            label: const Text("Download"),
-                                          ),
-                                        ],
-                                      );
-                                    }
-                                  }
-                                  return Text.rich(
-                                      TextSpan(children: listOfAyahsSpanText),
-                                      style: TextStyle(
-                                        fontSize: audioController
-                                            .fontSizeArabic.value,
-                                      ));
-                                }),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: SizedBox(
-                              height: 25,
-                              width: 25,
-                              child: IconButton(
-                                style: IconButton.styleFrom(
-                                    padding: EdgeInsets.zero,
-                                    backgroundColor: isDark
-                                        ? Colors.grey.shade900
-                                        : Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(100),
-                                      side: BorderSide(
-                                          color: Colors.grey.shade400,
-                                          width: 0.7),
-                                    )),
-                                onPressed: () {
-                                  audioController.isSurahAyahMode.value =
-                                      !audioController.isSurahAyahMode.value;
-                                },
-                                icon: const Icon(
-                                  Icons.close,
-                                  size: 15,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  getSurahView(isDark, latestSurahNumber),
                 getControllers(context, isDark, colorToApply),
               ],
             );
@@ -211,24 +80,150 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
     );
   }
 
+  Expanded getSurahView(bool isDark, int latestSurahNumber) {
+    return Expanded(
+      child: Stack(
+        children: [
+          Container(
+            margin:
+                const EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 25),
+            decoration: BoxDecoration(
+              color:
+                  isDark ? const Color.fromARGB(255, 29, 29, 29) : Colors.white,
+              borderRadius: BorderRadius.circular(7),
+              border: Border.all(color: Colors.grey.shade400, width: 0.7),
+            ),
+            child: Scrollbar(
+              controller: scrollController,
+              thickness: 5,
+              thumbVisibility: true,
+              radius: const Radius.circular(7),
+              interactive: true,
+              child: ListView.builder(
+                  controller: scrollController,
+                  padding: const EdgeInsets.all(10),
+                  itemCount: (surahAyahCount[(latestSurahNumber)] / 10).ceil(),
+                  itemBuilder: (context, index) {
+                    int ayahCount = surahAyahCount[latestSurahNumber];
+                    int start = index * 10 + 1;
+                    int end = (index + 1) * 10;
+                    if (end > ayahCount) {
+                      end = ayahCount;
+                    }
+
+                    List<InlineSpan> listOfAyahsSpanText = [];
+
+                    for (int currentAyahNumber = start;
+                        currentAyahNumber <= end;
+                        currentAyahNumber++) {
+                      listOfAyahsSpanText.addAll(
+                        getTajweedTexSpan(
+                          infoBox.get(
+                            "uthmani_tajweed/${(latestSurahNumber) + 1}:$currentAyahNumber",
+                            defaultValue: "",
+                          ),
+                        ),
+                      );
+                    }
+                    if (listOfAyahsSpanText.isEmpty) {
+                      if (index == 0) {
+                        return Column(
+                          children: [
+                            Text(
+                              "Unable to load",
+                              style: TextStyle(
+                                fontSize: audioController.fontSizeArabic.value,
+                              ),
+                            ),
+                            const Gap(10),
+                            ElevatedButton.icon(
+                              onPressed: () async {
+                                toastification.show(
+                                  context: context,
+                                  title: const Text("Trying to download"),
+                                  description:
+                                      const Text("Wait a bit until it's done"),
+                                );
+                                await getUthmaniTajweed();
+                                toastification.show(
+                                  context: context,
+                                  title: const Text("Trying to download"),
+                                  description:
+                                      const Text("Wait a bit until it's done"),
+                                );
+
+                                setState(() {});
+                              },
+                              icon: const Icon(
+                                  FluentIcons.arrow_download_24_regular),
+                              label: const Text("Download"),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                    return Text.rich(TextSpan(children: listOfAyahsSpanText),
+                        style: TextStyle(
+                          fontSize: audioController.fontSizeArabic.value,
+                        ));
+                  }),
+            ),
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: SizedBox(
+                height: 25,
+                width: 25,
+                child: IconButton(
+                  style: IconButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor:
+                          isDark ? Colors.grey.shade900 : Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                        side:
+                            BorderSide(color: Colors.grey.shade400, width: 0.7),
+                      )),
+                  onPressed: () {
+                    audioController.isSurahAyahMode.value =
+                        !audioController.isSurahAyahMode.value;
+                  },
+                  icon: const Icon(
+                    Icons.close,
+                    size: 15,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Container getControllers(
       BuildContext context, bool isDark, Color colorToApply) {
     return Container(
       height: 85,
       width: animation.value * MediaQuery.of(context).size.width * 1,
       margin: EdgeInsets.only(
-          left: 10,
+          left: 5,
           top: 10,
-          right: 10,
+          right: 5,
           bottom: widget.showQuranAyahMode ? 10 : 70),
       padding: const EdgeInsets.only(left: 5, right: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
-        color: isDark ? Colors.grey.shade800 : Colors.white,
+        color: isDark ? Colors.grey.shade900 : Colors.white,
+        border: Border.all(
+            color: Colors.grey.shade400.withValues(alpha: 0.5), width: 0.7),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           ProgressBar(
             progress: audioController.progress.value,

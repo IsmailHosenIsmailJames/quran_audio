@@ -1,16 +1,15 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
-import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
-import 'package:al_quran_audio/src/core/surah_ayah_count.dart';
-import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
-import 'package:al_quran_audio/src/screens/setup/pages/choice_default_recitation.dart';
+import 'package:al_quran_audio/src/screens/home/tabs/play_tab.dart';
+import 'package:al_quran_audio/src/theme/theme_controller.dart';
 import 'package:al_quran_audio/src/theme/theme_icon_button.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,6 +20,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   AudioController audioController = ManageQuranAudio.audioController;
+  final themeController = Get.put(AppThemeData());
+  PersistentTabController tabController =
+      PersistentTabController(initialIndex: 0);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +39,7 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             onPressed: () {
-              showSettings(context);
+              showSettings(context, audioController);
             },
             icon: const Icon(
               FluentIcons.settings_24_regular,
@@ -47,160 +49,85 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(7),
-                    color: Colors.grey.shade600.withValues(alpha: 0.2),
+          Obx(
+            () {
+              bool isDark = themeController.themeModeName.value == "dark" ||
+                  (themeController.themeModeName.value == "system" &&
+                      MediaQuery.of(context).platformBrightness ==
+                          Brightness.dark);
+              return PersistentTabView(
+                backgroundColor:
+                    isDark ? Colors.grey.shade900 : Colors.grey.shade100,
+                margin: const EdgeInsets.only(left: 3, right: 3, bottom: 3),
+
+                context,
+                controller: tabController,
+                screens: [
+                  const PlayTab(),
+                  Container(color: Colors.blue),
+                  Container(color: Colors.yellow)
+                ],
+                items: [
+                  PersistentBottomNavBarItem(
+                    icon: const Icon(Icons.play_circle_rounded),
+                    title: ("Play"),
+                    activeColorPrimary: Colors.green.shade800,
+                    activeColorSecondary: Colors.white,
+                    inactiveColorPrimary: Colors.green.shade600,
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Reciter",
-                            style: TextStyle(
-                              fontSize: 14,
-                            ),
-                          ),
-                          const Gap(10),
-                          SizedBox(
-                            height: 25,
-                            child: TextButton(
-                              style: TextButton.styleFrom(
-                                padding:
-                                    const EdgeInsets.only(left: 15, right: 15),
-                                backgroundColor:
-                                    const Color.fromARGB(255, 200, 250, 200),
-                                foregroundColor: Colors.green.shade800,
-                              ),
-                              onPressed: () async {
-                                final result = await Get.to(() =>
-                                    const ChoiceDefaultRecitation(
-                                        forChangeReciter: true));
-                                if (result.runtimeType == ReciterInfoModel) {
-                                  audioController.currentReciterModel.value =
-                                      result as ReciterInfoModel;
-                                  if (audioController
-                                          .currentPlayingSurah.value !=
-                                      -1) {
-                                    await ManageQuranAudio
-                                        .playMultipleSurahAsPlayList(
-                                            surahNumber: audioController
-                                                .currentPlayingSurah.value);
-                                  }
-                                }
-                              },
-                              child: const Text("Change"),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Obx(
-                        () => SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Text(
-                            audioController.currentReciterModel.value.name,
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                      ),
-                    ],
+                  PersistentBottomNavBarItem(
+                    icon: const Icon(Icons.playlist_play_rounded),
+                    title: ("Play Lists"),
+                    activeColorPrimary: Colors.green.shade800,
+                    activeColorSecondary: Colors.white,
+                    inactiveColorPrimary: Colors.green.shade600,
+                  ),
+                  PersistentBottomNavBarItem(
+                    icon: const Icon(FluentIcons.person_24_filled),
+                    title: ("Profile"),
+                    activeColorPrimary: Colors.green.shade800,
+                    activeColorSecondary: Colors.white,
+                    inactiveColorPrimary: Colors.green.shade600,
+                  ),
+                ],
+                handleAndroidBackButtonPress: true, // Default is true.
+                resizeToAvoidBottomInset:
+                    true, // This needs to be true if you want to move up the screen on a non-scrollable screen when keyboard appears. Default is true.
+                stateManagement: true, // Default is true.
+                hideNavigationBarWhenKeyboardAppears: true,
+                popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
+
+                decoration: NavBarDecoration(
+                  borderRadius: BorderRadius.circular(7),
+                  border: Border.all(
+                      color: Colors.grey.shade400.withValues(alpha: 0.5),
+                      width: 0.7),
+                ),
+                isVisible: true,
+                animationSettings: const NavBarAnimationSettings(
+                  navBarItemAnimation: ItemAnimationSettings(
+                    // Navigation Bar's items animation properties.
+                    duration: Duration(milliseconds: 400),
+                    curve: Curves.ease,
+                  ),
+                  screenTransitionAnimation: ScreenTransitionAnimationSettings(
+                    // Screen transition animation on change of selected tab.
+                    animateTabTransition: true,
+                    duration: Duration(milliseconds: 400),
+                    screenTransitionAnimationType:
+                        ScreenTransitionAnimationType.fadeIn,
                   ),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.only(top: 5, bottom: 100),
-                    itemCount: surahInfo.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        elevation: 0,
-                        margin: const EdgeInsets.only(bottom: 5),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(7)),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              height: 40,
-                              width: 40,
-                              child: getPlayButton(index),
-                            ),
-                            const Gap(10),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  ("${index + 1}. ${surahInfo[index]['name_simple'] ?? ""}")
-                                      .replaceAll("-", " "),
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                                Text(
-                                  (surahInfo[index]['revelation_place'] ?? "")
-                                      .capitalizeFirst,
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  (surahInfo[index]['name_arabic'] ?? "")
-                                      .capitalizeFirst,
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                                Text(
-                                  surahAyahCount[index].toString(),
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
-                            const Gap(5),
-                            PopupMenuButton(
-                              borderRadius: BorderRadius.circular(7),
-                              onSelected: (value) {},
-                              itemBuilder: (context) {
-                                return [];
-                              },
-                              child: Container(
-                                height: 40,
-                                width: 20,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade600.withValues(
-                                    alpha: 0.2,
-                                  ),
-                                  borderRadius: BorderRadius.circular(7),
-                                ),
-                                child: const Icon(
-                                  Icons.more_vert,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+                confineToSafeArea: true,
+                navBarHeight: kBottomNavigationBarHeight,
+                navBarStyle: NavBarStyle
+                    .style7, // Choose the nav bar style with this property
+              );
+            },
           ),
           Obx(
-            () => Align(
-              alignment: const Alignment(1, 1),
+            () => Container(
+              margin: const EdgeInsets.only(bottom: 55),
               child: (audioController.isPlaying.value == true ||
                       audioController.isReadyToControl.value == true)
                   ? WidgetAudioController(
@@ -216,64 +143,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Obx getPlayButton(int index) {
-    return Obx(
-      () {
-        return IconButton(
-          style: IconButton.styleFrom(
-            backgroundColor: Colors.blue.shade700,
-            foregroundColor: Colors.white,
-          ),
-          tooltip: "Play or Pause",
-          icon: (audioController.currentPlayingSurah.value == index &&
-                  audioController.isPlaying.value == true)
-              ? const Icon(Icons.pause)
-              : (audioController.currentPlayingSurah.value == index &&
-                      audioController.isLoading.value)
-                  ? CircularProgressIndicator(
-                      color: Colors.white,
-                      backgroundColor: Colors.white.withValues(alpha: 0.2),
-                      strokeWidth: 2,
-                    )
-                  : const Icon(Icons.play_arrow),
-          onPressed: () async {
-            if (audioController.isPlaying.value == true &&
-                audioController.currentPlayingSurah.value == index) {
-              await ManageQuranAudio.audioPlayer.pause();
-            } else if ((audioController.isPlaying.value == true ||
-                    audioController.isLoading.value == true) &&
-                audioController.currentPlayingSurah.value != index) {
-              audioController.currentPlayingSurah.value = index;
-              await ManageQuranAudio.audioPlayer.stop();
-              await ManageQuranAudio.playMultipleSurahAsPlayList(
-                surahNumber: index,
-                reciter: audioController.currentReciterModel.value,
-              );
-            } else if (audioController.isPlaying.value == false &&
-                audioController.currentPlayingSurah.value == index) {
-              if (audioController.isReadyToControl.value == false) {
-                await ManageQuranAudio.playMultipleSurahAsPlayList(
-                  surahNumber: index,
-                  reciter: audioController.currentReciterModel.value,
-                );
-              } else {
-                await ManageQuranAudio.audioPlayer.play();
-              }
-            } else if (audioController.isPlaying.value == false &&
-                audioController.currentPlayingSurah.value != index) {
-              audioController.currentPlayingSurah.value = index;
-              await ManageQuranAudio.playMultipleSurahAsPlayList(
-                surahNumber: index,
-                reciter: audioController.currentReciterModel.value,
-              );
-            }
-          },
-        );
-      },
-    );
-  }
-
-  void showSettings(BuildContext context) {
+  void showSettings(BuildContext context, AudioController audioController) {
     showModalBottomSheet(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(7),
@@ -345,4 +215,61 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+}
+
+Obx getPlayButton(int index, AudioController audioController) {
+  return Obx(
+    () {
+      return IconButton(
+        style: IconButton.styleFrom(
+          backgroundColor: Colors.green.shade800,
+          foregroundColor: Colors.white,
+        ),
+        tooltip: "Play or Pause",
+        icon: (audioController.currentPlayingSurah.value == index &&
+                audioController.isPlaying.value == true)
+            ? const Icon(Icons.pause)
+            : (audioController.currentPlayingSurah.value == index &&
+                    audioController.isLoading.value)
+                ? CircularProgressIndicator(
+                    color: Colors.white,
+                    backgroundColor: Colors.white.withValues(alpha: 0.2),
+                    strokeWidth: 2,
+                  )
+                : const Icon(Icons.play_arrow),
+        onPressed: () async {
+          if (audioController.isPlaying.value == true &&
+              audioController.currentPlayingSurah.value == index) {
+            await ManageQuranAudio.audioPlayer.pause();
+          } else if ((audioController.isPlaying.value == true ||
+                  audioController.isLoading.value == true) &&
+              audioController.currentPlayingSurah.value != index) {
+            audioController.currentPlayingSurah.value = index;
+            await ManageQuranAudio.audioPlayer.stop();
+            await ManageQuranAudio.playMultipleSurahAsPlayList(
+              surahNumber: index,
+              reciter: audioController.currentReciterModel.value,
+            );
+          } else if (audioController.isPlaying.value == false &&
+              audioController.currentPlayingSurah.value == index) {
+            if (audioController.isReadyToControl.value == false) {
+              await ManageQuranAudio.playMultipleSurahAsPlayList(
+                surahNumber: index,
+                reciter: audioController.currentReciterModel.value,
+              );
+            } else {
+              await ManageQuranAudio.audioPlayer.play();
+            }
+          } else if (audioController.isPlaying.value == false &&
+              audioController.currentPlayingSurah.value != index) {
+            audioController.currentPlayingSurah.value = index;
+            await ManageQuranAudio.playMultipleSurahAsPlayList(
+              surahNumber: index,
+              reciter: audioController.currentReciterModel.value,
+            );
+          }
+        },
+      );
+    },
+  );
 }
