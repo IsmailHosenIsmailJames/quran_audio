@@ -1,6 +1,7 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
+import 'package:al_quran_audio/src/screens/home/controller/home_page_controller.dart';
 import 'package:al_quran_audio/src/screens/home/tabs/play_list_page.dart';
 import 'package:al_quran_audio/src/screens/home/tabs/play_tab.dart';
 import 'package:al_quran_audio/src/screens/home/tabs/profile_page.dart';
@@ -23,6 +24,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   AudioController audioController = ManageQuranAudio.audioController;
   final themeController = Get.put(AppThemeData());
+  final HomePageController homePageController = Get.put(HomePageController());
   PersistentTabController tabController =
       PersistentTabController(initialIndex: 0);
   @override
@@ -65,9 +67,13 @@ class _HomePageState extends State<HomePage> {
                 context,
                 controller: tabController,
                 screens: [
-                  const PlayTab(),
-                  const PlayListPage(),
-                  const ProfilePage()
+                  PlayTab(
+                    tabController: tabController,
+                  ),
+                  PlayListPage(
+                    tabController: tabController,
+                  ),
+                  const ProfilePage(),
                 ],
                 items: [
                   PersistentBottomNavBarItem(
@@ -100,7 +106,7 @@ class _HomePageState extends State<HomePage> {
                 popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
 
                 decoration: NavBarDecoration(
-                  borderRadius: BorderRadius.circular(7),
+                  borderRadius: BorderRadius.circular(35),
                   border: Border.all(
                       color: Colors.grey.shade400.withValues(alpha: 0.5),
                       width: 0.7),

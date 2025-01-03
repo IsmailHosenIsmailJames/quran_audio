@@ -1,10 +1,12 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
+import 'package:al_quran_audio/src/theme/theme_controller.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -12,15 +14,27 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/recitation_info/recitation_info_model.dart';
 import '../../../core/surah_ayah_count.dart';
 import '../../setup/pages/choice_default_recitation.dart';
+import '../controller/home_page_controller.dart';
 import '../home_page.dart';
 
-class PlayTab extends StatelessWidget {
-  const PlayTab({super.key});
+class PlayTab extends StatefulWidget {
+  final PersistentTabController tabController;
+  const PlayTab({super.key, required this.tabController});
+
+  @override
+  State<PlayTab> createState() => _PlayTabState();
+}
+
+class _PlayTabState extends State<PlayTab> {
+  final AudioController audioController = ManageQuranAudio.audioController;
+  final HomePageController homePageController = Get.put(HomePageController());
+  final AppThemeData themeController = Get.find<AppThemeData>();
 
   @override
   Widget build(BuildContext context) {
-    final AudioController audioController = ManageQuranAudio.audioController;
-
+    // bool isDark = themeController.themeModeName.value == "dark" ||
+    //     (themeController.themeModeName.value == "system" &&
+    //         MediaQuery.of(context).platformBrightness == Brightness.dark);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,6 +99,71 @@ class PlayTab extends StatelessWidget {
             ],
           ),
         ),
+        Obx(
+          () => (homePageController.selectForPlaylistMode.value == false)
+              ? const SizedBox()
+              : Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                        color: Colors.grey.shade400.withValues(alpha: 0.5)),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  padding: const EdgeInsets.all(5),
+                  margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
+                  child: Column(
+                    children: [
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              const Text("Adding to"),
+                              const Gap(5),
+                              Text(
+                                homePageController.nameOfEditingPlaylist.value,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Gap(5),
+                          SizedBox(
+                            height: 25,
+                            child: Row(
+                              children: [
+                                Text(
+                                    "Selected: ${homePageController.selectedForPlaylist.length}"),
+                                const Spacer(),
+                                const Gap(5),
+                                OutlinedButton.icon(
+                                  style: TextButton.styleFrom(
+                                    padding: const EdgeInsets.only(
+                                        left: 7, right: 7),
+                                  ),
+                                  onPressed: () {
+                                    homePageController
+                                        .selectForPlaylistMode.value = false;
+                                  },
+                                  icon: const Icon(Icons.close),
+                                  label: const Text("Cancel"),
+                                ),
+                                const Gap(5),
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    addSelectedDataToPlayList(context);
+                                  },
+                                  icon: const Icon(Icons.done),
+                                  label: const Text("Done"),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+        ),
         Expanded(
           child: ListView.builder(
             padding:
@@ -96,55 +175,86 @@ class PlayTab extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 5),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(7)),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      height: 40,
-                      width: 40,
-                      child: getPlayButton(index, audioController),
-                    ),
-                    const Gap(10),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          ("${index + 1}. ${surahInfo[index]['name_simple'] ?? ""}")
-                              .replaceAll("-", " "),
-                          style: Theme.of(context).textTheme.bodyLarge,
+                child: Obx(
+                  () => Row(
+                    children: [
+                      SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: getPlayButton(index, audioController),
+                      ),
+                      const Gap(10),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            ("${index + 1}. ${surahInfo[index]['name_simple'] ?? ""}")
+                                .replaceAll("-", " "),
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          Text(
+                            (surahInfo[index]['revelation_place'] ?? "")
+                                .capitalizeFirst,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            (surahInfo[index]['name_arabic'] ?? "")
+                                .capitalizeFirst,
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          Text(
+                            surahAyahCount[index].toString(),
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                      const Gap(5),
+                      getPopUpButton(audioController, index, context),
+                      if (homePageController.selectForPlaylistMode.value ==
+                          true)
+                        Checkbox(
+                          value: homePageController.containsInPlaylist(
+                              audioController.currentReciterModel.value, index),
+                          onChanged: (value) {
+                            if (value == true) {
+                              homePageController.addToPlaylist(
+                                audioController.currentReciterModel.value,
+                                index,
+                              );
+                            } else {
+                              homePageController.removeToPlaylist(
+                                  audioController.currentReciterModel.value,
+                                  index);
+                            }
+                          },
                         ),
-                        Text(
-                          (surahInfo[index]['revelation_place'] ?? "")
-                              .capitalizeFirst,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          (surahInfo[index]['name_arabic'] ?? "")
-                              .capitalizeFirst,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        Text(
-                          surahAyahCount[index].toString(),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                    const Gap(5),
-                    getPopUpButton(audioController, index, context),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
           ),
         ),
       ],
+    );
+  }
+
+  void addSelectedDataToPlayList(BuildContext context) async {
+    await homePageController.saveToPlayList();
+    homePageController.reloadPlayList();
+    widget.tabController.jumpToTab(1);
+    toastification.show(
+      context: context,
+      title: const Text("Added to Playlist"),
+      autoCloseDuration: const Duration(seconds: 2),
     );
   }
 
