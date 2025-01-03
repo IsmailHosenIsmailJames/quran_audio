@@ -79,7 +79,7 @@ class IntroPage extends StatelessWidget {
                   const Text("and"),
                   TextButton(
                       onPressed: () {
-                        launchUrl(Uri.parse("https://everyayah.com/"),
+                        launchUrl(Uri.parse("https://quranicaudio.com/"),
                             mode: LaunchMode.externalApplication);
                       },
                       child: const Text("Quranicaudio.com")),
