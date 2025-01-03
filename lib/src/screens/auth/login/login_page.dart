@@ -1,7 +1,9 @@
-import 'package:al_quran_audio/src/api/appwrite/config.dart';
-import 'package:appwrite/appwrite.dart';
+import 'package:al_quran_audio/src/screens/auth/auth_controller/auth_controller.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:appwrite/models.dart' as models;
+import 'package:gap/gap.dart';
+import 'package:get/get.dart';
+import 'package:toastification/toastification.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,87 +13,147 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  models.User? loggedInUser;
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController nameController = TextEditingController();
-
-  Future<void> login(String email, String password) async {
-    await AppWriteConfig.account
-        .createEmailPasswordSession(email: email, password: password);
-    final user = await AppWriteConfig.account.get();
-    setState(() {
-      loggedInUser = user;
-    });
-  }
-
-  Future<void> register(String email, String password, String name) async {
-    await AppWriteConfig.account.create(
-        userId: ID.unique(), email: email, password: password, name: name);
-    await login(email, password);
-  }
-
-  Future<void> logout() async {
-    await AppWriteConfig.account.deleteSession(sessionId: 'current');
-    setState(() {
-      loggedInUser = null;
-    });
-  }
+  final AuthController authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(loggedInUser != null
-                ? 'Logged in as ${loggedInUser!.name}'
-                : 'Not logged in'),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
-            ),
-            const SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    login(emailController.text, passwordController.text);
-                  },
-                  child: const Text('Login'),
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Gap(20),
+                const Text(
+                  "Welcome to Al Quran Audio",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(width: 16.0),
-                ElevatedButton(
-                  onPressed: () {
-                    register(emailController.text, passwordController.text,
-                        nameController.text);
-                  },
-                  child: const Text('Register'),
+                const Text("Get the best experience by logging in"),
+                Text(
+                  "You can save your favorite playlist to the cloud. And continue listening from where you left off. No need to worry about losing your playlist. We got you covered.",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade600,
+                  ),
                 ),
-                const SizedBox(width: 16.0),
-                ElevatedButton(
-                  onPressed: () {
-                    logout();
+                const Gap(20),
+                const Text(
+                  "Email",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextFormField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    hintText: "type your email...",
+                  ),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    if (EmailValidator.validate(value ?? "")) {
+                      return null;
+                    } else {
+                      return "Please enter a valid email";
+                    }
                   },
-                  child: const Text('Logout'),
+                ),
+                const Gap(10),
+                const Text(
+                  "Password",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextFormField(
+                  controller: passwordController,
+                  decoration: const InputDecoration(
+                    hintText: "type your password...",
+                  ),
+                  obscureText: true,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    if (value!.length >= 6) {
+                      return null;
+                    } else {
+                      return "Password must be at least 6 characters";
+                    }
+                  },
+                ),
+                const Gap(20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      String? error = await authController.login(
+                        emailController.text,
+                        passwordController.text,
+                      );
+                      if (error != null) {
+                        toastification.show(
+                          context: context,
+                          title: const Text("Login unsuccessful"),
+                          description: Text(error),
+                          type: ToastificationType.error,
+                          autoCloseDuration: const Duration(seconds: 5),
+                        );
+                      } else {
+                        toastification.show(
+                          context: context,
+                          title: const Text("Login successful"),
+                          description:
+                              const Text("You have successfully logged in"),
+                          type: ToastificationType.success,
+                          autoCloseDuration: const Duration(seconds: 3),
+                        );
+                      }
+                    },
+                    child: const Text("Login"),
+                  ),
+                ),
+                const Gap(5),
+                Center(
+                    child: Text(
+                  "Or",
+                  style: TextStyle(color: Colors.grey.shade600),
+                )),
+                const Gap(5),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () async {
+                      String? error = await authController.register(
+                        emailController.text,
+                        passwordController.text,
+                      );
+                      if (error != null) {
+                        toastification.show(
+                          context: context,
+                          title: const Text("Signup unsuccessful"),
+                          description: Text(error),
+                          type: ToastificationType.error,
+                          autoCloseDuration: const Duration(seconds: 5),
+                        );
+                      } else {
+                        toastification.show(
+                          context: context,
+                          title: const Text("Signup successful"),
+                          description:
+                              const Text("You have successfully signed up"),
+                          type: ToastificationType.success,
+                          autoCloseDuration: const Duration(seconds: 3),
+                        );
+                      }
+                    },
+                    child: const Text("Sign Up"),
+                  ),
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -22,6 +22,8 @@ Future<void> main() async {
 
   await Hive.initFlutter();
   await Hive.openBox('info');
+  await Hive.openBox('play_list');
+  await Hive.openBox('cloud_play_list');
 
   runApp(const MyApp());
 }
@@ -68,6 +70,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
+      defaultTransition: Transition.leftToRight,
       home: Hive.box('info').get('default_reciter') == null
           ? const SetupPage()
           : const HomePage(),

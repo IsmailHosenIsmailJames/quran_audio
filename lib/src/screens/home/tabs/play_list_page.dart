@@ -211,7 +211,7 @@ class _PlayListPageState extends State<PlayListPage> {
                       PopupMenuItem(
                         onTap: () async {
                           try {
-                            Hive.box("info").delete("playlist_$playListKey");
+                            Hive.box("play_list").delete(playListKey);
 
                             homePageController.reloadPlayList();
 
@@ -298,8 +298,8 @@ class _PlayListPageState extends State<PlayListPage> {
                   child: ElevatedButton.icon(
                     onPressed: () async {
                       if (nameController.text.isNotEmpty) {
-                        if (Hive.box('info').containsKey(
-                            "playlist_${nameController.text.trim()}")) {
+                        if (Hive.box('play_list')
+                            .containsKey(nameController.text.trim())) {
                           toastification.show(
                             context: context,
                             title: const Text(
@@ -311,15 +311,13 @@ class _PlayListPageState extends State<PlayListPage> {
                           try {
                             List<PlayListModel> allPlayList = homePageController
                                 .allPlaylistInDB.value[playlistKey]!;
-                            await Hive.box("info")
-                                .delete("playlist_$playlistKey");
+                            await Hive.box("play_list").delete(playlistKey);
                             List<String> rawData = [];
                             for (var e in allPlayList) {
                               rawData.add(e.toJson());
                             }
-                            await Hive.box('info').put(
-                                "playlist_${nameController.text.trim()}",
-                                rawData);
+                            await Hive.box('play_list')
+                                .put(nameController.text.trim(), rawData);
                             homePageController.reloadPlayList();
                             Navigator.pop(context);
                             toastification.show(

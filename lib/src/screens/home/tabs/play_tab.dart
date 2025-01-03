@@ -174,8 +174,8 @@ class _PlayTabState extends State<PlayTab> {
             thumbVisibility: true,
             child: ListView.builder(
               controller: scrollController,
-              padding:
-                  const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 100),
+              padding: const EdgeInsets.only(
+                  left: 10, right: 10, top: 5, bottom: 100),
               itemCount: surahInfo.length,
               itemBuilder: (context, index) {
                 return Card(
@@ -186,6 +186,9 @@ class _PlayTabState extends State<PlayTab> {
                   child: Obx(
                     () => Row(
                       children: [
+                        const SizedBox(
+                          height: 50,
+                        ),
                         SizedBox(
                           height: 40,
                           width: 40,
@@ -228,23 +231,30 @@ class _PlayTabState extends State<PlayTab> {
                         getPopUpButton(audioController, index, context),
                         if (homePageController.selectForPlaylistMode.value ==
                             true)
-                          Checkbox(
-                            value: homePageController.containsInPlaylist(
-                                audioController.currentReciterModel.value,
-                                index),
-                            onChanged: (value) {
-                              if (value == true) {
-                                homePageController.addToPlaylist(
+                          SizedBox(
+                            height: 40,
+                            width: 40,
+                            child: Checkbox(
+                              value: homePageController.containsInPlaylist(
                                   audioController.currentReciterModel.value,
-                                  index,
-                                );
-                              } else {
-                                homePageController.removeToPlaylist(
+                                  index),
+                              onChanged: (value) {
+                                if (value == true) {
+                                  homePageController.addToPlaylist(
                                     audioController.currentReciterModel.value,
-                                    index);
-                              }
-                            },
+                                    index,
+                                  );
+                                } else {
+                                  homePageController.removeToPlaylist(
+                                      audioController.currentReciterModel.value,
+                                      index);
+                                }
+                              },
+                            ),
                           ),
+                        if (homePageController.selectForPlaylistMode.value ==
+                            true)
+                          const Gap(5),
                       ],
                     ),
                   ),
@@ -265,6 +275,7 @@ class _PlayTabState extends State<PlayTab> {
       context: context,
       title: const Text("Added to Playlist"),
       autoCloseDuration: const Duration(seconds: 2),
+      type: ToastificationType.success,
     );
   }
 

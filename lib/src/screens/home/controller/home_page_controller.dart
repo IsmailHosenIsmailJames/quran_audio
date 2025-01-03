@@ -45,8 +45,8 @@ class HomePageController extends GetxController {
     for (var playListModel in selectedForPlaylist) {
       playList.add(playListModel.toJson());
     }
-    await Hive.box("info").put(
-      "playlist_${nameOfEditingPlaylist.value}",
+    await Hive.box("play_list").put(
+      nameOfEditingPlaylist.value,
       playList,
     );
     selectForPlaylistMode.value = false;
@@ -55,18 +55,16 @@ class HomePageController extends GetxController {
 
   void reloadPlayList() {
     allPlaylistInDB.clear();
-    final infoBox = Hive.box("info");
+    final infoBox = Hive.box("play_list");
     for (var key in infoBox.keys) {
-      if (key.toString().startsWith("playlist_")) {
-        List playList = infoBox.get(key);
-        List<PlayListModel> playListModels = [];
-        for (var playListJson in playList) {
-          playListModels.add(PlayListModel.fromJson(playListJson));
-        }
-        allPlaylistInDB.addAll({
-          key.toString().replaceFirst("playlist_", ""): playListModels,
-        });
+      List playList = infoBox.get(key);
+      List<PlayListModel> playListModels = [];
+      for (var playListJson in playList) {
+        playListModels.add(PlayListModel.fromJson(playListJson));
       }
+      allPlaylistInDB.addAll({
+        key.toString(): playListModels,
+      });
     }
   }
 }
