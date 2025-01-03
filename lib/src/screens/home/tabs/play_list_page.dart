@@ -81,7 +81,8 @@ class _PlayListPageState extends State<PlayListPage> {
                 ),
               )
             : ListView(
-                padding: const EdgeInsets.all(5),
+                padding: const EdgeInsets.only(
+                    left: 5, right: 5, top: 5, bottom: 100),
                 children: <Widget>[
                       Row(
                         children: [
