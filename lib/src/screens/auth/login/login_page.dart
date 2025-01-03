@@ -19,6 +19,9 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   final AuthController authController = Get.find<AuthController>();
 
+  bool isLoggingAsync = false;
+  bool isSigningAsync = false;
+
   @override
   Widget build(BuildContext context) {
     log(authController.loggedInUser.value?.email.toString() ?? "");
@@ -91,10 +94,18 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {
+                      setState(() {
+                        isLoggingAsync = true;
+                      });
                       String? error = await authController.login(
                         emailController.text,
                         passwordController.text,
                       );
+
+                      setState(() {
+                        isLoggingAsync = false;
+                      });
+
                       if (error != null) {
                         toastification.show(
                           context: context,
@@ -112,9 +123,12 @@ class _LoginPageState extends State<LoginPage> {
                           type: ToastificationType.success,
                           autoCloseDuration: const Duration(seconds: 3),
                         );
+                        Get.back();
                       }
                     },
-                    child: const Text("Login"),
+                    child: isLoggingAsync
+                        ? const CircularProgressIndicator()
+                        : const Text("Login"),
                   ),
                 ),
                 const Gap(5),
@@ -128,10 +142,18 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: () async {
+                      setState(() {
+                        isSigningAsync = true;
+                      });
                       String? error = await authController.register(
                         emailController.text,
                         passwordController.text,
                       );
+
+                      setState(() {
+                        isSigningAsync = false;
+                      });
+
                       if (error != null) {
                         toastification.show(
                           context: context,
@@ -149,9 +171,12 @@ class _LoginPageState extends State<LoginPage> {
                           type: ToastificationType.success,
                           autoCloseDuration: const Duration(seconds: 3),
                         );
+                        Get.back();
                       }
                     },
-                    child: const Text("Sign Up"),
+                    child: isSigningAsync
+                        ? const CircularProgressIndicator()
+                        : const Text("Sign Up"),
                   ),
                 ),
               ],

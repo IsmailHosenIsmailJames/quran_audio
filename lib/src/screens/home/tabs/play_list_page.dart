@@ -39,7 +39,7 @@ class _PlayListPageState extends State<PlayListPage> {
   Widget build(BuildContext context) {
     return Obx(
       () {
-        final allPlayList = homePageController.allPlaylistInDB;
+        final allPlayList = homePageController.allPlaylistInDB.value;
         return allPlayList.isEmpty
             ? Center(
                 child: Column(
@@ -100,7 +100,7 @@ class _PlayListPageState extends State<PlayListPage> {
                       ),
                     ] +
                     List<Widget>.generate(
-                      allPlayList.keys.length,
+                      allPlayList.length,
                       (index) {
                         return getPlayListCards(allPlayList, index);
                       },
@@ -110,10 +110,9 @@ class _PlayListPageState extends State<PlayListPage> {
     );
   }
 
-  Card getPlayListCards(
-      RxMap<String, List<PlayListModel>> allPlayList, int index) {
-    String playListKey = allPlayList.keys.elementAt(index);
-    final currentPlayList = allPlayList[playListKey];
+  Card getPlayListCards(List<AllPlayListModel> allPlayList, int index) {
+    String playListKey = allPlayList[index].name;
+    final currentPlayList = allPlayList[index].playList;
 
     return Card(
       elevation: 0,
@@ -154,7 +153,7 @@ class _PlayListPageState extends State<PlayListPage> {
                         children: [
                           const Text("Total: "),
                           Text(
-                            "${currentPlayList?.length ?? 0}",
+                            "${currentPlayList.length}",
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -174,7 +173,7 @@ class _PlayListPageState extends State<PlayListPage> {
                       PopupMenuItem(
                         onTap: () {
                           homePageController.selectedForPlaylist.value =
-                              currentPlayList!;
+                              currentPlayList;
                           homePageController.selectForPlaylistMode.value = true;
                           homePageController.nameOfEditingPlaylist.value =
                               playListKey;
@@ -198,7 +197,7 @@ class _PlayListPageState extends State<PlayListPage> {
                           TextEditingController nameController =
                               TextEditingController(text: playListKey);
                           getEditPlaylistPopUp(
-                              context, nameController, playListKey);
+                              context, nameController, playListKey, index);
                         },
                         child: const Row(
                           children: [
@@ -245,7 +244,7 @@ class _PlayListPageState extends State<PlayListPage> {
   }
 
   Future<dynamic> getEditPlaylistPopUp(BuildContext context,
-      TextEditingController nameController, String playlistKey) {
+      TextEditingController nameController, String playlistKey, int index) {
     return showDialog(
       context: context,
       builder: (context) {
@@ -310,7 +309,7 @@ class _PlayListPageState extends State<PlayListPage> {
                         } else {
                           try {
                             List<PlayListModel> allPlayList = homePageController
-                                .allPlaylistInDB.value[playlistKey]!;
+                                .allPlaylistInDB.value[index].playList;
                             await Hive.box("play_list").delete(playlistKey);
                             List<String> rawData = [];
                             for (var e in allPlayList) {
@@ -413,15 +412,13 @@ class _PlayListPageState extends State<PlayListPage> {
                                     homePageController
                                             .nameOfEditingPlaylist.value =
                                         homePageController
-                                            .allPlaylistInDB.value.keys
-                                            .elementAt(index);
+                                            .allPlaylistInDB.value[index].name;
                                     homePageController
                                             .selectedForPlaylist.value =
-                                        homePageController
-                                            .allPlaylistInDB.value.values
-                                            .elementAt(index);
+                                        homePageController.allPlaylistInDB
+                                            .value[index].playList;
                                     homePageController.selectedForPlaylist
-                                        .removeAt(index);
+                                        .removeAt(i);
                                     homePageController.saveToPlayList();
                                     homePageController.reloadPlayList();
                                   },
@@ -530,8 +527,8 @@ class _PlayListPageState extends State<PlayListPage> {
             audioController.currentPlayListIndex.value != index) {
           audioController.currentPlayListIndex.value = index;
           await ManageQuranAudio.audioPlayer.stop();
-          List<LockCachingAudioSource> playList = getPlayList(
-              homePageController.allPlaylistInDB.values.elementAt(index));
+          List<LockCachingAudioSource> playList =
+              getPlayList(homePageController.allPlaylistInDB[index].playList);
 
           await ManageQuranAudio.playProvidedPlayList(
             playList: playList,
@@ -539,8 +536,8 @@ class _PlayListPageState extends State<PlayListPage> {
         } else if (audioController.isPlaying.value == false &&
             audioController.currentPlayListIndex.value == index) {
           if (audioController.isReadyToControl.value == false) {
-            List<LockCachingAudioSource> playList = getPlayList(
-                homePageController.allPlaylistInDB.values.elementAt(index));
+            List<LockCachingAudioSource> playList =
+                getPlayList(homePageController.allPlaylistInDB[index].playList);
 
             await ManageQuranAudio.playProvidedPlayList(
               playList: playList,
@@ -551,8 +548,8 @@ class _PlayListPageState extends State<PlayListPage> {
         } else if (audioController.isPlaying.value == false &&
             audioController.currentPlayListIndex.value != index) {
           audioController.currentPlayListIndex.value = index;
-          List<LockCachingAudioSource> playList = getPlayList(
-              homePageController.allPlaylistInDB.values.elementAt(index));
+          List<LockCachingAudioSource> playList =
+              getPlayList(homePageController.allPlaylistInDB[index].playList);
           await ManageQuranAudio.playProvidedPlayList(
             playList: playList,
           );

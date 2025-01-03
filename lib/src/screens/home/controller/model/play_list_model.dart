@@ -34,3 +34,39 @@ class PlayListModel {
         "reciter": reciter.toMap(),
       };
 }
+
+class AllPlayListModel {
+  final List<PlayListModel> playList;
+  final String name;
+
+  AllPlayListModel({
+    required this.playList,
+    required this.name,
+  });
+
+  AllPlayListModel copyWith({
+    List<PlayListModel>? playList,
+    String? name,
+  }) =>
+      AllPlayListModel(
+        playList: playList ?? this.playList,
+        name: name ?? this.name,
+      );
+
+  factory AllPlayListModel.fromJson(String str) =>
+      AllPlayListModel.fromMap(json.decode(str));
+
+  String toJson() => json.encode(toMap());
+
+  factory AllPlayListModel.fromMap(Map<String, dynamic> json) =>
+      AllPlayListModel(
+        playList: List<PlayListModel>.from(
+            json["playList"].map((x) => PlayListModel.fromMap(x))),
+        name: json["name"],
+      );
+
+  Map<String, dynamic> toMap() => {
+        "playList": List<dynamic>.from(playList.map((x) => x.toMap())),
+        "name": name,
+      };
+}

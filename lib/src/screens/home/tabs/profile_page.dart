@@ -1,8 +1,14 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/screens/auth/auth_controller/auth_controller.dart';
 import 'package:al_quran_audio/src/screens/auth/login/login_page.dart';
+import 'package:al_quran_audio/src/screens/home/controller/home_page_controller.dart';
 import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -13,6 +19,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   AuthController authController = Get.find<AuthController>();
+  final AudioController audioController = Get.find<AudioController>();
+  final HomePageController homePageController = Get.find<HomePageController>();
 
   Future<User?> loggedInUser() async {
     if (authController.loggedInUser.value == null) {
@@ -66,8 +74,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () {
-                        Get.to(() => const LoginPage());
+                      onPressed: () async {
+                        await Get.to(() => const LoginPage());
+                        setState(() {});
                       },
                       iconAlignment: IconAlignment.end,
                       child: const Row(
@@ -97,6 +106,22 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget getUserUI(User user) {
-    return Text("Email: ${user.email}");
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Obx(
+        () {
+          final allPlaylist = homePageController.allPlaylistInDB.value;
+          List<String> rawStringOfAllPlaylist = [];
+          for (var element in allPlaylist) {
+            rawStringOfAllPlaylist.add(element.toJson());
+          }
+          String? cloudPlayListString = Hive.box('cloud_play_list')
+              .get("all_playlist", defaultValue: null);
+          bool isBackedUp =
+              cloudPlayListString == jsonEncode(rawStringOfAllPlaylist);
+          return Text(isBackedUp ? "Backed up" : "Not backed up");
+        },
+      ),
+    );
   }
 }

@@ -1,7 +1,34 @@
 {
-    "surahNumber": 11,
-    "reciter": {
-        "name": "name",
-        "id": "id"
-    }
+    "key1": [
+        {
+            "surahNumber": 11,
+            "reciter": {
+                "name": "name",
+                "id": "id"
+            }
+        },
+        {
+            "surahNumber": 11,
+            "reciter": {
+                "name": "name",
+                "id": "id"
+            }
+        }
+    ],
+    "key2": [
+        {
+            "surahNumber": 11,
+            "reciter": {
+                "name": "name",
+                "id": "id"
+            }
+        },
+        {
+            "surahNumber": 11,
+            "reciter": {
+                "name": "name",
+                "id": "id"
+            }
+        }
+    ]
 }

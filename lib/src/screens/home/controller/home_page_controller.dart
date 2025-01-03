@@ -6,8 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 class HomePageController extends GetxController {
   RxBool selectForPlaylistMode = false.obs;
   RxList<PlayListModel> selectedForPlaylist = <PlayListModel>[].obs;
-  RxMap<String, List<PlayListModel>> allPlaylistInDB =
-      <String, List<PlayListModel>>{}.obs;
+  RxList<AllPlayListModel> allPlaylistInDB = <AllPlayListModel>[].obs;
   RxString nameOfEditingPlaylist = "".obs;
 
   @override
@@ -62,9 +61,8 @@ class HomePageController extends GetxController {
       for (var playListJson in playList) {
         playListModels.add(PlayListModel.fromJson(playListJson));
       }
-      allPlaylistInDB.addAll({
-        key.toString(): playListModels,
-      });
+      allPlaylistInDB
+          .add(AllPlayListModel(playList: playListModels, name: key));
     }
   }
 }
