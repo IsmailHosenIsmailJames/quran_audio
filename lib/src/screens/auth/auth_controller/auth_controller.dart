@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:al_quran_audio/src/api/appwrite/config.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:get/get.dart';
@@ -8,6 +6,9 @@ import 'package:appwrite/models.dart';
 class AuthController extends GetxController {
   Rx<User?> loggedInUser = Rx<User?>(null);
 
+  String databaseID = "6778271900148ad93326";
+  String collectionID = "all_play_list";
+
   @override
   void onInit() {
     super.onInit();
@@ -15,7 +16,6 @@ class AuthController extends GetxController {
   }
 
   Future<User?> getUser() async {
-    log("Get User...", name: "Auth");
     try {
       final user = await AppWriteConfig.account.get();
       loggedInUser.value = user;
@@ -23,7 +23,6 @@ class AuthController extends GetxController {
     } on AppwriteException catch (e) {
       print(e.message);
     }
-    log("Got User...", name: "Auth");
     return null;
   }
 

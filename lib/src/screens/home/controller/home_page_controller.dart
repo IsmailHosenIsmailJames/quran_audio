@@ -1,5 +1,11 @@
+import 'dart:convert';
+
+import 'package:al_quran_audio/src/api/appwrite/config.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
+import 'package:al_quran_audio/src/functions/safe_email_to_id.dart';
+import 'package:al_quran_audio/src/screens/auth/auth_controller/auth_controller.dart';
 import 'package:al_quran_audio/src/screens/home/controller/model/play_list_model.dart';
+import 'package:appwrite/appwrite.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -63,6 +69,37 @@ class HomePageController extends GetxController {
       }
       allPlaylistInDB
           .add(AllPlayListModel(playList: playListModels, name: key));
+    }
+  }
+
+  Future<String?> backupPlayList() async {
+    try {
+      List<String> rawPlaylistData = [];
+      for (var playList in allPlaylistInDB) {
+        rawPlaylistData.add(playList.toJson());
+      }
+      String rawJson = jsonEncode(rawPlaylistData);
+      final db = Databases(AppWriteConfig.client);
+
+      try {
+        final AuthController authController = Get.find<AuthController>();
+        String id = encodeEmailForId(authController.loggedInUser.value!.email);
+
+        await db.createDocument(
+          databaseId: authController.databaseID,
+          collectionId: authController.collectionID,
+          documentId: id,
+          data: {
+            "all_playlist_data": rawJson,
+          },
+        );
+        await Hive.box("cloud_play_list").put("all_playlist", rawJson);
+      } on AppwriteException catch (e) {
+        return e.message;
+      }
+      return null;
+    } catch (e) {
+      return e.toString();
     }
   }
 }

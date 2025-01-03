@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
@@ -34,8 +32,6 @@ class _HomePageState extends State<HomePage> {
   final AuthController authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
-    log(authController.loggedInUser.value?.email.toString() ?? "",
-        name: "Auth");
     return Scaffold(
       appBar: AppBar(
         title: const Row(

@@ -27,6 +27,7 @@ dependencies:
   flutter_svg: ^2.0.16
   appwrite: ^13.1.1
   email_validator: ^3.0.0
+  crypto: ^3.0.6
 
 dev_dependencies:
   flutter_test:
