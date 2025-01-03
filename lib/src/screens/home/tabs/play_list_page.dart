@@ -173,22 +173,10 @@ class _PlayListPageState extends State<PlayListPage> {
                       PopupMenuItem(
                         onTap: () {
                           toastification.show(
-                              context: context,
-                              title: const Text("Under Development"));
-                        },
-                        child: const Row(
-                          children: [
-                            Icon(Icons.delete, color: Colors.red),
-                            Gap(7),
-                            Text("Delete Playlist"),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem(
-                        onTap: () {
-                          toastification.show(
-                              context: context,
-                              title: const Text("Under Development"));
+                            context: context,
+                            title: const Text("Under Development"),
+                            autoCloseDuration: const Duration(seconds: 2),
+                          );
                         },
                         child: const Row(
                           children: [
@@ -201,14 +189,40 @@ class _PlayListPageState extends State<PlayListPage> {
                       PopupMenuItem(
                         onTap: () {
                           toastification.show(
-                              context: context,
-                              title: const Text("Under Development"));
+                            context: context,
+                            title: const Text("Under Development"),
+                            autoCloseDuration: const Duration(seconds: 2),
+                          );
                         },
                         child: const Row(
                           children: [
                             Icon(Icons.edit, color: Colors.green),
                             Gap(7),
                             Text("Edit Name"),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        onTap: () async {
+                          try {
+                            Hive.box("info").delete("playlist_$playListKey");
+
+                            homePageController.reloadPlayList();
+
+                            toastification.show(
+                              context: context,
+                              title: const Text("Deleted"),
+                              autoCloseDuration: const Duration(seconds: 2),
+                            );
+                          } catch (e) {
+                            log(e.toString());
+                          }
+                        },
+                        child: const Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red),
+                            Gap(7),
+                            Text("Delete Playlist"),
                           ],
                         ),
                       ),
@@ -369,8 +383,6 @@ class _PlayListPageState extends State<PlayListPage> {
   }
 
   IconButton getPlayButton(int index) {
-    final x = homePageController.allPlaylistInDB.values.elementAt(index);
-    log(x[0].toJson());
     return IconButton(
       style: IconButton.styleFrom(
         backgroundColor: Colors.green.shade800,
