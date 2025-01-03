@@ -81,7 +81,7 @@ class ManageQuranAudio {
       ConcatenatingAudioSource(
         children: playList,
       ),
-      initialIndex: initialIndex ?? 0,
+      initialIndex: initialIndex,
       initialPosition: Duration.zero,
     );
     await audioPlayer.play();

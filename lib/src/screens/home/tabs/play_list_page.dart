@@ -1,4 +1,5 @@
-import 'package:al_quran_audio/main.dart';
+import 'dart:developer';
+
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/surah_ayah_count.dart';
@@ -184,14 +185,14 @@ class _PlayListPageState extends State<PlayListPage> {
       curve: Curves.easeInOut,
       padding: const EdgeInsets.all(10.0),
       height: expandedList.contains(index) ? 300 : 0,
-      child: Scrollbar(
-        controller: scrollController,
-        interactive: true,
-        radius: const Radius.circular(10),
-        thumbVisibility: true,
-        child: Column(
-          children: [
-            Expanded(
+      child: Column(
+        children: [
+          Expanded(
+            child: Scrollbar(
+              controller: scrollController,
+              interactive: true,
+              radius: const Radius.circular(10),
+              thumbVisibility: true,
               child: ListView.builder(
                 controller: scrollController,
                 itemCount: currentPlayList?.length ?? 0,
@@ -221,94 +222,89 @@ class _PlayListPageState extends State<PlayListPage> {
                         ),
                       ],
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        getPlayButtonOnPlaylistList(
-                            playListModel, i, index, currentPlayList),
-                      ],
-                    ),
+                    trailing: getPlayButtonOnPlaylistList(
+                        playListModel, i, index, currentPlayList),
                   );
                 },
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  onPressed: () {
-                    toastification.show(
-                        context: context,
-                        title: const Text("Under Development"));
-                  },
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                ),
-                IconButton(
-                  onPressed: () {
-                    toastification.show(
-                        context: context,
-                        title: const Text("Under Development"));
-                  },
-                  icon: const Icon(Icons.add, color: Colors.green),
-                ),
-                IconButton(
-                  onPressed: () {
-                    toastification.show(
-                        context: context,
-                        title: const Text("Under Development"));
-                  },
-                  icon: const Icon(Icons.edit, color: Colors.green),
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                onPressed: () {
+                  toastification.show(
+                      context: context, title: const Text("Under Development"));
+                },
+                icon: const Icon(Icons.delete, color: Colors.red),
+              ),
+              IconButton(
+                onPressed: () {
+                  toastification.show(
+                      context: context, title: const Text("Under Development"));
+                },
+                icon: const Icon(Icons.add, color: Colors.green),
+              ),
+              IconButton(
+                onPressed: () {
+                  toastification.show(
+                      context: context, title: const Text("Under Development"));
+                },
+                icon: const Icon(Icons.edit, color: Colors.green),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  IconButton getPlayButtonOnPlaylistList(PlayListModel playListModel, int i,
+  Widget getPlayButtonOnPlaylistList(PlayListModel playListModel, int i,
       int index, List<PlayListModel> currentPlayList) {
-    return IconButton(
-      icon: (audioController.currentReciterModel.value.id ==
-                  playListModel.reciter.id &&
-              index == audioController.currentPlayListIndex.value &&
-              audioController.currentPlayingSurah.value == i &&
-              audioController.isPlaying.value)
-          ? const Icon(
-              Icons.pause_rounded,
-            )
-          : const Icon(Icons.play_arrow_rounded),
-      tooltip: "Play",
-      style: IconButton.styleFrom(
-        side: const BorderSide(),
-      ),
-      onPressed: () async {
-        if (audioController.currentReciterModel.value.id ==
-                playListModel.reciter.id &&
-            index == audioController.currentPlayListIndex.value &&
-            audioController.currentPlayingSurah.value == i &&
-            audioController.isPlaying.value) {
-          await ManageQuranAudio.audioPlayer.pause();
-          return;
-        } else if (audioController.currentReciterModel.value.id ==
-                playListModel.reciter.id &&
-            index == audioController.currentPlayListIndex.value &&
-            audioController.currentPlayingSurah.value == i) {
-          ManageQuranAudio.audioPlayer.play();
-          return;
-        }
-        audioController.currentPlayListIndex.value = index;
-        List<LockCachingAudioSource> playList = getPlayList(currentPlayList);
-        await ManageQuranAudio.playProvidedPlayList(
-          playList: playList,
-          initialIndex: i,
-        );
-      },
-    );
+    return Obx(() => IconButton(
+          icon: (audioController.currentReciterModel.value.id ==
+                      playListModel.reciter.id &&
+                  index == audioController.currentPlayListIndex.value &&
+                  audioController.currentPlayingSurah.value == i &&
+                  audioController.isPlaying.value)
+              ? const Icon(
+                  Icons.pause_rounded,
+                )
+              : const Icon(Icons.play_arrow_rounded),
+          tooltip: "Play",
+          style: IconButton.styleFrom(
+            side: const BorderSide(),
+          ),
+          onPressed: () async {
+            if (audioController.currentReciterModel.value.id ==
+                    playListModel.reciter.id &&
+                index == audioController.currentPlayListIndex.value &&
+                audioController.currentPlayingSurah.value == i &&
+                audioController.isPlaying.value) {
+              await ManageQuranAudio.audioPlayer.pause();
+              return;
+            } else if (audioController.currentReciterModel.value.id ==
+                    playListModel.reciter.id &&
+                index == audioController.currentPlayListIndex.value &&
+                audioController.currentPlayingSurah.value == i) {
+              ManageQuranAudio.audioPlayer.play();
+              return;
+            }
+            audioController.currentPlayListIndex.value = index;
+            List<LockCachingAudioSource> playList =
+                getPlayList(currentPlayList);
+            await ManageQuranAudio.playProvidedPlayList(
+              playList: playList,
+              initialIndex: i,
+            );
+          },
+        ));
   }
 
   IconButton getPlayButton(int index) {
+    final x = homePageController.allPlaylistInDB.values.elementAt(index);
+    log(x[0].toJson());
     return IconButton(
       style: IconButton.styleFrom(
         backgroundColor: Colors.green.shade800,
@@ -341,7 +337,6 @@ class _PlayListPageState extends State<PlayListPage> {
 
           await ManageQuranAudio.playProvidedPlayList(
             playList: playList,
-            initialIndex: 0,
           );
         } else if (audioController.isPlaying.value == false &&
             audioController.currentPlayListIndex.value == index) {
@@ -351,7 +346,6 @@ class _PlayListPageState extends State<PlayListPage> {
 
             await ManageQuranAudio.playProvidedPlayList(
               playList: playList,
-              initialIndex: 0,
             );
           } else {
             await ManageQuranAudio.audioPlayer.play();
@@ -363,7 +357,6 @@ class _PlayListPageState extends State<PlayListPage> {
               homePageController.allPlaylistInDB.values.elementAt(index));
           await ManageQuranAudio.playProvidedPlayList(
             playList: playList,
-            initialIndex: 0,
           );
         }
       },
@@ -378,7 +371,7 @@ class _PlayListPageState extends State<PlayListPage> {
           Uri.parse(
             ManageQuranAudio.makeAudioUrl(
               playListModel.reciter,
-              ManageQuranAudio.surahIDFromNumber(playListModel.surahNumber),
+              ManageQuranAudio.surahIDFromNumber(playListModel.surahNumber + 1),
             ),
           ),
           tag: MediaItem(
@@ -426,7 +419,7 @@ class _PlayListPageState extends State<PlayListPage> {
                     bottom: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
+                    color: Colors.grey.shade300.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(7),
                   ),
                   child: TextFormField(
