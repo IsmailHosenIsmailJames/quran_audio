@@ -172,6 +172,12 @@ class _PlayListPageState extends State<PlayListPage> {
                     itemBuilder: (context) => [
                       PopupMenuItem(
                         onTap: () {
+                          homePageController.selectedForPlaylist.value =
+                              currentPlayList!;
+                          homePageController.selectForPlaylistMode.value = true;
+                          homePageController.nameOfEditingPlaylist.value =
+                              playListKey;
+                          widget.tabController.jumpToTab(0);
                           toastification.show(
                             context: context,
                             title: const Text("Under Development"),
