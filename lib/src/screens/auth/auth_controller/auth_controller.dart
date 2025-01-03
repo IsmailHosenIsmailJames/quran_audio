@@ -1,7 +1,14 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:al_quran_audio/src/api/appwrite/config.dart';
+import 'package:al_quran_audio/src/functions/safe_email_to_id.dart';
+import 'package:al_quran_audio/src/screens/home/controller/home_page_controller.dart';
+import 'package:al_quran_audio/src/screens/home/controller/model/play_list_model.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:get/get.dart';
 import 'package:appwrite/models.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class AuthController extends GetxController {
   Rx<User?> loggedInUser = Rx<User?>(null);
@@ -35,6 +42,43 @@ class AuthController extends GetxController {
     }
     final user = await AppWriteConfig.account.get();
     loggedInUser.value = user;
+    try {
+      String id = encodeEmailForId(user.email);
+      final AuthController authController = Get.find<AuthController>();
+      final response = Databases(AppWriteConfig.client).getDocument(
+        databaseId: authController.databaseID,
+        collectionId: authController.collectionID,
+        documentId: id,
+      );
+      return response.then((value) async {
+        if (value.data["all_playlist_data"] != null) {
+          await Hive.box("cloud_play_list").put(
+            "all_playlist",
+            value.data["all_playlist_data"],
+          );
+          List<String> rawPlayList =
+              List<String>.from(jsonDecode(value.data["all_playlist_data"]));
+          for (var rawPlayList in rawPlayList) {
+            final decodeSinglePlayList = AllPlayListModel.fromJson(rawPlayList);
+            List<String> playList = [];
+            for (var playListModel in decodeSinglePlayList.playList) {
+              playList.add(playListModel.toJson());
+            }
+            await Hive.box("play_list").put(
+              decodeSinglePlayList.name,
+              playList,
+            );
+          }
+        }
+
+        HomePageController homePageController = Get.find<HomePageController>();
+        homePageController.reloadPlayList();
+
+        return null;
+      });
+    } on AppwriteException catch (e) {
+      log(e.message.toString());
+    }
     return null;
   }
 

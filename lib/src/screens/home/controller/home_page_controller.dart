@@ -84,16 +84,27 @@ class HomePageController extends GetxController {
       try {
         final AuthController authController = Get.find<AuthController>();
         String id = encodeEmailForId(authController.loggedInUser.value!.email);
-
-        await db.createDocument(
-          databaseId: authController.databaseID,
-          collectionId: authController.collectionID,
-          documentId: id,
-          data: {
-            "all_playlist_data": rawJson,
-          },
-        );
-        await Hive.box("cloud_play_list").put("all_playlist", rawJson);
+        if (Hive.box('cloud_play_list').keys.isNotEmpty) {
+          await db.updateDocument(
+            databaseId: authController.databaseID,
+            collectionId: authController.collectionID,
+            documentId: id,
+            data: {
+              "all_playlist_data": rawJson,
+            },
+          );
+          await Hive.box("cloud_play_list").put("all_playlist", rawJson);
+        } else {
+          await db.createDocument(
+            databaseId: authController.databaseID,
+            collectionId: authController.collectionID,
+            documentId: id,
+            data: {
+              "all_playlist_data": rawJson,
+            },
+          );
+          await Hive.box("cloud_play_list").put("all_playlist", rawJson);
+        }
       } on AppwriteException catch (e) {
         return e.message;
       }
