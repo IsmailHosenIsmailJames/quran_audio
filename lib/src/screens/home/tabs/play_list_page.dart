@@ -247,84 +247,91 @@ class _PlayListPageState extends State<PlayListPage> {
       padding: const EdgeInsets.all(10.0),
       height: expandedList.contains(index) ? 300 : 0,
       child: (expandedList.contains(index))
-          ? Scrollbar(
-              controller: scrollController,
-              interactive: true,
-              radius: const Radius.circular(10),
-              thumbVisibility: true,
-              child: ListView.builder(
-                controller: scrollController,
-                itemCount: currentPlayList?.length ?? 0,
-                itemBuilder: (context, i) {
-                  final playListModel = currentPlayList![i];
-                  return Padding(
-                    padding: const EdgeInsets.only(
-                        left: 8.0, right: 8, top: 4, bottom: 4),
-                    child: Row(
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+          ? (currentPlayList?.length ?? 0) > 0
+              ? Scrollbar(
+                  controller: scrollController,
+                  interactive: true,
+                  radius: const Radius.circular(10),
+                  thumbVisibility: true,
+                  child: ListView.builder(
+                    controller: scrollController,
+                    itemCount: currentPlayList?.length ?? 0,
+                    itemBuilder: (context, i) {
+                      final playListModel = currentPlayList![i];
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                            left: 8.0, right: 8, top: 4, bottom: 4),
+                        child: Row(
                           children: [
-                            Text(
-                              playListModel.reciter.name,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              surahInfo[playListModel.surahNumber]
-                                      ['name_simple'] ??
-                                  "",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 12),
-                            ),
-                            Text(
-                              "Total Ayah: ${surahAyahCount[playListModel.surahNumber]}",
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        getPlayButtonOnPlaylistList(
-                            playListModel, i, index, currentPlayList),
-                        PopupMenuButton(
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              onTap: () {
-                                homePageController.nameOfEditingPlaylist.value =
-                                    homePageController
-                                        .allPlaylistInDB.value.keys
-                                        .elementAt(index);
-                                homePageController.selectedForPlaylist.value =
-                                    homePageController
-                                        .allPlaylistInDB.value.values
-                                        .elementAt(index);
-                                homePageController.selectedForPlaylist
-                                    .removeAt(index);
-                                homePageController.saveToPlayList();
-                                homePageController.reloadPlayList();
-                              },
-                              child: const Row(
-                                children: [
-                                  Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  playListModel.reciter.name,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  Gap(7),
-                                  Text("Delete"),
-                                ],
-                              ),
+                                ),
+                                Text(
+                                  surahInfo[playListModel.surahNumber]
+                                          ['name_simple'] ??
+                                      "",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12),
+                                ),
+                                Text(
+                                  "Total Ayah: ${surahAyahCount[playListModel.surahNumber]}",
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            getPlayButtonOnPlaylistList(
+                                playListModel, i, index, currentPlayList),
+                            PopupMenuButton(
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  onTap: () {
+                                    homePageController
+                                            .nameOfEditingPlaylist.value =
+                                        homePageController
+                                            .allPlaylistInDB.value.keys
+                                            .elementAt(index);
+                                    homePageController
+                                            .selectedForPlaylist.value =
+                                        homePageController
+                                            .allPlaylistInDB.value.values
+                                            .elementAt(index);
+                                    homePageController.selectedForPlaylist
+                                        .removeAt(index);
+                                    homePageController.saveToPlayList();
+                                    homePageController.reloadPlayList();
+                                  },
+                                  child: const Row(
+                                    children: [
+                                      Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      ),
+                                      Gap(7),
+                                      Text("Delete"),
+                                    ],
+                                  ),
+                                )
+                              ],
                             )
                           ],
-                        )
-                      ],
-                    ),
-                  );
-                },
-              ),
-            )
+                        ),
+                      );
+                    },
+                  ),
+                )
+              : const Center(
+                  child: Text("Empty PlayList"),
+                )
           : const SizedBox(),
     );
   }
