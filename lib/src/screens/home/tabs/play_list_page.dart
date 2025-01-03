@@ -293,8 +293,6 @@ class _PlayListPageState extends State<PlayListPage> {
                           itemBuilder: (context) => [
                             PopupMenuItem(
                               onTap: () {
-                                List<PlayListModel> playList = currentPlayList;
-                                playList.removeAt(i);
                                 homePageController.nameOfEditingPlaylist.value =
                                     homePageController
                                         .allPlaylistInDB.value.keys
