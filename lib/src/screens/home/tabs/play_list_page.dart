@@ -188,11 +188,10 @@ class _PlayListPageState extends State<PlayListPage> {
                       ),
                       PopupMenuItem(
                         onTap: () {
-                          toastification.show(
-                            context: context,
-                            title: const Text("Under Development"),
-                            autoCloseDuration: const Duration(seconds: 2),
-                          );
+                          TextEditingController nameController =
+                              TextEditingController(text: playListKey);
+                          getEditPlaylistPopUp(
+                              context, nameController, playListKey);
                         },
                         child: const Row(
                           children: [
@@ -235,6 +234,117 @@ class _PlayListPageState extends State<PlayListPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<dynamic> getEditPlaylistPopUp(BuildContext context,
+      TextEditingController nameController, String playlistKey) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          insetPadding: const EdgeInsets.all(10),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Name of the PlayList",
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                ),
+                const Gap(10),
+                Container(
+                  padding: const EdgeInsets.only(
+                    left: 5,
+                    right: 5,
+                    top: 2,
+                    bottom: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                  child: TextFormField(
+                    controller: nameController,
+                    decoration: const InputDecoration(
+                      hintText: "Enter the name of the PlayList",
+                      border: InputBorder.none,
+                    ),
+                    autofocus: true,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please enter the name of the PlayList";
+                      } else {
+                        return null;
+                      }
+                    },
+                  ),
+                ),
+                const Gap(10),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      if (nameController.text.isNotEmpty) {
+                        if (Hive.box('info').containsKey(
+                            "playlist_${nameController.text.trim()}")) {
+                          toastification.show(
+                            context: context,
+                            title: const Text(
+                                "PlayList already exists or name is not allowed"),
+                            type: ToastificationType.error,
+                            autoCloseDuration: const Duration(seconds: 2),
+                          );
+                        } else {
+                          try {
+                            List<PlayListModel> allPlayList = homePageController
+                                .allPlaylistInDB.value[playlistKey]!;
+                            await Hive.box("info")
+                                .delete("playlist_$playlistKey");
+                            List<String> rawData = [];
+                            for (var e in allPlayList) {
+                              rawData.add(e.toJson());
+                            }
+                            await Hive.box('info').put(
+                                "playlist_${nameController.text.trim()}",
+                                rawData);
+                            homePageController.reloadPlayList();
+                            Navigator.pop(context);
+                            toastification.show(
+                              context: context,
+                              title: const Text("Saved changes"),
+                              autoCloseDuration: const Duration(seconds: 2),
+                            );
+                          } catch (e) {
+                            log(e.toString());
+                          }
+                        }
+                      } else {
+                        toastification.show(
+                          context: context,
+                          title:
+                              const Text("Empty PlayList name is not allowed"),
+                          type: ToastificationType.error,
+                          autoCloseDuration: const Duration(seconds: 2),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.done),
+                    label: const Text(
+                      "Save Changes",
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -538,11 +648,6 @@ class _PlayListPageState extends State<PlayListPage> {
                             autoCloseDuration: const Duration(seconds: 2),
                           );
                         } else {
-                          // Name is valid
-                          Hive.box('info').put(
-                            playListController.text.trim(),
-                            [],
-                          );
                           Navigator.pop(context);
                           homePageController.selectForPlaylistMode.value = true;
                           homePageController.nameOfEditingPlaylist.value =
