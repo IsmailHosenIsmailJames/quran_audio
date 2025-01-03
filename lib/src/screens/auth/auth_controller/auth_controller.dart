@@ -1,14 +1,30 @@
+import 'dart:developer';
+
 import 'package:al_quran_audio/src/api/appwrite/config.dart';
-import 'package:al_quran_audio/src/api/appwrite/functions.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:get/get.dart';
 import 'package:appwrite/models.dart';
 
 class AuthController extends GetxController {
   Rx<User?> loggedInUser = Rx<User?>(null);
+
   @override
   void onInit() {
     super.onInit();
+    getUser();
+  }
+
+  Future<User?> getUser() async {
+    log("Get User...", name: "Auth");
+    try {
+      final user = await AppWriteConfig.account.get();
+      loggedInUser.value = user;
+      return user;
+    } on AppwriteException catch (e) {
+      print(e.message);
+    }
+    log("Got User...", name: "Auth");
+    return null;
   }
 
   Future<String?> login(String email, String password) async {
