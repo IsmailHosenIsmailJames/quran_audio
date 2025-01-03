@@ -8,6 +8,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 class AudioController extends GetxController {
   static final box = Hive.box("info");
   RxInt currentReciterIndex = (0).obs;
+  RxInt currentPlayListIndex = (0).obs;
   RxInt setupSelectedReciterIndex = (0).obs;
 
   RxInt currentPlayingSurah = (0).obs;

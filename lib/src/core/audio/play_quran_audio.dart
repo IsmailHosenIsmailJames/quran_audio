@@ -70,6 +70,23 @@ class ManageQuranAudio {
     audioController.isStreamRegistered.value = true;
   }
 
+  static Future<void> playProvidedPlayList(
+      {required List<LockCachingAudioSource> playList,
+      int? initialIndex}) async {
+    if (audioController.isStreamRegistered.value == false) {
+      await startListening();
+    }
+    await audioPlayer.stop();
+    await audioPlayer.setAudioSource(
+      ConcatenatingAudioSource(
+        children: playList,
+      ),
+      initialIndex: initialIndex ?? 0,
+      initialPosition: Duration.zero,
+    );
+    await audioPlayer.play();
+  }
+
   static Future<void> playMultipleSurahAsPlayList(
       {required int surahNumber, ReciterInfoModel? reciter}) async {
     if (audioController.isStreamRegistered.value == false) {

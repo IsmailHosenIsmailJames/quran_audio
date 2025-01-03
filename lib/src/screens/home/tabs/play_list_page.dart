@@ -1,10 +1,17 @@
+import 'package:al_quran_audio/main.dart';
+import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
+import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
+import 'package:al_quran_audio/src/core/surah_ayah_count.dart';
 import 'package:al_quran_audio/src/screens/home/controller/home_page_controller.dart';
 import 'package:al_quran_audio/src/screens/home/controller/model/play_list_model.dart';
+import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
 import 'package:al_quran_audio/src/theme/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:toastification/toastification.dart';
 
@@ -18,14 +25,12 @@ class PlayListPage extends StatefulWidget {
 
 class _PlayListPageState extends State<PlayListPage> {
   final HomePageController homePageController = Get.put(HomePageController());
-  final HomePageController audioController = Get.put(HomePageController());
+  final AudioController audioController = Get.put(AudioController());
   final themeController = Get.find<AppThemeData>();
   final infoBox = Hive.box("info");
-  late Map favorite;
+  List<int> expandedList = [];
   @override
   void initState() {
-    favorite = Map.from(infoBox.get("favorite", defaultValue: {}));
-
     super.initState();
   }
 
@@ -113,53 +118,280 @@ class _PlayListPageState extends State<PlayListPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(7),
       ),
-      child: Row(
-        children: [
-          IconButton(
-            style: IconButton.styleFrom(
-              backgroundColor: Colors.green.shade800,
-              foregroundColor: Colors.white,
-            ),
-            tooltip: "Play or Pause",
-            icon: const Icon(Icons.play_arrow),
-            onPressed: () {
-              // Play the PlayList
-            },
-          ),
-          const Gap(5),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                playListKey,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Row(
-                children: [
-                  const Text("Total: "),
-                  Text(
-                    "${currentPlayList?.length ?? 0}",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+      child: Padding(
+        padding: const EdgeInsets.all(2.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                SizedBox(height: 40, width: 40, child: getPlayButton(index)),
+                const Gap(5),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      playListKey,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                    Row(
+                      children: [
+                        const Text("Total: "),
+                        Text(
+                          "${currentPlayList?.length ?? 0}",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: Icon(
+                    expandedList.contains(index)
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
                   ),
-                ],
-              ),
-            ],
-          ),
-        ],
+                  onPressed: () {
+                    setState(() {
+                      if (expandedList.contains(index)) {
+                        expandedList.remove(index);
+                      } else {
+                        expandedList.add(index);
+                      }
+                    });
+                  },
+                ),
+              ],
+            ),
+            animatedExpandedList(index, currentPlayList),
+          ],
+        ),
       ),
     );
   }
 
-  createANewPlayList() async {
-    // homePageController.selectForPlaylistMode.value = true;
-    // widget.tabController.jumpToTab(0);
+  AnimatedContainer animatedExpandedList(
+      int index, List<PlayListModel>? currentPlayList) {
+    ScrollController scrollController = ScrollController();
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      padding: const EdgeInsets.all(10.0),
+      height: expandedList.contains(index) ? 300 : 0,
+      child: Scrollbar(
+        controller: scrollController,
+        interactive: true,
+        radius: const Radius.circular(10),
+        thumbVisibility: true,
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: currentPlayList?.length ?? 0,
+                itemBuilder: (context, i) {
+                  final playListModel = currentPlayList![i];
+                  return ListTile(
+                    title: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          playListModel.reciter.name,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          surahInfo[playListModel.surahNumber]['name_simple'] ??
+                              "",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 12),
+                        ),
+                        Text(
+                          "Total Ayah: ${surahAyahCount[playListModel.surahNumber]}",
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        getPlayButtonOnPlaylistList(
+                            playListModel, i, index, currentPlayList),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    toastification.show(
+                        context: context,
+                        title: const Text("Under Development"));
+                  },
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                ),
+                IconButton(
+                  onPressed: () {
+                    toastification.show(
+                        context: context,
+                        title: const Text("Under Development"));
+                  },
+                  icon: const Icon(Icons.add, color: Colors.green),
+                ),
+                IconButton(
+                  onPressed: () {
+                    toastification.show(
+                        context: context,
+                        title: const Text("Under Development"));
+                  },
+                  icon: const Icon(Icons.edit, color: Colors.green),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
+  IconButton getPlayButtonOnPlaylistList(PlayListModel playListModel, int i,
+      int index, List<PlayListModel> currentPlayList) {
+    return IconButton(
+      icon: (audioController.currentReciterModel.value.id ==
+                  playListModel.reciter.id &&
+              index == audioController.currentPlayListIndex.value &&
+              audioController.currentPlayingSurah.value == i &&
+              audioController.isPlaying.value)
+          ? const Icon(
+              Icons.pause_rounded,
+            )
+          : const Icon(Icons.play_arrow_rounded),
+      tooltip: "Play",
+      style: IconButton.styleFrom(
+        side: const BorderSide(),
+      ),
+      onPressed: () async {
+        if (audioController.currentReciterModel.value.id ==
+                playListModel.reciter.id &&
+            index == audioController.currentPlayListIndex.value &&
+            audioController.currentPlayingSurah.value == i &&
+            audioController.isPlaying.value) {
+          await ManageQuranAudio.audioPlayer.pause();
+          return;
+        } else if (audioController.currentReciterModel.value.id ==
+                playListModel.reciter.id &&
+            index == audioController.currentPlayListIndex.value &&
+            audioController.currentPlayingSurah.value == i) {
+          ManageQuranAudio.audioPlayer.play();
+          return;
+        }
+        audioController.currentPlayListIndex.value = index;
+        List<LockCachingAudioSource> playList = getPlayList(currentPlayList);
+        await ManageQuranAudio.playProvidedPlayList(
+          playList: playList,
+          initialIndex: i,
+        );
+      },
+    );
+  }
+
+  IconButton getPlayButton(int index) {
+    return IconButton(
+      style: IconButton.styleFrom(
+        backgroundColor: Colors.green.shade800,
+        foregroundColor: Colors.white,
+      ),
+      tooltip: "Play or Pause",
+      icon: (audioController.currentPlayListIndex.value == index &&
+              audioController.isPlaying.value == true)
+          ? const Icon(Icons.pause_rounded)
+          : (audioController.currentPlayListIndex.value == index &&
+                  audioController.isLoading.value)
+              ? CircularProgressIndicator(
+                  color: Colors.white,
+                  backgroundColor: Colors.white.withValues(alpha: 0.2),
+                  strokeWidth: 2,
+                )
+              : const Icon(Icons.play_arrow_rounded),
+      onPressed: () async {
+        // Play the PlayList
+        if (audioController.isPlaying.value == true &&
+            audioController.currentPlayListIndex.value == index) {
+          await ManageQuranAudio.audioPlayer.pause();
+        } else if ((audioController.isPlaying.value == true ||
+                audioController.isLoading.value == true) &&
+            audioController.currentPlayListIndex.value != index) {
+          audioController.currentPlayListIndex.value = index;
+          await ManageQuranAudio.audioPlayer.stop();
+          List<LockCachingAudioSource> playList = getPlayList(
+              homePageController.allPlaylistInDB.values.elementAt(index));
+
+          await ManageQuranAudio.playProvidedPlayList(
+            playList: playList,
+            initialIndex: 0,
+          );
+        } else if (audioController.isPlaying.value == false &&
+            audioController.currentPlayListIndex.value == index) {
+          if (audioController.isReadyToControl.value == false) {
+            List<LockCachingAudioSource> playList = getPlayList(
+                homePageController.allPlaylistInDB.values.elementAt(index));
+
+            await ManageQuranAudio.playProvidedPlayList(
+              playList: playList,
+              initialIndex: 0,
+            );
+          } else {
+            await ManageQuranAudio.audioPlayer.play();
+          }
+        } else if (audioController.isPlaying.value == false &&
+            audioController.currentPlayListIndex.value != index) {
+          audioController.currentPlayListIndex.value = index;
+          List<LockCachingAudioSource> playList = getPlayList(
+              homePageController.allPlaylistInDB.values.elementAt(index));
+          await ManageQuranAudio.playProvidedPlayList(
+            playList: playList,
+            initialIndex: 0,
+          );
+        }
+      },
+    );
+  }
+
+  List<LockCachingAudioSource> getPlayList(List<PlayListModel> playList) {
+    List<LockCachingAudioSource> playListAudioSource = [];
+    for (var playListModel in playList) {
+      playListAudioSource.add(
+        LockCachingAudioSource(
+          Uri.parse(
+            ManageQuranAudio.makeAudioUrl(
+              playListModel.reciter,
+              ManageQuranAudio.surahIDFromNumber(playListModel.surahNumber),
+            ),
+          ),
+          tag: MediaItem(
+            id: "${playListModel.reciter.id}${playListModel.surahNumber}",
+            title: playListModel.reciter.name,
+          ),
+        ),
+      );
+    }
+    return playListAudioSource;
+  }
+
+  createANewPlayList() async {
     showDialog(
       context: context,
       builder: (context) {
