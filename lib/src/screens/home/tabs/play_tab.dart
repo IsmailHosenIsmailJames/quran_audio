@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/screens/home/controller/model/play_list_model.dart';
@@ -172,7 +170,6 @@ class _PlayTabState extends State<PlayTab> {
           child: Scrollbar(
             controller: scrollController,
             interactive: true,
-            thumbVisibility: true,
             child: ListView.builder(
               controller: scrollController,
               padding: const EdgeInsets.only(
@@ -286,7 +283,7 @@ class _PlayTabState extends State<PlayTab> {
   }
 
   PopupMenuButton<String> getPopUpButton(AudioController audioController,
-      int index, BuildContext context, PlayListModel currentPlaylist) {
+      int index, BuildContext context, PlayListModel currentPlayModel) {
     final box = Hive.box('play_list');
     List<PlayListModel> favoriteListModel = [];
     List<String> favoriteList =
@@ -296,8 +293,8 @@ class _PlayTabState extends State<PlayTab> {
     for (String favorite in favoriteList) {
       final model = PlayListModel.fromJson(favorite);
       favoriteListModel.add(model);
-      if (model.reciter.id == currentPlaylist.reciter.id &&
-          model.surahNumber == currentPlaylist.surahNumber) {
+      if (model.reciter.id == currentPlayModel.reciter.id &&
+          model.surahNumber == currentPlayModel.surahNumber) {
         isExitsInFavorite = true;
       }
     }
@@ -310,36 +307,96 @@ class _PlayTabState extends State<PlayTab> {
             ManageQuranAudio.surahIDFromNumber(index + 1));
 
         if (value == "Favorite") {
-          log(isExitsInFavorite.toString());
-
-          homePageController.nameOfEditingPlaylist.value = "Favorite";
-          homePageController.selectedForPlaylist.value = favoriteListModel;
-          if (isExitsInFavorite) {
-            homePageController.selectedForPlaylist.removeWhere((element) =>
-                element.reciter.id == currentPlaylist.reciter.id &&
-                element.surahNumber == currentPlaylist.surahNumber);
-          } else {
-            homePageController.selectedForPlaylist.add(currentPlaylist);
-          }
-          await homePageController.saveToPlayList();
-          homePageController.reloadPlayList();
-          setState(() {});
-
-          // Add to favorite
-          toastification.show(
-            context: context,
-            title: Text(
-                "${isExitsInFavorite ? "Removed form" : "Added to"} Favorite"),
-            autoCloseDuration: const Duration(seconds: 2),
-            type: ToastificationType.success,
-          );
+          await addOrRemoveFavorite(
+              favoriteListModel, isExitsInFavorite, currentPlayModel, context);
         } else if (value == "Playlist") {
-          // Add to playlist
-          toastification.show(
+          List<String> playListName =
+              List<String>.from(Hive.box("play_list").keys.toList());
+          await showDialog(
             context: context,
-            title: const Text("Added to Playlist"),
-            autoCloseDuration: const Duration(seconds: 2),
+            builder: (context) {
+              return Dialog(
+                insetPadding: const EdgeInsets.all(10),
+                child: SizedBox(
+                  height: 300,
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      const Gap(10),
+                      const Text(
+                        "Add to",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const Divider(),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: playListName.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              minTileHeight: 50,
+                              title: Text(playListName[index]),
+                              onTap: () async {
+                                homePageController.nameOfEditingPlaylist.value =
+                                    playListName[index];
+                                List<PlayListModel> playModelsList =
+                                    getPlayList(playListName[index]);
+                                bool isAlreadyExits = false;
+                                for (var element in playModelsList) {
+                                  if (element.reciter.id ==
+                                          currentPlayModel.reciter.id &&
+                                      element.surahNumber ==
+                                          currentPlayModel.surahNumber) {
+                                    isAlreadyExits = true;
+                                    break;
+                                  }
+                                }
+                                if (isAlreadyExits) {
+                                  toastification.show(
+                                    context: context,
+                                    title: const Text("Already Exits"),
+                                    type: ToastificationType.info,
+                                    autoCloseDuration:
+                                        const Duration(seconds: 2),
+                                  );
+                                } else {
+                                  playModelsList.add(currentPlayModel);
+                                  homePageController.selectedForPlaylist.value =
+                                      playModelsList;
+                                  homePageController.saveToPlayList();
+                                  homePageController.reloadPlayList();
+                                  Navigator.pop(context);
+                                  toastification.show(
+                                    context: context,
+                                    title: Text(
+                                      "Successfully added to ${playListName[index]}",
+                                    ),
+                                    autoCloseDuration:
+                                        const Duration(seconds: 3),
+                                    type: ToastificationType.success,
+                                  );
+                                }
+                              },
+                              trailing: const Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 15,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           );
+          // Add to playlist
+          // toastification.show(
+          //   context: context,
+          //   title: const Text("Added to Playlist"),
+          //   autoCloseDuration: const Duration(seconds: 2),
+          // );
         } else if (value == "Download") {
           // Download
           launchUrl(
@@ -420,5 +477,46 @@ class _PlayTabState extends State<PlayTab> {
         ),
       ),
     );
+  }
+
+  Future<void> addOrRemoveFavorite(
+      List<PlayListModel> favoriteListModel,
+      bool isExitsInFavorite,
+      PlayListModel currentPlayModel,
+      BuildContext context) async {
+    homePageController.nameOfEditingPlaylist.value = "Favorite";
+    homePageController.selectedForPlaylist.value = favoriteListModel;
+    if (isExitsInFavorite) {
+      homePageController.selectedForPlaylist.removeWhere((element) =>
+          element.reciter.id == currentPlayModel.reciter.id &&
+          element.surahNumber == currentPlayModel.surahNumber);
+    } else {
+      homePageController.selectedForPlaylist.add(currentPlayModel);
+    }
+    await homePageController.saveToPlayList();
+    homePageController.reloadPlayList();
+    setState(() {});
+
+    // Add to favorite
+    toastification.show(
+      context: context,
+      title:
+          Text("${isExitsInFavorite ? "Removed form" : "Added to"} Favorite"),
+      autoCloseDuration: const Duration(seconds: 2),
+      type: ToastificationType.success,
+    );
+  }
+
+  List<PlayListModel> getPlayList(String playListName) {
+    final box = Hive.box("play_list");
+    List<PlayListModel> playlistModels = [];
+    List<String> rawPlayModelsList =
+        List<String>.from(box.get(playListName, defaultValue: []));
+
+    for (String favorite in rawPlayModelsList) {
+      final model = PlayListModel.fromJson(favorite);
+      playlistModels.add(model);
+    }
+    return playlistModels;
   }
 }
