@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
+import 'package:al_quran_audio/src/screens/home/controller/model/play_list_model.dart';
 import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
 import 'package:al_quran_audio/src/theme/theme_controller.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:toastification/toastification.dart';
@@ -33,9 +37,6 @@ class _PlayTabState extends State<PlayTab> {
 
   @override
   Widget build(BuildContext context) {
-    // bool isDark = themeController.themeModeName.value == "dark" ||
-    //     (themeController.themeModeName.value == "system" &&
-    //         MediaQuery.of(context).platformBrightness == Brightness.dark);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,6 +179,10 @@ class _PlayTabState extends State<PlayTab> {
                   left: 10, right: 10, top: 5, bottom: 100),
               itemCount: surahInfo.length,
               itemBuilder: (context, index) {
+                PlayListModel currentPlaylist = PlayListModel(
+                  reciter: audioController.currentReciterModel.value,
+                  surahNumber: index,
+                );
                 return Card(
                   elevation: 0,
                   margin: const EdgeInsets.only(bottom: 5),
@@ -186,12 +191,10 @@ class _PlayTabState extends State<PlayTab> {
                   child: Obx(
                     () => Row(
                       children: [
-                        const SizedBox(
-                          height: 50,
-                        ),
+                        const Gap(3),
                         SizedBox(
-                          height: 40,
-                          width: 40,
+                          height: 34,
+                          width: 34,
                           child: getPlayButton(index, audioController),
                         ),
                         const Gap(10),
@@ -228,7 +231,10 @@ class _PlayTabState extends State<PlayTab> {
                           ],
                         ),
                         const Gap(5),
-                        getPopUpButton(audioController, index, context),
+                        if (homePageController.selectForPlaylistMode.value ==
+                            false)
+                          getPopUpButton(
+                              audioController, index, context, currentPlaylist),
                         if (homePageController.selectForPlaylistMode.value ==
                             true)
                           SizedBox(
@@ -254,7 +260,7 @@ class _PlayTabState extends State<PlayTab> {
                           ),
                         if (homePageController.selectForPlaylistMode.value ==
                             true)
-                          const Gap(5),
+                          const Gap(8),
                       ],
                     ),
                   ),
@@ -279,8 +285,23 @@ class _PlayTabState extends State<PlayTab> {
     );
   }
 
-  PopupMenuButton<String> getPopUpButton(
-      AudioController audioController, int index, BuildContext context) {
+  PopupMenuButton<String> getPopUpButton(AudioController audioController,
+      int index, BuildContext context, PlayListModel currentPlaylist) {
+    final box = Hive.box('play_list');
+    List<PlayListModel> favoriteListModel = [];
+    List<String> favoriteList =
+        List<String>.from(box.get("Favorite", defaultValue: []));
+    bool isExitsInFavorite = false;
+
+    for (String favorite in favoriteList) {
+      final model = PlayListModel.fromJson(favorite);
+      favoriteListModel.add(model);
+      if (model.reciter.id == currentPlaylist.reciter.id &&
+          model.surahNumber == currentPlaylist.surahNumber) {
+        isExitsInFavorite = true;
+      }
+    }
+
     return PopupMenuButton(
       borderRadius: BorderRadius.circular(7),
       onSelected: (value) async {
@@ -289,11 +310,28 @@ class _PlayTabState extends State<PlayTab> {
             ManageQuranAudio.surahIDFromNumber(index + 1));
 
         if (value == "Favorite") {
+          log(isExitsInFavorite.toString());
+
+          homePageController.nameOfEditingPlaylist.value = "Favorite";
+          homePageController.selectedForPlaylist.value = favoriteListModel;
+          if (isExitsInFavorite) {
+            homePageController.selectedForPlaylist.removeWhere((element) =>
+                element.reciter.id == currentPlaylist.reciter.id &&
+                element.surahNumber == currentPlaylist.surahNumber);
+          } else {
+            homePageController.selectedForPlaylist.add(currentPlaylist);
+          }
+          await homePageController.saveToPlayList();
+          homePageController.reloadPlayList();
+          setState(() {});
+
           // Add to favorite
           toastification.show(
             context: context,
-            title: const Text("Added to Favorite"),
+            title: Text(
+                "${isExitsInFavorite ? "Removed form" : "Added to"} Favorite"),
             autoCloseDuration: const Duration(seconds: 2),
+            type: ToastificationType.success,
           );
         } else if (value == "Playlist") {
           // Add to playlist
@@ -321,13 +359,17 @@ class _PlayTabState extends State<PlayTab> {
       },
       itemBuilder: (context) {
         return [
-          const PopupMenuItem(
+          PopupMenuItem(
             value: "Favorite",
             child: Row(
               children: [
-                Icon(Icons.favorite_rounded),
-                Gap(7),
-                Text("Add to Favorite"),
+                Icon(
+                  Icons.favorite_rounded,
+                  color: isExitsInFavorite ? Colors.green : null,
+                ),
+                const Gap(7),
+                Text(
+                    "${isExitsInFavorite ? "Remove form" : "Add to"} Favorite"),
               ],
             ),
           ),

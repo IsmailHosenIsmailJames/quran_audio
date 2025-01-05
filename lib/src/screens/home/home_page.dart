@@ -235,6 +235,7 @@ Obx getPlayButton(int index, AudioController audioController) {
         style: IconButton.styleFrom(
           backgroundColor: Colors.green.shade800,
           foregroundColor: Colors.white,
+          padding: EdgeInsets.zero,
         ),
         tooltip: "Play or Pause",
         icon: (audioController.currentPlayingSurah.value == index &&

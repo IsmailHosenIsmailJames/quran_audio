@@ -136,8 +136,8 @@ class _PlayListPageState extends State<PlayListPage> {
               },
               child: Row(
                 children: [
-                  SizedBox(height: 40, width: 40, child: getPlayButton(index)),
-                  const Gap(5),
+                  SizedBox(height: 34, width: 34, child: getPlayButton(index)),
+                  const Gap(8),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -403,8 +403,12 @@ class _PlayListPageState extends State<PlayListPage> {
                               ],
                             ),
                             const Spacer(),
-                            getPlayButtonOnPlaylistList(
-                                playListModel, i, index, currentPlayList),
+                            SizedBox(
+                              height: 34,
+                              width: 34,
+                              child: getPlayButtonOnPlaylistList(
+                                  playListModel, i, index, currentPlayList),
+                            ),
                             PopupMenuButton(
                               itemBuilder: (context) => [
                                 PopupMenuItem(
@@ -463,6 +467,7 @@ class _PlayListPageState extends State<PlayListPage> {
           tooltip: "Play",
           style: IconButton.styleFrom(
             side: const BorderSide(),
+            padding: EdgeInsets.zero,
           ),
           onPressed: () async {
             if (audioController.currentReciterModel.value.id ==
@@ -504,6 +509,7 @@ class _PlayListPageState extends State<PlayListPage> {
       style: IconButton.styleFrom(
         backgroundColor: Colors.green.shade800,
         foregroundColor: Colors.white,
+        padding: EdgeInsets.zero,
       ),
       tooltip: "Play or Pause",
       icon: (audioController.currentPlayListIndex.value == index &&
