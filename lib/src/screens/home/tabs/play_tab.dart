@@ -1,6 +1,6 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
-import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
+import 'package:al_quran_audio/src/functions/tajweed_scripts_composer.dart';
 import 'package:al_quran_audio/src/screens/home/controller/model/play_list_model.dart';
 import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
 import 'package:al_quran_audio/src/theme/theme_controller.dart';

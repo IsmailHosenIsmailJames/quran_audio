@@ -1,13 +1,11 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
+import 'package:al_quran_audio/src/functions/get_cached_file_size_of_audio.dart';
 import 'package:al_quran_audio/src/theme/theme_controller.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'dart:math';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -149,7 +147,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             FutureBuilder<int>(
-              future: getCacheSize(),
+              future: justAudioCache(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
@@ -165,31 +163,4 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
-}
-
-String formatBytes(int bytes, [int decimals = 2]) {
-  if (bytes <= 0) return "0 B";
-  const suffixes = ["B", "KB", "MB", "GB", "TB"];
-  int i = (log(bytes) / log(1024)).floor();
-  double size = bytes / pow(1024, i);
-  return "${size.toStringAsFixed(decimals)} ${suffixes[i]}";
-}
-
-Future<int> getCacheSize() async {
-  final cacheDir = await getCacheDirectory();
-  int totalSize = 0;
-
-  if (cacheDir.existsSync()) {
-    cacheDir.listSync().forEach((file) {
-      if (file is File) {
-        totalSize += file.lengthSync();
-      }
-    });
-  }
-
-  return totalSize;
-}
-
-Future<Directory> getCacheDirectory() async {
-  return await getTemporaryDirectory();
 }
