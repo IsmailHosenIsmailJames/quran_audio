@@ -25,6 +25,7 @@ Future<void> main() async {
   await Hive.openBox('info');
   await Hive.openBox('play_list');
   await Hive.openBox('cloud_play_list');
+  await Hive.openBox('audio_time_stamp');
 
   runApp(const MyApp());
 }

@@ -5,6 +5,7 @@ import 'package:al_quran_audio/src/api/apis.dart';
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitations.dart';
+import 'package:al_quran_audio/src/functions/http_to_sha_encode.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
@@ -35,7 +36,11 @@ class ManageQuranAudio {
     });
 
     audioPlayer.positionStream.listen((event) {
-      audioController.progress.value = event;
+      int sec = event.inSeconds;
+      if (sec != audioController.progress.value.inSeconds) {
+        audioController.progress.value = event;
+        log(event.inSeconds.toString());
+      }
     });
 
     audioPlayer.speedStream.listen((event) {
@@ -56,6 +61,12 @@ class ManageQuranAudio {
       } else {
         audioController.isLoading.value = false;
       }
+      // registerAudioTimeStamp(
+      //   makeAudioUrl(
+      //     audioController.currentReciterModel.value,
+      //     (surahIDFromNumber(audioController.currentPlayingSurah.value + 1)),
+      //   ),
+      // );
     });
 
     audioPlayer.playbackEventStream.listen((event) {
@@ -181,5 +192,12 @@ class ManageQuranAudio {
   /// where 'SSS' is the zero-padded surah number and 'AAA' is the zero-padded ayah number.
   static String surahIDFromNumber(int surahNumber) {
     return surahNumber.toString().padLeft(3, '0');
+  }
+
+  static void registerAudioTimeStamp(String url) async {
+    String hexCodeOfURL = urlToHash(url);
+    int dateTimeNow = DateTime.now().millisecondsSinceEpoch;
+    final box = Hive.box('audio_time_stamp');
+    await box.put(hexCodeOfURL, dateTimeNow);
   }
 }

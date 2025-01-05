@@ -45,12 +45,16 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
+            const Gap(5),
             Obx(
-              () => DropdownButton<String>(
+              () => DropdownButtonFormField<String>(
                 value: appThemeDataController.themeModeName.value,
                 onChanged: (value) {
                   appThemeDataController.setTheme(value!);
                 },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
                 isExpanded: true,
                 items: [
                   const DropdownMenuItem(
@@ -146,17 +150,41 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ],
             ),
-            FutureBuilder<int>(
-              future: justAudioCache(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text("Error: ${snapshot.error}");
-                } else {
-                  return Text("Cache Size: ${formatBytes(snapshot.data ?? 0)}");
-                }
-              },
+            const Gap(10),
+            Container(
+              margin: const EdgeInsets.only(
+                left: 15,
+                top: 5,
+                bottom: 5,
+                right: 5,
+              ),
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const Text("Total Cache Size :  "),
+                      FutureBuilder<int>(
+                        future: justAudioCache(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return Text("Error: ${snapshot.error}");
+                          } else {
+                            return Text(formatBytes(snapshot.data ?? 0));
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
