@@ -1,5 +1,6 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
+import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
 import 'package:al_quran_audio/src/screens/home/controller/model/play_list_model.dart';
 import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
 import 'package:al_quran_audio/src/theme/theme_controller.dart';
@@ -15,6 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/recitation_info/recitation_info_model.dart';
 import '../../../core/surah_ayah_count.dart';
+import '../../../functions/get_uthmani_tajweed.dart';
 import '../../setup/pages/choice_default_recitation.dart';
 import '../controller/home_page_controller.dart';
 import '../home_page.dart';
@@ -32,6 +34,7 @@ class _PlayTabState extends State<PlayTab> {
   final HomePageController homePageController = Get.put(HomePageController());
   final AppThemeData themeController = Get.find<AppThemeData>();
   final ScrollController scrollController = ScrollController();
+  final infoBox = Hive.box("info");
 
   @override
   Widget build(BuildContext context) {
@@ -180,85 +183,92 @@ class _PlayTabState extends State<PlayTab> {
                   reciter: audioController.currentReciterModel.value,
                   surahNumber: index,
                 );
-                return Card(
-                  elevation: 0,
-                  margin: const EdgeInsets.only(bottom: 5),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(7)),
-                  child: Obx(
-                    () => Row(
-                      children: [
-                        const Gap(3),
-                        SizedBox(
-                          height: 34,
-                          width: 34,
-                          child: getPlayButton(index, audioController),
-                        ),
-                        const Gap(10),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              ("${index + 1}. ${surahInfo[index]['name_simple'] ?? ""}")
-                                  .replaceAll("-", " "),
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            Text(
-                              (surahInfo[index]['revelation_place'] ?? "")
-                                  .capitalizeFirst,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              (surahInfo[index]['name_arabic'] ?? "")
-                                  .capitalizeFirst,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            Text(
-                              surahAyahCount[index].toString(),
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
-                        const Gap(5),
-                        if (homePageController.selectForPlaylistMode.value ==
-                            false)
-                          getPopUpButton(
-                              audioController, index, context, currentPlaylist),
-                        if (homePageController.selectForPlaylistMode.value ==
-                            true)
+                return GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    showPopUpForQuranWithTajweedText(context, index);
+                  },
+                  child: Card(
+                    elevation: 0,
+                    margin: const EdgeInsets.only(bottom: 5),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(7)),
+                    child: Obx(
+                      () => Row(
+                        children: [
+                          const Gap(3),
                           SizedBox(
-                            height: 40,
-                            width: 40,
-                            child: Checkbox(
-                              value: homePageController.containsInPlaylist(
-                                  audioController.currentReciterModel.value,
-                                  index),
-                              onChanged: (value) {
-                                if (value == true) {
-                                  homePageController.addToPlaylist(
-                                    audioController.currentReciterModel.value,
-                                    index,
-                                  );
-                                } else {
-                                  homePageController.removeToPlaylist(
-                                      audioController.currentReciterModel.value,
-                                      index);
-                                }
-                              },
-                            ),
+                            height: 34,
+                            width: 34,
+                            child: getPlayButton(index, audioController),
                           ),
-                        if (homePageController.selectForPlaylistMode.value ==
-                            true)
-                          const Gap(8),
-                      ],
+                          const Gap(10),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                ("${index + 1}. ${surahInfo[index]['name_simple'] ?? ""}")
+                                    .replaceAll("-", " "),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              Text(
+                                (surahInfo[index]['revelation_place'] ?? "")
+                                    .capitalizeFirst,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                (surahInfo[index]['name_arabic'] ?? "")
+                                    .capitalizeFirst,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              Text(
+                                surahAyahCount[index].toString(),
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                          const Gap(5),
+                          if (homePageController.selectForPlaylistMode.value ==
+                              false)
+                            getPopUpButton(audioController, index, context,
+                                currentPlaylist),
+                          if (homePageController.selectForPlaylistMode.value ==
+                              true)
+                            SizedBox(
+                              height: 40,
+                              width: 40,
+                              child: Checkbox(
+                                value: homePageController.containsInPlaylist(
+                                    audioController.currentReciterModel.value,
+                                    index),
+                                onChanged: (value) {
+                                  if (value == true) {
+                                    homePageController.addToPlaylist(
+                                      audioController.currentReciterModel.value,
+                                      index,
+                                    );
+                                  } else {
+                                    homePageController.removeToPlaylist(
+                                        audioController
+                                            .currentReciterModel.value,
+                                        index);
+                                  }
+                                },
+                              ),
+                            ),
+                          if (homePageController.selectForPlaylistMode.value ==
+                              true)
+                            const Gap(8),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -267,6 +277,95 @@ class _PlayTabState extends State<PlayTab> {
           ),
         ),
       ],
+    );
+  }
+
+  Future<dynamic> showPopUpForQuranWithTajweedText(
+      BuildContext context, int index) {
+    return showModalBottomSheet(
+      showDragHandle: true,
+      scrollControlDisabledMaxHeightRatio: 1,
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 1,
+          minChildSize: 0.75,
+          maxChildSize: 1,
+          expand: true,
+          snap: true,
+          builder: (context, scrollController) {
+            return ListView.builder(
+                controller: scrollController,
+                padding: const EdgeInsets.all(10),
+                itemCount: (surahAyahCount[(index)] / 10).ceil(),
+                itemBuilder: (context, index) {
+                  int ayahCount = surahAyahCount[index];
+                  int start = index * 10 + 1;
+                  int end = (index + 1) * 10;
+                  if (end > ayahCount) {
+                    end = ayahCount;
+                  }
+
+                  List<InlineSpan> listOfAyahsSpanText = [];
+
+                  for (int currentAyahNumber = start;
+                      currentAyahNumber <= end;
+                      currentAyahNumber++) {
+                    listOfAyahsSpanText.addAll(
+                      getTajweedTexSpan(
+                        infoBox.get(
+                          "uthmani_tajweed/${(index) + 1}:$currentAyahNumber",
+                          defaultValue: "",
+                        ),
+                      ),
+                    );
+                  }
+                  if (listOfAyahsSpanText.isEmpty) {
+                    if (index == 0) {
+                      return Column(
+                        children: [
+                          Text(
+                            "Unable to load",
+                            style: TextStyle(
+                              fontSize: audioController.fontSizeArabic.value,
+                            ),
+                          ),
+                          const Gap(10),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              toastification.show(
+                                context: context,
+                                title: const Text("Trying to download"),
+                                description:
+                                    const Text("Wait a bit until it's done"),
+                              );
+                              await getUthmaniTajweed();
+                              toastification.show(
+                                context: context,
+                                title: const Text("Trying to download"),
+                                description:
+                                    const Text("Wait a bit until it's done"),
+                              );
+
+                              setState(() {});
+                            },
+                            icon: const Icon(
+                                FluentIcons.arrow_download_24_regular),
+                            label: const Text("Download"),
+                          ),
+                        ],
+                      );
+                    }
+                  }
+                  return Text.rich(TextSpan(children: listOfAyahsSpanText),
+                      style: TextStyle(
+                        fontSize: audioController.fontSizeArabic.value,
+                      ));
+                });
+          },
+        );
+      },
     );
   }
 

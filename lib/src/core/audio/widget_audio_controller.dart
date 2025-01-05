@@ -70,7 +70,12 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 if (audioController.isSurahAyahMode.value)
-                  getSurahView(isDark, latestSurahNumber),
+                  Expanded(
+                    child: getSurahView(
+                      isDark,
+                      latestSurahNumber,
+                    ),
+                  ),
                 getControllers(context, isDark, colorToApply),
               ],
             );
@@ -80,127 +85,125 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
     );
   }
 
-  Expanded getSurahView(bool isDark, int latestSurahNumber) {
-    return Expanded(
-      child: Stack(
-        children: [
-          Container(
-            margin:
-                const EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 25),
-            decoration: BoxDecoration(
-              color:
-                  isDark ? const Color.fromARGB(255, 29, 29, 29) : Colors.white,
-              borderRadius: BorderRadius.circular(7),
-              border: Border.all(color: Colors.grey.shade400, width: 0.7),
-            ),
-            child: Scrollbar(
-              controller: scrollController,
-              thickness: 5,
-              thumbVisibility: true,
-              radius: const Radius.circular(7),
-              interactive: true,
-              child: ListView.builder(
-                  controller: scrollController,
-                  padding: const EdgeInsets.all(10),
-                  itemCount: (surahAyahCount[(latestSurahNumber)] / 10).ceil(),
-                  itemBuilder: (context, index) {
-                    int ayahCount = surahAyahCount[latestSurahNumber];
-                    int start = index * 10 + 1;
-                    int end = (index + 1) * 10;
-                    if (end > ayahCount) {
-                      end = ayahCount;
-                    }
-
-                    List<InlineSpan> listOfAyahsSpanText = [];
-
-                    for (int currentAyahNumber = start;
-                        currentAyahNumber <= end;
-                        currentAyahNumber++) {
-                      listOfAyahsSpanText.addAll(
-                        getTajweedTexSpan(
-                          infoBox.get(
-                            "uthmani_tajweed/${(latestSurahNumber) + 1}:$currentAyahNumber",
-                            defaultValue: "",
-                          ),
-                        ),
-                      );
-                    }
-                    if (listOfAyahsSpanText.isEmpty) {
-                      if (index == 0) {
-                        return Column(
-                          children: [
-                            Text(
-                              "Unable to load",
-                              style: TextStyle(
-                                fontSize: audioController.fontSizeArabic.value,
-                              ),
-                            ),
-                            const Gap(10),
-                            ElevatedButton.icon(
-                              onPressed: () async {
-                                toastification.show(
-                                  context: context,
-                                  title: const Text("Trying to download"),
-                                  description:
-                                      const Text("Wait a bit until it's done"),
-                                );
-                                await getUthmaniTajweed();
-                                toastification.show(
-                                  context: context,
-                                  title: const Text("Trying to download"),
-                                  description:
-                                      const Text("Wait a bit until it's done"),
-                                );
-
-                                setState(() {});
-                              },
-                              icon: const Icon(
-                                  FluentIcons.arrow_download_24_regular),
-                              label: const Text("Download"),
-                            ),
-                          ],
-                        );
-                      }
-                    }
-                    return Text.rich(TextSpan(children: listOfAyahsSpanText),
-                        style: TextStyle(
-                          fontSize: audioController.fontSizeArabic.value,
-                        ));
-                  }),
-            ),
+  Widget getSurahView(bool isDark, int latestSurahNumber) {
+    return Stack(
+      children: [
+        Container(
+          margin:
+              const EdgeInsets.only(left: 10, right: 10, bottom: 10, top: 25),
+          decoration: BoxDecoration(
+            color:
+                isDark ? const Color.fromARGB(255, 29, 29, 29) : Colors.white,
+            borderRadius: BorderRadius.circular(7),
+            border: Border.all(color: Colors.grey.shade400, width: 0.7),
           ),
-          Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: SizedBox(
-                height: 25,
-                width: 25,
-                child: IconButton(
-                  style: IconButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      backgroundColor:
-                          isDark ? Colors.grey.shade900 : Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                        side:
-                            BorderSide(color: Colors.grey.shade400, width: 0.7),
-                      )),
-                  onPressed: () {
-                    audioController.isSurahAyahMode.value =
-                        !audioController.isSurahAyahMode.value;
-                  },
-                  icon: const Icon(
-                    Icons.close,
-                    size: 15,
-                  ),
+          child: Scrollbar(
+            controller: scrollController,
+            thickness: 5,
+            thumbVisibility: true,
+            radius: const Radius.circular(7),
+            interactive: true,
+            child: getWidgetOfQuranWithTajweed(latestSurahNumber),
+          ),
+        ),
+        Align(
+          alignment: Alignment.topRight,
+          child: Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: SizedBox(
+              height: 25,
+              width: 25,
+              child: IconButton(
+                style: IconButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    backgroundColor:
+                        isDark ? Colors.grey.shade900 : Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                      side: BorderSide(color: Colors.grey.shade400, width: 0.7),
+                    )),
+                onPressed: () {
+                  audioController.isSurahAyahMode.value =
+                      !audioController.isSurahAyahMode.value;
+                },
+                icon: const Icon(
+                  Icons.close,
+                  size: 15,
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  ListView getWidgetOfQuranWithTajweed(int latestSurahNumber) {
+    return ListView.builder(
+        controller: scrollController,
+        padding: const EdgeInsets.all(10),
+        itemCount: (surahAyahCount[(latestSurahNumber)] / 10).ceil(),
+        itemBuilder: (context, index) {
+          int ayahCount = surahAyahCount[latestSurahNumber];
+          int start = index * 10 + 1;
+          int end = (index + 1) * 10;
+          if (end > ayahCount) {
+            end = ayahCount;
+          }
+
+          List<InlineSpan> listOfAyahsSpanText = [];
+
+          for (int currentAyahNumber = start;
+              currentAyahNumber <= end;
+              currentAyahNumber++) {
+            listOfAyahsSpanText.addAll(
+              getTajweedTexSpan(
+                infoBox.get(
+                  "uthmani_tajweed/${(latestSurahNumber) + 1}:$currentAyahNumber",
+                  defaultValue: "",
+                ),
+              ),
+            );
+          }
+          if (listOfAyahsSpanText.isEmpty) {
+            if (index == 0) {
+              return Column(
+                children: [
+                  Text(
+                    "Unable to load",
+                    style: TextStyle(
+                      fontSize: audioController.fontSizeArabic.value,
+                    ),
+                  ),
+                  const Gap(10),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      toastification.show(
+                        context: context,
+                        title: const Text("Trying to download"),
+                        description: const Text("Wait a bit until it's done"),
+                      );
+                      await getUthmaniTajweed();
+                      toastification.show(
+                        context: context,
+                        title: const Text("Trying to download"),
+                        description: const Text("Wait a bit until it's done"),
+                      );
+
+                      setState(() {});
+                    },
+                    icon: const Icon(FluentIcons.arrow_download_24_regular),
+                    label: const Text("Download"),
+                  ),
+                ],
+              );
+            }
+          }
+          return Text.rich(TextSpan(children: listOfAyahsSpanText),
+              style: TextStyle(
+                fontSize: audioController.fontSizeArabic.value,
+              ));
+        });
   }
 
   Container getControllers(
@@ -351,46 +354,46 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
       ),
     );
   }
+}
 
-  List<InlineSpan> getTajweedTexSpan(String ayah,
-      {bool hideEnd = false, bool doBold = false}) {
-    List<Map<String, String?>> tajweed = extractWordsGetTazweeds(ayah);
-    List<InlineSpan> spanText = [];
-    for (int i = 0; i < tajweed.length; i++) {
-      Map<String, String?> taz = tajweed[i];
-      String word = taz['word'] ?? "";
-      String className = taz['class'] ?? "null";
-      String tag = taz['tag'] ?? "null";
-      if (className == 'null' || tag == "null") {
+List<InlineSpan> getTajweedTexSpan(String ayah,
+    {bool hideEnd = false, bool doBold = false}) {
+  List<Map<String, String?>> tajweed = extractWordsGetTazweeds(ayah);
+  List<InlineSpan> spanText = [];
+  for (int i = 0; i < tajweed.length; i++) {
+    Map<String, String?> taz = tajweed[i];
+    String word = taz['word'] ?? "";
+    String className = taz['class'] ?? "null";
+    String tag = taz['tag'] ?? "null";
+    if (className == 'null' || tag == "null") {
+      spanText.add(
+        TextSpan(text: word),
+      );
+    } else {
+      if (className == "end" && hideEnd != true) {
         spanText.add(
-          TextSpan(text: word),
+          TextSpan(
+            text: "۝$word ",
+          ),
         );
       } else {
-        if (className == "end" && hideEnd != true) {
-          spanText.add(
-            TextSpan(
-              text: "۝$word ",
-            ),
-          );
-        } else {
-          if (hideEnd && word.length == 1 && i == 13) {
-            continue;
-          }
-          Color textColor = colorsForTajweed[className] ??
-              const Color.fromARGB(255, 121, 85, 72);
-          spanText.add(
-            TextSpan(
-              text: word,
-              style: TextStyle(
-                color: textColor,
-              ),
-            ),
-          );
+        if (hideEnd && word.length == 1 && i == 13) {
+          continue;
         }
+        Color textColor = colorsForTajweed[className] ??
+            const Color.fromARGB(255, 121, 85, 72);
+        spanText.add(
+          TextSpan(
+            text: word,
+            style: TextStyle(
+              color: textColor,
+            ),
+          ),
+        );
       }
     }
-    return spanText;
   }
+  return spanText;
 }
 
 String startAyahBismillah(String scriptType) {
