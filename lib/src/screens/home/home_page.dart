@@ -63,10 +63,9 @@ class _HomePageState extends State<HomePage> {
                       MediaQuery.of(context).platformBrightness ==
                           Brightness.dark);
               return PersistentTabView(
-                backgroundColor:
-                    isDark ? Colors.grey.shade900 : Colors.grey.shade100,
-                margin: const EdgeInsets.only(left: 3, right: 3, bottom: 3),
-
+                backgroundColor: isDark
+                    ? const Color.fromARGB(255, 20, 20, 20)
+                    : Colors.grey.shade100,
                 context,
                 controller: tabController,
                 screens: [
@@ -82,47 +81,43 @@ class _HomePageState extends State<HomePage> {
                   PersistentBottomNavBarItem(
                     icon: const Icon(Icons.play_circle_rounded),
                     title: ("Play"),
-                    activeColorPrimary: Colors.green.shade800,
-                    activeColorSecondary: Colors.white,
-                    inactiveColorPrimary: Colors.green.shade600,
+                    activeColorSecondary: Colors.green.shade600,
+                    inactiveColorPrimary:
+                        isDark ? Colors.white : Colors.grey.shade700,
                   ),
                   PersistentBottomNavBarItem(
                     icon: const Icon(Icons.playlist_play_rounded),
                     title: ("Play Lists"),
-                    activeColorPrimary: Colors.green.shade800,
-                    activeColorSecondary: Colors.white,
-                    inactiveColorPrimary: Colors.green.shade600,
+                    activeColorSecondary: Colors.green.shade600,
+                    inactiveColorPrimary:
+                        isDark ? Colors.white : Colors.grey.shade700,
                   ),
                   PersistentBottomNavBarItem(
                     icon: const Icon(FluentIcons.person_24_filled),
                     title: ("Profile"),
-                    activeColorPrimary: Colors.green.shade800,
-                    activeColorSecondary: Colors.white,
-                    inactiveColorPrimary: Colors.green.shade600,
+                    activeColorSecondary: Colors.green.shade600,
+                    inactiveColorPrimary:
+                        isDark ? Colors.white : Colors.grey.shade700,
                   ),
                 ],
-                handleAndroidBackButtonPress: true, // Default is true.
-                resizeToAvoidBottomInset:
-                    true, // This needs to be true if you want to move up the screen on a non-scrollable screen when keyboard appears. Default is true.
-                stateManagement: true, // Default is true.
+                handleAndroidBackButtonPress: true,
+                resizeToAvoidBottomInset: true,
+                stateManagement: true,
                 hideNavigationBarWhenKeyboardAppears: true,
                 popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
-
                 decoration: NavBarDecoration(
-                  borderRadius: BorderRadius.circular(35),
-                  border: Border.all(
-                      color: Colors.grey.shade400.withValues(alpha: 0.5),
-                      width: 0.7),
+                  border: Border(
+                    top: BorderSide(
+                        color: Colors.grey.shade600.withValues(alpha: 0.4)),
+                  ),
                 ),
                 isVisible: true,
                 animationSettings: const NavBarAnimationSettings(
                   navBarItemAnimation: ItemAnimationSettings(
-                    // Navigation Bar's items animation properties.
                     duration: Duration(milliseconds: 400),
                     curve: Curves.ease,
                   ),
                   screenTransitionAnimation: ScreenTransitionAnimationSettings(
-                    // Screen transition animation on change of selected tab.
                     animateTabTransition: true,
                     duration: Duration(milliseconds: 400),
                     screenTransitionAnimationType:
@@ -131,8 +126,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 confineToSafeArea: true,
                 navBarHeight: kBottomNavigationBarHeight,
-                navBarStyle: NavBarStyle
-                    .style7, // Choose the nav bar style with this property
+                navBarStyle: NavBarStyle.style12,
               );
             },
           ),
