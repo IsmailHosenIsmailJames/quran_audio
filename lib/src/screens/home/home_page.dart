@@ -3,16 +3,15 @@ import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
 import 'package:al_quran_audio/src/screens/auth/auth_controller/auth_controller.dart';
 import 'package:al_quran_audio/src/screens/home/controller/home_page_controller.dart';
+import 'package:al_quran_audio/src/screens/home/settings/settings_page.dart';
 import 'package:al_quran_audio/src/screens/home/tabs/play_list_page.dart';
 import 'package:al_quran_audio/src/screens/home/tabs/play_tab.dart';
 import 'package:al_quran_audio/src/screens/home/tabs/profile_page.dart';
 import 'package:al_quran_audio/src/theme/theme_controller.dart';
-import 'package:al_quran_audio/src/theme/theme_icon_button.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class HomePage extends StatefulWidget {
@@ -45,8 +44,11 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {
-              showSettings(context, audioController);
+            onPressed: () async {
+              await Get.to(
+                () => const SettingsPage(),
+              );
+              setState(() {});
             },
             icon: const Icon(
               FluentIcons.settings_24_regular,
@@ -145,79 +147,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-    );
-  }
-
-  void showSettings(BuildContext context, AudioController audioController) {
-    showModalBottomSheet(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(7),
-      ),
-      context: context,
-      builder: (context) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  const Icon(FluentIcons.settings_24_regular),
-                  const Gap(5),
-                  const Text("Settings"),
-                  const Spacer(),
-                  themeIconButton,
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(
-                      Icons.close,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Gap(15),
-            const Row(
-              children: [
-                Gap(15),
-                Icon(FluentIcons.text_font_16_filled),
-                Gap(10),
-                Text(
-                  "Font Size",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            Obx(
-              () => Row(
-                children: [
-                  Expanded(
-                    child: Slider(
-                      value: audioController.fontSizeArabic.value,
-                      min: 10,
-                      max: 50,
-                      divisions: 40,
-                      onChanged: (value) async {
-                        audioController.fontSizeArabic.value = value;
-                        setState(() {});
-                        Hive.box("info").put("fontSizeArabic", value);
-                      },
-                    ),
-                  ),
-                  const Gap(5),
-                  Text(
-                    audioController.fontSizeArabic.value.round().toString(),
-                  ),
-                  const Gap(10),
-                ],
-              ),
-            )
-          ],
-        );
-      },
     );
   }
 }
