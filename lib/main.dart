@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:toastification/toastification.dart';
 
 import 'src/theme/theme_controller.dart';
 
@@ -26,6 +27,7 @@ Future<void> main() async {
   await Hive.openBox('play_list');
   await Hive.openBox('cloud_play_list');
   await Hive.openBox('audio_time_stamp');
+  await Hive.openBox('completed_surah');
 
   runApp(const MyApp());
 }
@@ -35,59 +37,61 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Al Quran Audio',
-      theme: ThemeData.light().copyWith(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: MyColors.mainColor,
-          brightness: Brightness.light,
-        ),
-        textTheme: GoogleFonts.poppinsTextTheme(),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: MyColors.mainColor,
-            foregroundColor: Colors.white,
-            shadowColor: Colors.transparent,
-            iconColor: Colors.white,
+    return ToastificationWrapper(
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Al Quran Audio',
+        theme: ThemeData.light().copyWith(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: MyColors.mainColor,
+            brightness: Brightness.light,
+          ),
+          textTheme: GoogleFonts.poppinsTextTheme(),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: MyColors.mainColor,
+              foregroundColor: Colors.white,
+              shadowColor: Colors.transparent,
+              iconColor: Colors.white,
+            ),
           ),
         ),
-      ),
-      darkTheme: ThemeData.dark().copyWith(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: MyColors.mainColor,
-          brightness: Brightness.dark,
-        ),
-        textTheme: GoogleFonts.poppinsTextTheme().apply(
-          bodyColor: Colors.white,
-          displayColor: Colors.white,
-          decorationColor: Colors.white,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: MyColors.mainColor,
-            foregroundColor: Colors.white,
-            shadowColor: Colors.transparent,
-            iconColor: Colors.white,
+        darkTheme: ThemeData.dark().copyWith(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: MyColors.mainColor,
+            brightness: Brightness.dark,
+          ),
+          textTheme: GoogleFonts.poppinsTextTheme().apply(
+            bodyColor: Colors.white,
+            displayColor: Colors.white,
+            decorationColor: Colors.white,
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: MyColors.mainColor,
+              foregroundColor: Colors.white,
+              shadowColor: Colors.transparent,
+              iconColor: Colors.white,
+            ),
           ),
         ),
-      ),
-      defaultTransition: Transition.leftToRight,
-      home: Hive.box('info').get('default_reciter') == null
-          ? const SetupPage()
-          : const HomePage(),
-      onInit: () async {
-        Get.put(AuthController());
-        final appTheme = Get.put(AppThemeData());
-        final AudioController audioController =
-            ManageQuranAudio.audioController;
-        final box = Hive.box('info');
-        final reciterIndex = box.get("reciter_index", defaultValue: 0);
-        audioController.currentReciterIndex.value = reciterIndex;
+        defaultTransition: Transition.leftToRight,
+        home: Hive.box('info').get('default_reciter') == null
+            ? const SetupPage()
+            : const HomePage(),
+        onInit: () async {
+          Get.put(AuthController());
+          final appTheme = Get.put(AppThemeData());
+          final AudioController audioController =
+              ManageQuranAudio.audioController;
+          final box = Hive.box('info');
+          final reciterIndex = box.get("reciter_index", defaultValue: 0);
+          audioController.currentReciterIndex.value = reciterIndex;
 
-        getUthmaniTajweed();
-        appTheme.initTheme();
-      },
+          getUthmaniTajweed();
+          appTheme.initTheme();
+        },
+      ),
     );
   }
 }
