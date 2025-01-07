@@ -45,7 +45,7 @@ class IntroPage extends StatelessWidget {
             alignment: Alignment.center,
             child: Text(
               "The Quran Audio Recitation App brings together a curated collection of 76 reciters, providing an immersive auditory experience of the Quran. With a focus on simplicity, accessibility, and quality, the app caters to users of all ages and preferences. Whether you are at home, commuting, or meditating, this app lets you carry the soul of the Quran wherever you go.",
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.justify,
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),

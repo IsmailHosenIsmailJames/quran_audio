@@ -5,14 +5,10 @@ import 'package:al_quran_audio/src/api/apis.dart';
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitations.dart';
-import 'package:al_quran_audio/src/functions/http_to_sha_encode.dart';
-import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:toastification/toastification.dart';
 
 class ManageQuranAudio {
   static AudioPlayer audioPlayer = AudioPlayer();
@@ -42,16 +38,6 @@ class ManageQuranAudio {
       int sec = event.inSeconds;
       if (sec != audioController.progress.value.inSeconds) {
         audioController.progress.value = event;
-        // registerAudioTimeStamp(
-        //   url: makeAudioUrl(
-        //     audioController.currentReciterModel.value,
-        //     (surahIDFromNumber(audioController.currentPlayingSurah.value + 1)),
-        //   ),
-        //   position: sec,
-        //   totalDuration: audioController.totalDuration.value.inSeconds,
-        //   reciter: audioController.currentReciterModel.value,
-        //   surahNumber: audioController.currentPlayingSurah.value,
-        // );
       }
     });
 
@@ -200,65 +186,5 @@ class ManageQuranAudio {
   /// where 'SSS' is the zero-padded surah number and 'AAA' is the zero-padded ayah number.
   static String surahIDFromNumber(int surahNumber) {
     return surahNumber.toString().padLeft(3, '0');
-  }
-
-  static void registerAudioTimeStamp({
-    required String url,
-    int? position,
-    int? totalDuration,
-    ReciterInfoModel? reciter,
-    int? surahNumber,
-  }) async {
-    String hexCodeOfURL = urlToHash(url);
-    final box = Hive.box('audio_time_stamp');
-
-    Map<String, dynamic> lastTimeStamp = Map<String, dynamic>.from(
-        box.get(hexCodeOfURL, defaultValue: <String, dynamic>{}));
-
-    int lastPlayingPosition = lastTimeStamp['last_playing_position'] ?? 0;
-    int lastPlayingDuration =
-        lastTimeStamp['last_playing_duration'] ?? totalDuration;
-    if (lastPlayingPosition < lastPlayingDuration) {
-      lastPlayingPosition++;
-    }
-    lastTimeStamp['last_playing_position'] = lastPlayingPosition;
-    lastTimeStamp['last_playing_duration'] = lastPlayingDuration;
-    lastTimeStamp['reciter'] = reciter?.toMap();
-    lastTimeStamp['surah_number'] = surahNumber;
-
-    await box.put(hexCodeOfURL, lastTimeStamp);
-    Map<String, dynamic> completionInfo = Map<String, dynamic>.from(
-        Hive.box('completed_surah').get(surahNumber, defaultValue: {
-      "isFinished": false,
-      "surahNumber": surahNumber,
-      "percentage": 0,
-    }));
-    if (position != null &&
-        totalDuration != null &&
-        completionInfo['isFinished'] != true) {
-      if ((lastPlayingDuration - lastPlayingPosition <= 3)) {
-        toastification.show(
-          title: Text(
-              "Great. You just finished ${surahInfo[surahNumber ?? 0]["name_simple"]}"),
-          autoCloseDuration: const Duration(seconds: 3),
-          type: ToastificationType.success,
-        );
-        log("$lastPlayingDuration - $lastPlayingPosition = True");
-        completionInfo['isFinished'] = true;
-        completionInfo['percentage'] = 100;
-        completionInfo['surahNumber'] = surahNumber;
-      } else {
-        log("$lastPlayingDuration - $lastPlayingPosition = False");
-        int percentage = ((position / totalDuration) * 100).toInt();
-        completionInfo['isFinished'] = false;
-        completionInfo['percentage'] = percentage;
-        completionInfo['surahNumber'] = surahNumber;
-      }
-      await Hive.box('completed_surah').put(surahNumber, completionInfo);
-      log(completionInfo.toString(), name: "Completion Info");
-    }
-
-    await box.put(hexCodeOfURL, lastTimeStamp);
-    log(lastTimeStamp.toString(), name: "hexCodeOfURL Info");
   }
 }

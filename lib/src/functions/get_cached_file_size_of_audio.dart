@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
 
@@ -15,14 +16,29 @@ Future<int> getCacheSize(Directory cacheDir) async {
   int totalSize = 0;
 
   if (cacheDir.existsSync()) {
+    int i = 0;
     cacheDir.listSync().forEach((file) {
+      log(i.toString());
+      i++;
       if (file is File) {
         totalSize += file.lengthSync();
       }
     });
+    log("all $i");
   }
 
   return totalSize;
+}
+
+Future<int?> justSingleAudioCache(String name) async {
+  final path = await getApplicationCacheDirectory();
+  String cachePath = join(path.path, "just_audio_cache", "remote", "$name.mp3");
+  File f = File(cachePath);
+  if (await f.exists()) {
+    return await f.length();
+  } else {
+    return null;
+  }
 }
 
 String formatBytes(int bytes, [int decimals = 2]) {
