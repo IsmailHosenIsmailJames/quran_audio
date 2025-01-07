@@ -1,4 +1,5 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
+import 'package:al_quran_audio/src/core/audio/full_screen_mode/full_screen_mode.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/surah_ayah_count.dart';
 import 'package:al_quran_audio/src/functions/get_uthmani_tajweed.dart';
@@ -90,7 +91,16 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
     return Stack(
       children: [
         Container(
-          margin: const EdgeInsets.only(left: 5, right: 5, top: 25),
+          margin: EdgeInsets.only(
+            left: 5,
+            right: 5,
+            top: audioController.isFullScreenMode.value == false ? 25 : 5,
+            bottom: audioController.isFullScreenMode.value == false
+                ? 0
+                : MediaQuery.of(context).size.height > 450
+                    ? 130
+                    : 70,
+          ),
           decoration: BoxDecoration(
             color:
                 isDark ? const Color.fromARGB(255, 29, 29, 29) : Colors.white,
@@ -107,34 +117,36 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
             child: getWidgetOfQuranWithTajweed(latestSurahNumber),
           ),
         ),
-        Align(
-          alignment: Alignment.topRight,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: SizedBox(
-              height: 25,
-              width: 25,
-              child: IconButton(
-                style: IconButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    backgroundColor:
-                        isDark ? Colors.grey.shade900 : Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
-                      side: BorderSide(color: Colors.grey.shade400, width: 0.7),
-                    )),
-                onPressed: () {
-                  audioController.isSurahAyahMode.value =
-                      !audioController.isSurahAyahMode.value;
-                },
-                icon: const Icon(
-                  Icons.close,
-                  size: 15,
+        if (!audioController.isFullScreenMode.value)
+          Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: SizedBox(
+                height: 25,
+                width: 25,
+                child: IconButton(
+                  style: IconButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      backgroundColor:
+                          isDark ? Colors.grey.shade900 : Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                        side:
+                            BorderSide(color: Colors.grey.shade400, width: 0.7),
+                      )),
+                  onPressed: () {
+                    audioController.isSurahAyahMode.value =
+                        !audioController.isSurahAyahMode.value;
+                  },
+                  icon: const Icon(
+                    Icons.close,
+                    size: 15,
+                  ),
                 ),
               ),
             ),
           ),
-        ),
       ],
     );
   }
@@ -200,10 +212,14 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
               );
             }
           }
-          return Text.rich(TextSpan(children: listOfAyahsSpanText),
-              style: TextStyle(
-                fontSize: audioController.fontSizeArabic.value,
-              ));
+          return Text.rich(
+            TextSpan(children: listOfAyahsSpanText),
+            style: TextStyle(
+              fontSize: audioController.fontSizeArabic.value,
+            ),
+            textAlign: TextAlign.justify,
+            textDirection: TextDirection.rtl,
+          );
         });
   }
 
@@ -407,9 +423,19 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                       style: IconButton.styleFrom(
                         padding: EdgeInsets.zero,
                       ),
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.fullscreen_rounded,
+                      onPressed: () {
+                        if (audioController.isFullScreenMode.value) {
+                          Get.back();
+                        } else {
+                          Get.to(
+                            () => const FullScreenAudioMode(),
+                          );
+                        }
+                      },
+                      icon: Icon(
+                        audioController.isFullScreenMode.value
+                            ? Icons.fullscreen_exit_rounded
+                            : Icons.fullscreen_rounded,
                       ),
                     ),
                   ),
