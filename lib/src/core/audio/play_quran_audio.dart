@@ -42,16 +42,16 @@ class ManageQuranAudio {
       int sec = event.inSeconds;
       if (sec != audioController.progress.value.inSeconds) {
         audioController.progress.value = event;
-        registerAudioTimeStamp(
-          url: makeAudioUrl(
-            audioController.currentReciterModel.value,
-            (surahIDFromNumber(audioController.currentPlayingSurah.value + 1)),
-          ),
-          position: sec,
-          totalDuration: audioController.totalDuration.value.inSeconds,
-          reciter: audioController.currentReciterModel.value,
-          surahNumber: audioController.currentPlayingSurah.value,
-        );
+        // registerAudioTimeStamp(
+        //   url: makeAudioUrl(
+        //     audioController.currentReciterModel.value,
+        //     (surahIDFromNumber(audioController.currentPlayingSurah.value + 1)),
+        //   ),
+        //   position: sec,
+        //   totalDuration: audioController.totalDuration.value.inSeconds,
+        //   reciter: audioController.currentReciterModel.value,
+        //   surahNumber: audioController.currentPlayingSurah.value,
+        // );
       }
     });
 
@@ -105,7 +105,9 @@ class ManageQuranAudio {
   }
 
   static Future<void> playMultipleSurahAsPlayList(
-      {required int surahNumber, ReciterInfoModel? reciter}) async {
+      {required int surahNumber,
+      ReciterInfoModel? reciter,
+      bool playInstantly = true}) async {
     if (audioController.isStreamRegistered.value == false) {
       await startListening();
     }
@@ -134,7 +136,7 @@ class ManageQuranAudio {
       initialIndex: surahNumber,
       initialPosition: Duration.zero,
     );
-    await audioPlayer.play();
+    if (playInstantly) await audioPlayer.play();
   }
 
   /// Generates a URL pointing to a specific ayah's audio on everyayah.com.

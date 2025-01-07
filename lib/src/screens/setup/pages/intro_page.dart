@@ -20,8 +20,8 @@ class IntroPage extends StatelessWidget {
           ),
           Center(
             child: Container(
-              height: 280,
-              width: 280,
+              height: 200,
+              width: 200,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(1000),
                 boxShadow: [
