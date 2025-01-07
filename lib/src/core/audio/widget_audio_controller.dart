@@ -95,11 +95,6 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
             left: 5,
             right: 5,
             top: audioController.isFullScreenMode.value == false ? 25 : 5,
-            bottom: audioController.isFullScreenMode.value == false
-                ? 0
-                : MediaQuery.of(context).size.height > 450
-                    ? 130
-                    : 70,
           ),
           decoration: BoxDecoration(
             color:

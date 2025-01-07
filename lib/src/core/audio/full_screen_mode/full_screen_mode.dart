@@ -39,28 +39,6 @@ class _FullScreenAudioModeState extends State<FullScreenAudioMode> {
               showQuranAyahMode: true,
               surahNumber: audioController.currentPlayingSurah.value,
             ),
-            Align(
-              alignment: Alignment(
-                  1, MediaQuery.of(context).size.height < 450 ? 0.43 : 0.63),
-              child: Container(
-                margin: const EdgeInsets.only(
-                  left: 5,
-                  right: 5,
-                  top: 5,
-                ),
-                height: 100,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey.withValues(
-                    alpha: 0.2,
-                  ),
-                  borderRadius: BorderRadius.circular(7),
-                ),
-                child: const Center(
-                  child: Text("Audio Wave form"),
-                ),
-              ),
-            ),
           ],
         ),
       ),

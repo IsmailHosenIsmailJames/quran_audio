@@ -1,5 +1,6 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/functions/get_cached_file_size_of_audio.dart';
+import 'package:al_quran_audio/src/functions/tajweed_scripts_composer.dart';
 import 'package:al_quran_audio/src/theme/theme_controller.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
@@ -124,7 +125,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       divisions: 40,
                       onChanged: (value) async {
                         audioController.fontSizeArabic.value = value;
-                        setState(() {});
                         await Hive.box("info").put("fontSizeArabic", value);
                       },
                     ),
@@ -135,6 +135,31 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   const Gap(10),
                 ],
+              ),
+            ),
+            Container(
+              alignment: Alignment.topRight,
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(
+                  alpha: 0.2,
+                ),
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: Obx(
+                () => Text.rich(
+                  TextSpan(
+                    children: getTajweedTexSpan(
+                      startAyahBismillah(
+                        "uthmani_tajweed",
+                      ),
+                    ),
+                  ),
+                  style: TextStyle(
+                    fontSize: audioController.fontSizeArabic.value,
+                  ),
+                  textDirection: TextDirection.rtl,
+                ),
               ),
             ),
             const Gap(15),
