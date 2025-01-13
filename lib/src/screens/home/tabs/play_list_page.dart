@@ -646,7 +646,7 @@ class _PlayListPageState extends State<PlayListPage> {
                   child: ElevatedButton.icon(
                     onPressed: () {
                       if (playListController.text.isNotEmpty) {
-                        if (Hive.box('info')
+                        if (Hive.box('play_list')
                             .containsKey(playListController.text.trim())) {
                           toastification.show(
                             context: context,
