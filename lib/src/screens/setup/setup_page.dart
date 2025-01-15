@@ -26,80 +26,82 @@ class _SetupPageState extends State<SetupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          PageView(
-            controller: pageController,
-            onPageChanged: (value) {
-              setState(() {
-                pageIndex = value;
-              });
-            },
-            children: const [
-              IntroPage(),
-              ChoiceDefaultRecitation(),
-            ],
-          ),
-          Container(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: SizedBox(
-                width: double.infinity,
-                height: 40,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (pageIndex == 0) {
-                      pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeIn);
-                    } else {
-                      try {
-                        final reciter = recitationsInfoList[
-                            audioController.setupSelectedReciterIndex.value];
-                        final box = Hive.box("info");
-                        await box.put("default_reciter", jsonEncode(reciter));
-                        await box.put("reciter", jsonEncode(reciter));
-                        await box.put("reciter_index",
-                            audioController.setupSelectedReciterIndex.value);
+      body: SafeArea(
+        child: Stack(
+          children: [
+            PageView(
+              controller: pageController,
+              onPageChanged: (value) {
+                setState(() {
+                  pageIndex = value;
+                });
+              },
+              children: const [
+                IntroPage(),
+                ChoiceDefaultRecitation(),
+              ],
+            ),
+            Container(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 40,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (pageIndex == 0) {
+                        pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeIn);
+                      } else {
+                        try {
+                          final reciter = recitationsInfoList[
+                              audioController.setupSelectedReciterIndex.value];
+                          final box = Hive.box("info");
+                          await box.put("default_reciter", jsonEncode(reciter));
+                          await box.put("reciter", jsonEncode(reciter));
+                          await box.put("reciter_index",
+                              audioController.setupSelectedReciterIndex.value);
 
-                        if (audioController.isPlaying.value) {
-                          audioController.currentReciterIndex.value =
-                              audioController.setupSelectedReciterIndex.value;
-                          ManageQuranAudio.playMultipleSurahAsPlayList(
-                            surahNumber:
-                                audioController.currentPlayingSurah.value,
-                            reciter: ReciterInfoModel.fromMap(
-                              reciter,
-                            ),
+                          if (audioController.isPlaying.value) {
+                            audioController.currentReciterIndex.value =
+                                audioController.setupSelectedReciterIndex.value;
+                            ManageQuranAudio.playMultipleSurahAsPlayList(
+                              surahNumber:
+                                  audioController.currentPlayingSurah.value,
+                              reciter: ReciterInfoModel.fromMap(
+                                reciter,
+                              ),
+                            );
+                          } else {
+                            audioController.isReadyToControl.value = false;
+                          }
+                          Get.offAll(() => const HomePage());
+                        } catch (e) {
+                          toastification.show(
+                            context: context,
+                            title: const Text("Something went wrong"),
+                            type: ToastificationType.info,
+                            autoCloseDuration: const Duration(seconds: 3),
                           );
-                        } else {
-                          audioController.isReadyToControl.value = false;
                         }
-                        Get.offAll(() => const HomePage());
-                      } catch (e) {
-                        toastification.show(
-                          context: context,
-                          title: const Text("Something went wrong"),
-                          type: ToastificationType.info,
-                          autoCloseDuration: const Duration(seconds: 3),
-                        );
                       }
-                    }
-                  },
-                  child: Row(
-                    children: [
-                      const Spacer(flex: 6),
-                      Text(pageIndex == 0 ? "Next" : "Finish"),
-                      const Spacer(flex: 5),
-                      Icon(pageIndex == 0 ? Icons.arrow_forward : Icons.done),
-                    ],
+                    },
+                    child: Row(
+                      children: [
+                        const Spacer(flex: 6),
+                        Text(pageIndex == 0 ? "Next" : "Finish"),
+                        const Spacer(flex: 5),
+                        Icon(pageIndex == 0 ? Icons.arrow_forward : Icons.done),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

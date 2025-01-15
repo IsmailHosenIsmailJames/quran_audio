@@ -35,181 +35,183 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                Icon(Icons.light_mode_rounded),
-                Gap(10),
-                Text(
-                  "Theme Brightness",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const Gap(5),
-            Obx(
-              () => DropdownButtonFormField<String>(
-                value: appThemeDataController.themeModeName.value,
-                onChanged: (value) {
-                  appThemeDataController.setTheme(value!);
-                },
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                ),
-                isExpanded: true,
-                items: [
-                  const DropdownMenuItem(
-                    value: "system",
-                    child: Row(
-                      children: [
-                        Gap(10),
-                        Icon(
-                          Icons.brightness_4_rounded,
-                          size: 18,
-                        ),
-                        Gap(10),
-                        Text("System default"),
-                      ],
-                    ),
-                  ),
-                  const DropdownMenuItem(
-                    value: "dark",
-                    child: Row(
-                      children: [
-                        Gap(10),
-                        Icon(
-                          Icons.dark_mode_rounded,
-                          size: 18,
-                        ),
-                        Gap(10),
-                        Text("Dark"),
-                      ],
-                    ),
-                  ),
-                  const DropdownMenuItem(
-                    value: "light",
-                    child: Row(
-                      children: [
-                        Gap(10),
-                        Icon(
-                          Icons.light_mode_rounded,
-                          size: 18,
-                        ),
-                        Gap(10),
-                        Text("Light"),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Gap(15),
-            const Row(
-              children: [
-                Icon(FluentIcons.text_font_16_filled),
-                Gap(10),
-                Text(
-                  "Quran Font Size",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            Obx(
-              () => Row(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Row(
                 children: [
-                  Expanded(
-                    child: Slider(
-                      value: audioController.fontSizeArabic.value,
-                      min: 10,
-                      max: 50,
-                      divisions: 40,
-                      onChanged: (value) async {
-                        audioController.fontSizeArabic.value = value;
-                        await Hive.box("info").put("fontSizeArabic", value);
-                      },
-                    ),
-                  ),
-                  const Gap(5),
+                  Icon(Icons.light_mode_rounded),
+                  Gap(10),
                   Text(
-                    audioController.fontSizeArabic.value.round().toString(),
+                    "Theme Brightness",
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  const Gap(10),
                 ],
               ),
-            ),
-            Container(
-              alignment: Alignment.topRight,
-              padding: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: Colors.grey.withValues(
-                  alpha: 0.2,
-                ),
-                borderRadius: BorderRadius.circular(7),
-              ),
-              child: Obx(
-                () => Text.rich(
-                  TextSpan(
-                    children: getTajweedTexSpan(
-                      startAyahBismillah(
-                        "uthmani_tajweed",
+              const Gap(5),
+              Obx(
+                () => DropdownButtonFormField<String>(
+                  value: appThemeDataController.themeModeName.value,
+                  onChanged: (value) {
+                    appThemeDataController.setTheme(value!);
+                  },
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
+                  isExpanded: true,
+                  items: [
+                    const DropdownMenuItem(
+                      value: "system",
+                      child: Row(
+                        children: [
+                          Gap(10),
+                          Icon(
+                            Icons.brightness_4_rounded,
+                            size: 18,
+                          ),
+                          Gap(10),
+                          Text("System default"),
+                        ],
                       ),
                     ),
+                    const DropdownMenuItem(
+                      value: "dark",
+                      child: Row(
+                        children: [
+                          Gap(10),
+                          Icon(
+                            Icons.dark_mode_rounded,
+                            size: 18,
+                          ),
+                          Gap(10),
+                          Text("Dark"),
+                        ],
+                      ),
+                    ),
+                    const DropdownMenuItem(
+                      value: "light",
+                      child: Row(
+                        children: [
+                          Gap(10),
+                          Icon(
+                            Icons.light_mode_rounded,
+                            size: 18,
+                          ),
+                          Gap(10),
+                          Text("Light"),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Gap(15),
+              const Row(
+                children: [
+                  Icon(FluentIcons.text_font_16_filled),
+                  Gap(10),
+                  Text(
+                    "Quran Font Size",
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  style: TextStyle(
-                    fontSize: audioController.fontSizeArabic.value,
+                ],
+              ),
+              Obx(
+                () => Row(
+                  children: [
+                    Expanded(
+                      child: Slider(
+                        value: audioController.fontSizeArabic.value,
+                        min: 10,
+                        max: 50,
+                        divisions: 40,
+                        onChanged: (value) async {
+                          audioController.fontSizeArabic.value = value;
+                          await Hive.box("info").put("fontSizeArabic", value);
+                        },
+                      ),
+                    ),
+                    const Gap(5),
+                    Text(
+                      audioController.fontSizeArabic.value.round().toString(),
+                    ),
+                    const Gap(10),
+                  ],
+                ),
+              ),
+              Container(
+                alignment: Alignment.topRight,
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(
+                    alpha: 0.2,
                   ),
-                  textDirection: TextDirection.rtl,
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: Obx(
+                  () => Text.rich(
+                    TextSpan(
+                      children: getTajweedTexSpan(
+                        startAyahBismillah(
+                          "uthmani_tajweed",
+                        ),
+                      ),
+                    ),
+                    style: TextStyle(
+                      fontSize: audioController.fontSizeArabic.value,
+                    ),
+                    textDirection: TextDirection.rtl,
+                  ),
                 ),
               ),
-            ),
-            const Gap(15),
-            const Row(
-              children: [
-                Icon(
-                  Icons.cached_rounded,
-                ),
-                Gap(10),
-                Text(
-                  "Audio Cached",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const Gap(5),
-            Container(
-              margin: const EdgeInsets.only(
-                left: 5,
-                top: 5,
-                bottom: 5,
-                right: 5,
+              const Gap(15),
+              const Row(
+                children: [
+                  Icon(
+                    Icons.cached_rounded,
+                  ),
+                  Gap(10),
+                  Text(
+                    "Audio Cached",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-              padding: const EdgeInsets.all(7),
-              decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(7),
-              ),
-              child: FutureBuilder(
-                future: getCategorizedCacheFilesWithSize(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    Map<String, List<Map<String, dynamic>>> data =
-                        snapshot.data!;
+              const Gap(5),
+              Container(
+                margin: const EdgeInsets.only(
+                  left: 5,
+                  top: 5,
+                  bottom: 5,
+                  right: 5,
+                ),
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                child: FutureBuilder(
+                  future: getCategorizedCacheFilesWithSize(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      Map<String, List<Map<String, dynamic>>> data =
+                          snapshot.data!;
 
-                    List<String> keys = data.keys.toList();
+                      List<String> keys = data.keys.toList();
 
-                    return getListOfCacheWidget(keys, data);
-                  } else {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                },
+                      return getListOfCacheWidget(keys, data);
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

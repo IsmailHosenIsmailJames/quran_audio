@@ -56,96 +56,99 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          Obx(
-            () {
-              bool isDark = themeController.themeModeName.value == "dark" ||
-                  (themeController.themeModeName.value == "system" &&
-                      MediaQuery.of(context).platformBrightness ==
-                          Brightness.dark);
-              return PersistentTabView(
-                backgroundColor: isDark
-                    ? const Color.fromARGB(255, 20, 20, 20)
-                    : Colors.grey.shade100,
-                context,
-                controller: tabController,
-                screens: [
-                  PlayTab(
-                    tabController: tabController,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Obx(
+              () {
+                bool isDark = themeController.themeModeName.value == "dark" ||
+                    (themeController.themeModeName.value == "system" &&
+                        MediaQuery.of(context).platformBrightness ==
+                            Brightness.dark);
+                return PersistentTabView(
+                  backgroundColor: isDark
+                      ? const Color.fromARGB(255, 20, 20, 20)
+                      : Colors.grey.shade100,
+                  context,
+                  controller: tabController,
+                  screens: [
+                    PlayTab(
+                      tabController: tabController,
+                    ),
+                    PlayListPage(
+                      tabController: tabController,
+                    ),
+                    const ProfilePage(),
+                  ],
+                  items: [
+                    PersistentBottomNavBarItem(
+                      icon: const Icon(Icons.play_circle_rounded),
+                      title: ("Play"),
+                      activeColorSecondary: Colors.green.shade600,
+                      inactiveColorPrimary:
+                          isDark ? Colors.white : Colors.grey.shade700,
+                    ),
+                    PersistentBottomNavBarItem(
+                      icon: const Icon(Icons.playlist_play_rounded),
+                      title: ("Play Lists"),
+                      activeColorSecondary: Colors.green.shade600,
+                      inactiveColorPrimary:
+                          isDark ? Colors.white : Colors.grey.shade700,
+                    ),
+                    PersistentBottomNavBarItem(
+                      icon: const Icon(FluentIcons.person_24_filled),
+                      title: ("Profile"),
+                      activeColorSecondary: Colors.green.shade600,
+                      inactiveColorPrimary:
+                          isDark ? Colors.white : Colors.grey.shade700,
+                    ),
+                  ],
+                  handleAndroidBackButtonPress: true,
+                  resizeToAvoidBottomInset: true,
+                  stateManagement: true,
+                  hideNavigationBarWhenKeyboardAppears: true,
+                  popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
+                  decoration: NavBarDecoration(
+                    border: Border(
+                      top: BorderSide(
+                          color: Colors.grey.shade600.withValues(alpha: 0.4)),
+                    ),
                   ),
-                  PlayListPage(
-                    tabController: tabController,
+                  isVisible: true,
+                  animationSettings: const NavBarAnimationSettings(
+                    navBarItemAnimation: ItemAnimationSettings(
+                      duration: Duration(milliseconds: 400),
+                      curve: Curves.ease,
+                    ),
+                    screenTransitionAnimation:
+                        ScreenTransitionAnimationSettings(
+                      animateTabTransition: true,
+                      duration: Duration(milliseconds: 400),
+                      screenTransitionAnimationType:
+                          ScreenTransitionAnimationType.fadeIn,
+                    ),
                   ),
-                  const ProfilePage(),
-                ],
-                items: [
-                  PersistentBottomNavBarItem(
-                    icon: const Icon(Icons.play_circle_rounded),
-                    title: ("Play"),
-                    activeColorSecondary: Colors.green.shade600,
-                    inactiveColorPrimary:
-                        isDark ? Colors.white : Colors.grey.shade700,
-                  ),
-                  PersistentBottomNavBarItem(
-                    icon: const Icon(Icons.playlist_play_rounded),
-                    title: ("Play Lists"),
-                    activeColorSecondary: Colors.green.shade600,
-                    inactiveColorPrimary:
-                        isDark ? Colors.white : Colors.grey.shade700,
-                  ),
-                  PersistentBottomNavBarItem(
-                    icon: const Icon(FluentIcons.person_24_filled),
-                    title: ("Profile"),
-                    activeColorSecondary: Colors.green.shade600,
-                    inactiveColorPrimary:
-                        isDark ? Colors.white : Colors.grey.shade700,
-                  ),
-                ],
-                handleAndroidBackButtonPress: true,
-                resizeToAvoidBottomInset: true,
-                stateManagement: true,
-                hideNavigationBarWhenKeyboardAppears: true,
-                popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
-                decoration: NavBarDecoration(
-                  border: Border(
-                    top: BorderSide(
-                        color: Colors.grey.shade600.withValues(alpha: 0.4)),
-                  ),
-                ),
-                isVisible: true,
-                animationSettings: const NavBarAnimationSettings(
-                  navBarItemAnimation: ItemAnimationSettings(
-                    duration: Duration(milliseconds: 400),
-                    curve: Curves.ease,
-                  ),
-                  screenTransitionAnimation: ScreenTransitionAnimationSettings(
-                    animateTabTransition: true,
-                    duration: Duration(milliseconds: 400),
-                    screenTransitionAnimationType:
-                        ScreenTransitionAnimationType.fadeIn,
-                  ),
-                ),
-                confineToSafeArea: true,
-                navBarHeight: kBottomNavigationBarHeight,
-                navBarStyle: NavBarStyle.style12,
-              );
-            },
-          ),
-          Obx(
-            () => Container(
-              margin: const EdgeInsets.only(bottom: 55),
-              child: (audioController.isPlaying.value == true ||
-                      audioController.isReadyToControl.value == true)
-                  ? WidgetAudioController(
-                      showSurahNumber: false,
-                      showQuranAyahMode: true,
-                      surahNumber: audioController.currentPlayingSurah.value,
-                    )
-                  : null,
+                  confineToSafeArea: true,
+                  navBarHeight: kBottomNavigationBarHeight,
+                  navBarStyle: NavBarStyle.style12,
+                );
+              },
             ),
-          ),
-        ],
+            Obx(
+              () => Container(
+                margin: const EdgeInsets.only(bottom: 55),
+                child: (audioController.isPlaying.value == true ||
+                        audioController.isReadyToControl.value == true)
+                    ? WidgetAudioController(
+                        showSurahNumber: false,
+                        showQuranAyahMode: true,
+                        surahNumber: audioController.currentPlayingSurah.value,
+                      )
+                    : null,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
