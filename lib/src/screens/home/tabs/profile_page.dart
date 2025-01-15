@@ -164,7 +164,9 @@ class _ProfilePageState extends State<ProfilePage> {
               const Gap(10),
               Text(
                 (!isBackedUp)
-                    ? "Your Playlists need to backup."
+                    ? cloudPlayListString?.isEmpty == true
+                        ? "Your Playlists need to backup."
+                        : "Backup changes to cloud"
                     : "Your Playlists are up to date",
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -202,8 +204,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       }
                     },
                     icon: const Icon(Icons.backup_rounded),
-                    label: const Text(
-                      "Backup Now",
+                    label: Text(
+                      cloudPlayListString?.isEmpty == true
+                          ? "Backup Now"
+                          : "Backup Changes",
                     ),
                   ),
                 ),

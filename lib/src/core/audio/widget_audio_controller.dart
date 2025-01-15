@@ -277,7 +277,7 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                           !audioController.isSurahAyahMode.value;
                     },
                     icon: Icon(
-                      Icons.text_snippet_rounded,
+                      FluentIcons.book_24_filled,
                       color: audioController.isSurahAyahMode.value
                           ? Colors.green
                           : colorToApply,

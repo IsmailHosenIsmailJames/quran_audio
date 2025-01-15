@@ -197,7 +197,11 @@ class _PlayTabState extends State<PlayTab> {
                 return GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTap: () {
-                    showPopUpForQuranWithTajweedText(context, index);
+                    int startAyah = 0;
+                    for (int i = 0; i < index; i++) {
+                      startAyah += surahAyahCount[i];
+                    }
+                    showPopUpForQuranWithTajweedText(context, index, startAyah);
                   },
                   child: Card(
                     elevation: 0,
@@ -292,11 +296,17 @@ class _PlayTabState extends State<PlayTab> {
   }
 
   Future<dynamic> showPopUpForQuranWithTajweedText(
-      BuildContext context, int index) {
+      BuildContext context, int index, int startAyah) {
     return showModalBottomSheet(
       showDragHandle: true,
       scrollControlDisabledMaxHeightRatio: 1,
       isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(7),
+          topRight: Radius.circular(7),
+        ),
+      ),
       context: context,
       builder: (context) {
         return DraggableScrollableSheet(
@@ -308,12 +318,17 @@ class _PlayTabState extends State<PlayTab> {
           builder: (context, scrollController) {
             return ListView.builder(
                 controller: scrollController,
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.only(
+                  bottom: 100,
+                  left: 10,
+                  right: 10,
+                  top: 10,
+                ),
                 itemCount: (surahAyahCount[(index)] / 10).ceil(),
-                itemBuilder: (context, index) {
+                itemBuilder: (context, i) {
                   int ayahCount = surahAyahCount[index];
-                  int start = index * 10 + 1;
-                  int end = (index + 1) * 10;
+                  int start = i * 10 + 1;
+                  int end = start + 10 + 1;
                   if (end > ayahCount) {
                     end = ayahCount;
                   }
@@ -323,6 +338,7 @@ class _PlayTabState extends State<PlayTab> {
                   for (int currentAyahNumber = start;
                       currentAyahNumber <= end;
                       currentAyahNumber++) {
+                    // log("uthmani_tajweed/${(index) + 1}:$currentAyahNumber");
                     listOfAyahsSpanText.addAll(
                       getTajweedTexSpan(
                         infoBox.get(
