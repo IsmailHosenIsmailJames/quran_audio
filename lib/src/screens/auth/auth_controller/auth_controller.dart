@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:al_quran_audio/src/api/appwrite/config.dart';
-import 'package:al_quran_audio/src/functions/safe_email_to_id.dart';
 import 'package:al_quran_audio/src/screens/home/controller/home_page_controller.dart';
 import 'package:al_quran_audio/src/screens/home/controller/model/play_list_model.dart';
 import 'package:appwrite/appwrite.dart';
@@ -43,7 +42,7 @@ class AuthController extends GetxController {
     final user = await AppWriteConfig.account.get();
     loggedInUser.value = user;
     try {
-      String id = encodeEmailForId(user.email);
+      String id = user.$id;
       final AuthController authController = Get.find<AuthController>();
       final response = Databases(AppWriteConfig.client).getDocument(
         databaseId: authController.databaseID,

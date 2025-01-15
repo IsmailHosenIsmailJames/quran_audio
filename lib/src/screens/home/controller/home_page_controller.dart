@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:al_quran_audio/src/api/appwrite/config.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
-import 'package:al_quran_audio/src/functions/safe_email_to_id.dart';
 import 'package:al_quran_audio/src/screens/auth/auth_controller/auth_controller.dart';
 import 'package:al_quran_audio/src/screens/home/controller/model/play_list_model.dart';
 import 'package:appwrite/appwrite.dart';
@@ -83,7 +82,7 @@ class HomePageController extends GetxController {
 
       try {
         final AuthController authController = Get.find<AuthController>();
-        String id = encodeEmailForId(authController.loggedInUser.value!.email);
+        String id = authController.loggedInUser.value!.$id;
         if (Hive.box('cloud_play_list').keys.isNotEmpty) {
           await db.updateDocument(
             databaseId: authController.databaseID,
