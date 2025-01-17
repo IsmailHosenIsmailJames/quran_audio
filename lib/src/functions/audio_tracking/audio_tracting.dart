@@ -39,7 +39,6 @@ void audioTracking() {
 
   trackingAudioModel!.totalPlayedDurationInSeconds += 1;
   trackingAudioModel!.totalDurationInSeconds = totalDuration.inSeconds;
-  trackingAudioModel!.totalPlayedDurationInSeconds += 1;
 
   box.put(currentPlayingSurah, trackingAudioModel!.toMap());
   log("Audio Tracked \n${trackingAudioModel!.toMap()}");
