@@ -115,11 +115,107 @@ class _ProfilePageState extends State<ProfilePage> {
         const Gap(15),
         Padding(
           padding: const EdgeInsets.all(5.0),
-          child: Text("Audio History",
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "Audio History",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "Listened ${formatDuration(Duration(seconds: getTotalDurationInSeconds()))}",
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              SizedBox(
+                height: 30,
+                width: 50,
+                child: PopupMenuButton(
+                    style: IconButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                    ),
+                    onSelected: (value) {
+                      setState(() {
+                        sortBy = value.toString();
+                      });
+                    },
+                    itemBuilder: (context) {
+                      return [
+                        PopupMenuItem(
+                          value: "surahIncreasing",
+                          child: Text(
+                            "Sort by increasing Surah Number",
+                            style: TextStyle(
+                              color: sortBy == "surahIncreasing"
+                                  ? Colors.green
+                                  : null,
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: "surahDecreasing",
+                          child: Text(
+                            "Sort by decreasing Surah Number",
+                            style: TextStyle(
+                              color: sortBy == "surahDecreasing"
+                                  ? Colors.green
+                                  : null,
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: "increasing",
+                          child: Text(
+                            "Sort by increasing surah duration",
+                            style: TextStyle(
+                              color:
+                                  sortBy == "increasing" ? Colors.green : null,
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: "decreasing",
+                          child: Text(
+                            "Sort by decreasing surah duration",
+                            style: TextStyle(
+                              color:
+                                  sortBy == "decreasing" ? Colors.green : null,
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: "increasingListened",
+                          child: Text(
+                            "Sort by increasing listened duration",
+                            style: TextStyle(
+                              color: sortBy == "increasingListened"
+                                  ? Colors.green
+                                  : null,
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: "decreasingListened",
+                          child: Text(
+                            "Sort by decreasing listened duration",
+                            style: TextStyle(
+                              color: sortBy == "decreasingListened"
+                                  ? Colors.green
+                                  : null,
+                            ),
+                          ),
+                        ),
+                      ];
+                    }),
+              ),
+            ],
+          ),
         ),
         Container(
-          margin: EdgeInsets.all(5),
+          margin: const EdgeInsets.all(5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: Colors.grey.withValues(alpha: 0.05),
@@ -142,97 +238,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         currentTrackingModel.totalPlayedDurationInSeconds ==
                                 0 &&
                             currentTrackingModel.totalDurationInSeconds == 1;
-                    return Padding(
-                      padding: const EdgeInsets.all(5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                            radius: 15,
-                            child: FittedBox(
-                              child: Text(
-                                (currentTrackingModel.surahNumber + 1)
-                                    .toString(),
-                              ),
-                            ),
-                          ),
-                          const Gap(10),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    surahInfo[currentTrackingModel.surahNumber]
-                                            ["name_simple"] ??
-                                        "",
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const Gap(10),
-                                  (didNotPlayed)
-                                      ? Text(
-                                          "Didn't played yet",
-                                          style: const TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.grey,
-                                          ),
-                                        )
-                                      : Text(
-                                          "Listened: ${formatDuration(Duration(seconds: currentTrackingModel.totalPlayedDurationInSeconds))} | Duration: ${formatDuration(Duration(seconds: currentTrackingModel.totalDurationInSeconds))}",
-                                          style: const TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 20,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                              0.75 -
-                                          ((isDone && didNotPlayed == false)
-                                              ? 30
-                                              : 0),
-                                      child: LinearProgressIndicator(
-                                        value: currentTrackingModel
-                                                .totalPlayedDurationInSeconds /
-                                            currentTrackingModel
-                                                .totalDurationInSeconds,
-                                        borderRadius: BorderRadius.circular(7),
-                                      ),
-                                    ),
-                                    const Gap(5),
-                                    if (isDone && didNotPlayed == false)
-                                      const SizedBox(
-                                        height: 25,
-                                        width: 25,
-                                        child: CircleAvatar(
-                                          backgroundColor: Colors.green,
-                                          child: Icon(
-                                            Icons.done,
-                                            color: Colors.white,
-                                            size: 15,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
+                    return getAudioHistoryOfSurahs(
+                        currentTrackingModel, didNotPlayed, context, isDone);
                   },
                 ),
               );
@@ -240,6 +247,98 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ],
+    );
+  }
+
+  String sortBy = "surahIncreasing";
+
+  Padding getAudioHistoryOfSurahs(TrackingAudioModel currentTrackingModel,
+      bool didNotPlayed, BuildContext context, bool isDone) {
+    return Padding(
+      padding: const EdgeInsets.all(5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: 15,
+            child: FittedBox(
+              child: Text(
+                (currentTrackingModel.surahNumber + 1).toString(),
+              ),
+            ),
+          ),
+          const Gap(10),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    surahInfo[currentTrackingModel.surahNumber]
+                            ["name_simple"] ??
+                        "",
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Gap(10),
+                  (didNotPlayed)
+                      ? const Text(
+                          "Didn't played yet",
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey,
+                          ),
+                        )
+                      : Text(
+                          "Listened: ${formatDuration(Duration(seconds: currentTrackingModel.totalPlayedDurationInSeconds))} | Duration: ${formatDuration(Duration(seconds: currentTrackingModel.totalDurationInSeconds))}",
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey,
+                          ),
+                        ),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.75 -
+                          ((isDone && didNotPlayed == false) ? 30 : 0),
+                      child: LinearProgressIndicator(
+                        value:
+                            currentTrackingModel.totalPlayedDurationInSeconds /
+                                currentTrackingModel.totalDurationInSeconds,
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                    ),
+                    const Gap(5),
+                    if (isDone && didNotPlayed == false)
+                      const SizedBox(
+                        height: 25,
+                        width: 25,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.green,
+                          child: Icon(
+                            Icons.done,
+                            color: Colors.white,
+                            size: 15,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -270,7 +369,41 @@ class _ProfilePageState extends State<ProfilePage> {
       toReturn.add(model);
     }
 
+    if (sortBy == "surahIncreasing") {
+      return toReturn;
+    } else if (sortBy == "surahDecreasing") {
+      return toReturn.reversed.toList();
+    } else if (sortBy == "increasing") {
+      toReturn.sort((a, b) => a.totalDurationInSeconds.compareTo(
+            b.totalDurationInSeconds,
+          ));
+      return toReturn;
+    } else if (sortBy == "decreasing") {
+      toReturn.sort((a, b) => b.totalDurationInSeconds.compareTo(
+            a.totalDurationInSeconds,
+          ));
+      return toReturn;
+    } else if (sortBy == "increasingListened") {
+      toReturn.sort((a, b) => a.totalPlayedDurationInSeconds.compareTo(
+            b.totalPlayedDurationInSeconds,
+          ));
+      return toReturn;
+    } else if (sortBy == "decreasingListened") {
+      toReturn.sort((a, b) => b.totalPlayedDurationInSeconds.compareTo(
+            a.totalPlayedDurationInSeconds,
+          ));
+      return toReturn;
+    }
+
     return toReturn;
+  }
+
+  int getTotalDurationInSeconds() {
+    int totalDurationInSeconds = 0;
+    getAudioTrackingModelList().forEach((element) {
+      totalDurationInSeconds += element.totalPlayedDurationInSeconds;
+    });
+    return totalDurationInSeconds;
   }
 
   String formatDuration(Duration duration) {
