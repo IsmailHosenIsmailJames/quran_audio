@@ -5,6 +5,7 @@ import 'package:al_quran_audio/src/api/apis.dart';
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitations.dart';
+import 'package:al_quran_audio/src/functions/audio_tracking/audio_tracting.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio/just_audio.dart';
@@ -30,7 +31,10 @@ class ManageQuranAudio {
     log("Listening to audio stream");
     audioPlayer.durationStream.listen((event) {
       if (event != null) {
-        audioController.totalDuration.value = event;
+        int sec = event.inSeconds;
+        if (sec != audioController.totalDuration.value.inSeconds) {
+          audioController.totalDuration.value = event;
+        }
       }
     });
 
@@ -38,15 +42,23 @@ class ManageQuranAudio {
       int sec = event.inSeconds;
       if (sec != audioController.progress.value.inSeconds) {
         audioController.progress.value = event;
+        audioController.currentReciterModel;
+
+        audioTracking();
       }
     });
 
     audioPlayer.speedStream.listen((event) {
-      audioController.speed.value = event;
+      if (audioController.speed.value != event) {
+        audioController.speed.value = event;
+      }
     });
 
     audioPlayer.bufferedPositionStream.listen((event) {
-      audioController.bufferPosition.value = event;
+      int sec = event.inSeconds;
+      if (sec != audioController.bufferPosition.value.inSeconds) {
+        audioController.bufferPosition.value = event;
+      }
     });
 
     audioPlayer.playerStateStream.listen((event) {

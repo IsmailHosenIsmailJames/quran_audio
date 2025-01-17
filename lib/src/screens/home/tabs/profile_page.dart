@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
+import 'package:al_quran_audio/src/functions/audio_tracking/model.dart';
 import 'package:al_quran_audio/src/screens/auth/auth_controller/auth_controller.dart';
 import 'package:al_quran_audio/src/screens/auth/login/login_page.dart';
 import 'package:al_quran_audio/src/screens/home/controller/home_page_controller.dart';
+import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
 import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -36,77 +39,242 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: loggedInUser(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return const Center(
-            child: Text("Error"),
-          );
-        } else {
-          User? user = snapshot.data;
-          if (user == null) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text(
-                    "Get the best experience by logging in ->",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    "You can save your favorite playlist to the cloud. And continue listening from where you left off. No need to worry about losing your playlist. We got you covered.",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        await Get.to(() => const LoginPage());
-                        setState(() {});
-                      },
-                      iconAlignment: IconAlignment.end,
-                      child: const Row(
-                        children: [
-                          Spacer(),
-                          Text(
-                            'Login',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                          Spacer(),
-                          Icon(Icons.fast_forward_rounded),
-                        ],
+    return ListView(
+      children: [
+        FutureBuilder(
+          future: loggedInUser(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(
+                child: Text("Error"),
+              );
+            } else {
+              User? user = snapshot.data;
+              if (user == null) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text(
+                        "Get the best experience by logging in ->",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        "You can save your favorite playlist to the cloud. And continue listening from where you left off. No need to worry about losing your playlist. We got you covered.",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade600,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            await Get.to(() => const LoginPage());
+                            setState(() {});
+                          },
+                          iconAlignment: IconAlignment.end,
+                          child: const Row(
+                            children: [
+                              Spacer(),
+                              Text(
+                                'Login',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Spacer(),
+                              Icon(Icons.fast_forward_rounded),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return getUserUI(user);
+              }
+            }
+          },
+        ),
+        const Gap(15),
+        Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Text("Audio History",
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        Container(
+          margin: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.grey.withValues(alpha: 0.05),
+          ),
+          child: StreamBuilder(
+            stream: getPeriodicStream(),
+            builder: (context, snapshot) {
+              List<TrackingAudioModel> audioTrackingModelList =
+                  getAudioTrackingModelList();
+              return Column(
+                children: List.generate(
+                  audioTrackingModelList.length,
+                  (index) {
+                    TrackingAudioModel currentTrackingModel =
+                        audioTrackingModelList[index];
+                    bool isDone =
+                        currentTrackingModel.totalPlayedDurationInSeconds >=
+                            currentTrackingModel.totalDurationInSeconds - 2;
+                    bool didNotPlayed =
+                        currentTrackingModel.totalPlayedDurationInSeconds ==
+                                0 &&
+                            currentTrackingModel.totalDurationInSeconds == 1;
+                    return Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            child: FittedBox(
+                              child: Text(
+                                (currentTrackingModel.surahNumber + 1)
+                                    .toString(),
+                              ),
+                            ),
+                          ),
+                          const Gap(10),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    surahInfo[currentTrackingModel.surahNumber]
+                                            ["name_simple"] ??
+                                        "",
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const Gap(10),
+                                  (didNotPlayed)
+                                      ? Text(
+                                          "Didn't played yet",
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.grey,
+                                          ),
+                                        )
+                                      : Text(
+                                          "Listened: ${formatDuration(Duration(seconds: currentTrackingModel.totalPlayedDurationInSeconds))} | Duration: ${formatDuration(Duration(seconds: currentTrackingModel.totalDurationInSeconds))}",
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 20,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                              0.75 -
+                                          ((isDone && didNotPlayed == false)
+                                              ? 30
+                                              : 0),
+                                      child: LinearProgressIndicator(
+                                        value: currentTrackingModel
+                                                .totalPlayedDurationInSeconds /
+                                            currentTrackingModel
+                                                .totalDurationInSeconds,
+                                        borderRadius: BorderRadius.circular(7),
+                                      ),
+                                    ),
+                                    const Gap(5),
+                                    if (isDone && didNotPlayed == false)
+                                      const SizedBox(
+                                        height: 25,
+                                        width: 25,
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.green,
+                                          child: Icon(
+                                            Icons.done,
+                                            color: Colors.white,
+                                            size: 15,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-              ],
-            );
-          } else {
-            return getUserUI(user);
-          }
-        }
-      },
+              );
+            },
+          ),
+        ),
+      ],
     );
+  }
+
+  Stream<int> getPeriodicStream() async* {
+    yield* Stream.periodic(const Duration(seconds: 5), (_) {
+      return 1;
+    }).asyncMap(
+      (value) async => value,
+    );
+  }
+
+  List<TrackingAudioModel> getAudioTrackingModelList() {
+    List<TrackingAudioModel> toReturn = [];
+    final box = Hive.box("audio_track");
+    for (int key = 0; key < 114; key++) {
+      final value = box.get(key);
+      TrackingAudioModel? model = value != null
+          ? TrackingAudioModel.fromMap(
+              Map<String, dynamic>.from(value),
+            )
+          : null;
+      model ??= TrackingAudioModel(
+          surahNumber: key,
+          lastReciterId: audioController.currentReciterModel.value.id,
+          totalDurationInSeconds: 1,
+          totalPlayedDurationInSeconds: 0);
+
+      toReturn.add(model);
+    }
+
+    return toReturn;
+  }
+
+  String formatDuration(Duration duration) {
+    return "${duration.inHours}:${duration.inMinutes % 60}:${duration.inSeconds % 60}";
   }
 
   Widget getUserUI(User user) {
@@ -212,16 +380,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               const Gap(20),
-              const Center(
-                child: Text(
-                  "Note: We are working on more features...\nStay tuned!",
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-              ),
             ],
           );
         },
