@@ -20,15 +20,12 @@ class IntroPage extends StatelessWidget {
     ];
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.only(top: 40, bottom: 80),
+        padding: const EdgeInsets.only(bottom: 80),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [themeIconButton],
-            ),
+            Gap(50),
             Center(
               child: Container(
                 height: 200,
@@ -50,7 +47,21 @@ class IntroPage extends StatelessWidget {
                 ),
               ),
             ),
-            const Gap(15),
+            const Gap(30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Gap(10),
+                const Text(
+                  "Theme",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Gap(5),
+                themeIconButton
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Text(

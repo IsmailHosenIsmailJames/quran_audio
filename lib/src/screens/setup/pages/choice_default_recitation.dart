@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
@@ -23,9 +21,9 @@ class ChoiceDefaultRecitation extends StatefulWidget {
 
 class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
   AudioController audioControllerGetx = ManageQuranAudio.audioController;
+  String search = "";
   @override
   Widget build(BuildContext context) {
-    log((audioControllerGetx.isPlaying.value == true).toString());
     return Scaffold(
       appBar: AppBar(
         title: widget.forChangeReciter == true
@@ -39,11 +37,16 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
         children: [
           ListView.builder(
             padding:
-                const EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 60),
+                const EdgeInsets.only(left: 5, right: 5, top: 50, bottom: 60),
             itemCount: recitationsInfoList.length,
             itemBuilder: (context, index) {
               final current =
                   ReciterInfoModel.fromMap(recitationsInfoList[index]);
+              if (!(current.name + current.id)
+                  .toLowerCase()
+                  .contains(search.toLowerCase())) {
+                return const SizedBox();
+              }
               return GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () async {
@@ -108,6 +111,18 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                 ),
               );
             },
+          ),
+          SizedBox(
+            height: 35,
+            child: SearchBar(
+              leading: const Icon(Icons.search),
+              hintText: "Search",
+              onChanged: (value) {
+                setState(() {
+                  search = value;
+                });
+              },
+            ),
           ),
           Obx(
             () => Align(
