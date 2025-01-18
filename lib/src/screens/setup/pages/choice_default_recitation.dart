@@ -112,8 +112,9 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
               );
             },
           ),
-          SizedBox(
-            height: 35,
+          Container(
+            padding: const EdgeInsets.only(left: 5, right: 5),
+            height: 40,
             child: SearchBar(
               leading: const Icon(Icons.search),
               hintText: "Search",
