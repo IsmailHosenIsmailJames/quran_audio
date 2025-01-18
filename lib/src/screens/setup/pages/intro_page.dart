@@ -9,85 +9,130 @@ class IntroPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 40, bottom: 80),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [themeIconButton],
-          ),
-          Center(
-            child: Container(
-              height: 200,
-              width: 200,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(1000),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.green.withValues(alpha: 0.6),
-                    spreadRadius: 10,
-                    blurRadius: 40,
-                  ),
-                ],
-                image: const DecorationImage(
-                  image: AssetImage(
-                    "assets/AlQuranAudio.jpg",
+    List<String> listOfPoints = [
+      "Get 80 best Quran reciters recitations.",
+      "Read Quran with Tajweed while listening.",
+      "Create your personalized playlists.",
+      "Enjoy background playback support.",
+      "Track your listening progress.",
+      "Share and download your favorite one.",
+      "Backup playlists and listening history.",
+    ];
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 40, bottom: 80),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [themeIconButton],
+            ),
+            Center(
+              child: Container(
+                height: 200,
+                width: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(1000),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.green.withValues(alpha: 0.6),
+                      spreadRadius: 10,
+                      blurRadius: 40,
+                    ),
+                  ],
+                  image: const DecorationImage(
+                    image: AssetImage(
+                      "assets/AlQuranAudio.jpg",
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          const Gap(10),
-          Container(
-            padding: const EdgeInsets.only(left: 10, right: 10),
-            alignment: Alignment.center,
-            child: Text(
-              "The Quran Audio Recitation App brings together a curated collection of 76 reciters, providing an immersive auditory experience of the Quran. With a focus on simplicity, accessibility, and quality, the app caters to users of all ages and preferences. Whether you are at home, commuting, or meditating, this app lets you carry the soul of the Quran wherever you go.",
-              textAlign: TextAlign.justify,
-              style: Theme.of(context).textTheme.bodySmall,
+            const Gap(15),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Text(
+                "Quran Companion",
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.only(left: 10, right: 10),
-            alignment: Alignment.center,
-            child: Text(
-              "Discover, Listen, Reflect.",
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge,
+            const Divider(
+              height: 1,
             ),
-          ),
-          MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaler: const TextScaler.linear(0.7),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: List.generate(
+                  listOfPoints.length,
+                  (index) {
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      minTileHeight: 20,
+                      horizontalTitleGap: 6,
+                      minVerticalPadding: 4,
+                      leading: CircleAvatar(
+                        radius: 10,
+                        backgroundColor: Colors.green.shade700,
+                        child: const Icon(
+                          Icons.done,
+                          color: Colors.white,
+                          size: 15,
+                        ),
+                      ),
+                      title: Text(
+                        listOfPoints[index],
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text("Data collected from :"),
-                  TextButton(
-                    onPressed: () {
-                      launchUrl(Uri.parse("https://quran.com/"),
-                          mode: LaunchMode.externalApplication);
-                    },
-                    child: const Text("Quran.com"),
-                  ),
-                  const Text("and"),
-                  TextButton(
-                      onPressed: () {
+            const Divider(
+              height: 1,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: MediaQuery(
+                data: MediaQuery.of(context)
+                    .copyWith(textScaler: const TextScaler.linear(0.8)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text("We used "),
+                    GestureDetector(
+                      onTap: () {
+                        launchUrl(Uri.parse("https://quran.com/"),
+                            mode: LaunchMode.externalApplication);
+                      },
+                      child: Text(
+                        "Quran.com",
+                        style: TextStyle(
+                          color: Colors.green.shade400,
+                        ),
+                      ),
+                    ),
+                    const Text(" & "),
+                    GestureDetector(
+                      onTap: () {
                         launchUrl(Uri.parse("https://quranicaudio.com/"),
                             mode: LaunchMode.externalApplication);
                       },
-                      child: const Text("Quranicaudio.com")),
-                ],
+                      child: Text(
+                        "Quranicaudio.com",
+                        style: TextStyle(color: Colors.green.shade400),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
