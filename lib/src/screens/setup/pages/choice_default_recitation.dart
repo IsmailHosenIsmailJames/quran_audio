@@ -26,6 +26,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: widget.forChangeReciter == true
             ? const Text("Change Reciter")
             : const Text("Choice Default Reciter"),
@@ -33,6 +34,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
           if (widget.forChangeReciter == false) themeIconButton,
         ],
       ),
+      backgroundColor: Colors.transparent,
       body: Stack(
         children: [
           ListView.builder(
@@ -58,7 +60,7 @@ class _ChoiceDefaultRecitationState extends State<ChoiceDefaultRecitation> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey.withValues(alpha: 0.2),
+                    color: Colors.grey.withValues(alpha: 0.1),
                   ),
                   padding: const EdgeInsets.all(5),
                   margin: const EdgeInsets.only(bottom: 5),
