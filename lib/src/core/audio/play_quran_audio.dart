@@ -86,8 +86,7 @@ class ManageQuranAudio {
   }
 
   static Future<void> playProvidedPlayList(
-      {required List<LockCachingAudioSource> playList,
-      int? initialIndex}) async {
+      {required List<AudioSource> playList, int? initialIndex}) async {
     if (audioController.isStreamRegistered.value == false) {
       await startListening();
     }
@@ -106,35 +105,48 @@ class ManageQuranAudio {
       {required int surahNumber,
       ReciterInfoModel? reciter,
       bool playInstantly = true}) async {
+    log("playMultipleSurahAsPlayList", name: "Audio Player");
     if (audioController.isStreamRegistered.value == false) {
       await startListening();
     }
+    log("startListening", name: "Audio Player");
     await audioPlayer.stop();
+    log("audioPlayer.stop()", name: "Audio Player");
+
     reciter ??= findRecitationModel();
-    List<LockCachingAudioSource> audioSources = [];
+    List<AudioSource> audioSources = [];
     for (var i = 0; i < 114; i++) {
+      log(i.toString());
       audioSources.add(
-        LockCachingAudioSource(
-            Uri.parse(
-              makeAudioUrl(
-                reciter,
-                surahIDFromNumber(i + 1),
-              ),
+        AudioSource.uri(
+          Uri.parse(
+            makeAudioUrl(
+              reciter,
+              surahIDFromNumber(i + 1),
             ),
-            tag: MediaItem(
-              id: "${reciter.id}$i",
-              title: reciter.name,
-            )),
+          ),
+          tag: MediaItem(
+            id: "${reciter.id}$i",
+            title: reciter.name,
+          ),
+        ),
       );
     }
-    await audioPlayer.setAudioSource(
-      ConcatenatingAudioSource(
-        children: audioSources,
-      ),
-      initialIndex: surahNumber,
-      initialPosition: Duration.zero,
-    );
+
+    try {
+      await audioPlayer.setAudioSource(
+        ConcatenatingAudioSource(
+          children: audioSources,
+        ),
+        initialIndex: surahNumber,
+        initialPosition: Duration.zero,
+      );
+    } catch (e) {
+      log(e.toString());
+    }
+    log("audioPlayer.setAudioSource()", name: "Audio Player");
     if (playInstantly) await audioPlayer.play();
+    log("audioPlayer.play()", name: "Audio Player");
   }
 
   /// Generates a URL pointing to a specific ayah's audio on everyayah.com.

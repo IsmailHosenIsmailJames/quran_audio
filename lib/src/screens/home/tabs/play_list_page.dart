@@ -482,8 +482,7 @@ class _PlayListPageState extends State<PlayListPage> {
                 index == audioController.currentPlayListIndex.value &&
                 audioController.currentPlayingSurah.value == i) {
               if (audioController.isReadyToControl.value == false) {
-                List<LockCachingAudioSource> playList =
-                    getPlayList(currentPlayList);
+                List<AudioSource> playList = getPlayList(currentPlayList);
                 await ManageQuranAudio.playProvidedPlayList(
                   playList: playList,
                   initialIndex: i,
@@ -494,8 +493,7 @@ class _PlayListPageState extends State<PlayListPage> {
               return;
             }
             audioController.currentPlayListIndex.value = index;
-            List<LockCachingAudioSource> playList =
-                getPlayList(currentPlayList);
+            List<AudioSource> playList = getPlayList(currentPlayList);
             await ManageQuranAudio.playProvidedPlayList(
               playList: playList,
               initialIndex: i,
@@ -533,7 +531,7 @@ class _PlayListPageState extends State<PlayListPage> {
             audioController.currentPlayListIndex.value != index) {
           audioController.currentPlayListIndex.value = index;
           await ManageQuranAudio.audioPlayer.stop();
-          List<LockCachingAudioSource> playList =
+          List<AudioSource> playList =
               getPlayList(homePageController.allPlaylistInDB[index].playList);
 
           await ManageQuranAudio.playProvidedPlayList(
@@ -542,7 +540,7 @@ class _PlayListPageState extends State<PlayListPage> {
         } else if (audioController.isPlaying.value == false &&
             audioController.currentPlayListIndex.value == index) {
           if (audioController.isReadyToControl.value == false) {
-            List<LockCachingAudioSource> playList =
+            List<AudioSource> playList =
                 getPlayList(homePageController.allPlaylistInDB[index].playList);
 
             await ManageQuranAudio.playProvidedPlayList(
@@ -554,7 +552,7 @@ class _PlayListPageState extends State<PlayListPage> {
         } else if (audioController.isPlaying.value == false &&
             audioController.currentPlayListIndex.value != index) {
           audioController.currentPlayListIndex.value = index;
-          List<LockCachingAudioSource> playList =
+          List<AudioSource> playList =
               getPlayList(homePageController.allPlaylistInDB[index].playList);
           await ManageQuranAudio.playProvidedPlayList(
             playList: playList,
@@ -564,11 +562,11 @@ class _PlayListPageState extends State<PlayListPage> {
     );
   }
 
-  List<LockCachingAudioSource> getPlayList(List<PlayListModel> playList) {
-    List<LockCachingAudioSource> playListAudioSource = [];
+  List<AudioSource> getPlayList(List<PlayListModel> playList) {
+    List<AudioSource> playListAudioSource = [];
     for (var playListModel in playList) {
       playListAudioSource.add(
-        LockCachingAudioSource(
+        AudioSource.uri(
           Uri.parse(
             ManageQuranAudio.makeAudioUrl(
               playListModel.reciter,
