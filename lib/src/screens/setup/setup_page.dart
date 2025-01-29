@@ -93,7 +93,7 @@ class _SetupPageState extends State<SetupPage> {
                               } else {
                                 audioController.isReadyToControl.value = false;
                               }
-                              Get.offAll(() => const HomePage());
+                              Get.off(() => const HomePage());
                             } catch (e) {
                               toastification.show(
                                 context: context,
