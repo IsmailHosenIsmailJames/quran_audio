@@ -2,7 +2,7 @@ import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/functions/get_uthmani_tajweed.dart';
 import 'package:al_quran_audio/src/screens/auth/auth_controller/auth_controller.dart';
-import 'package:al_quran_audio/src/screens/home/home_page.dart';
+import 'package:al_quran_audio/src/screens/home/view_warper.dart';
 import 'package:al_quran_audio/src/screens/setup/setup_page.dart';
 import 'package:al_quran_audio/src/theme/colors.dart';
 import 'package:flutter/material.dart';
@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
         defaultTransition: Transition.leftToRight,
         home: Hive.box('info').get('default_reciter') == null
             ? const SetupPage()
-            : const HomePage(),
+            : const ViewWarper(),
         onInit: () async {
           Get.put(AuthController());
           final appTheme = Get.put(AppThemeData());

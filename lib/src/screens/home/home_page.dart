@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   AudioController audioController = ManageQuranAudio.audioController;
   final themeController = Get.put(AppThemeData());
   final HomePageController homePageController = Get.put(HomePageController());
-  PersistentTabController tabController =
+  PersistentTabController pageController =
       PersistentTabController(initialIndex: 0);
 
   final AuthController authController = Get.find<AuthController>();
@@ -70,13 +70,13 @@ class _HomePageState extends State<HomePage> {
                       ? const Color.fromARGB(255, 20, 20, 20)
                       : Colors.grey.shade100,
                   context,
-                  controller: tabController,
+                  controller: pageController,
                   screens: [
                     PlayTab(
-                      tabController: tabController,
+                      tabController: pageController,
                     ),
                     PlayListPage(
-                      tabController: tabController,
+                      tabController: pageController,
                     ),
                     const ProfilePage(),
                   ],

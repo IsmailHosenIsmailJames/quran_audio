@@ -22,8 +22,8 @@ import '../controller/home_page_controller.dart';
 import '../home_page.dart';
 
 class PlayTab extends StatefulWidget {
-  final PersistentTabController tabController;
-  const PlayTab({super.key, required this.tabController});
+  final PersistentTabController? tabController;
+  const PlayTab({super.key, this.tabController});
 
   @override
   State<PlayTab> createState() => _PlayTabState();
@@ -38,260 +38,277 @@ class _PlayTabState extends State<PlayTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(5),
-          margin: const EdgeInsets.only(top: 5, left: 5, right: 5),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(7),
-            color: Colors.grey.shade600.withValues(alpha: 0.2),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Reciter",
-                    style: TextStyle(
-                      fontSize: 14,
-                    ),
-                  ),
-                  const Gap(10),
-                  SizedBox(
-                    height: 25,
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.only(left: 15, right: 15),
-                        backgroundColor: Colors.green.shade800,
-                        foregroundColor: Colors.white,
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: widget.tabController != null
+          ? null
+          : AppBar(
+              backgroundColor: Colors.transparent,
+              title: const Text("Play Quran"),
+              centerTitle: true,
+            ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(5),
+            margin: const EdgeInsets.only(top: 5, left: 5, right: 5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(7),
+              color: Colors.grey.shade600.withValues(alpha: 0.2),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Reciter",
+                      style: TextStyle(
+                        fontSize: 14,
                       ),
-                      onPressed: () async {
-                        final result = await Get.to(() =>
-                            const ChoiceDefaultRecitation(
-                                forChangeReciter: true));
-                        if (result.runtimeType == ReciterInfoModel) {
-                          audioController.currentReciterModel.value =
-                              result as ReciterInfoModel;
-                          if (audioController.currentPlayingSurah.value != -1) {
-                            if (audioController.isPlaying.value) {
-                              await ManageQuranAudio
-                                  .playMultipleSurahAsPlayList(
-                                surahNumber:
-                                    audioController.currentPlayingSurah.value,
-                              );
-                            } else {
-                              await ManageQuranAudio
-                                  .playMultipleSurahAsPlayList(
-                                surahNumber:
-                                    audioController.currentPlayingSurah.value,
-                                playInstantly: false,
-                              );
+                    ),
+                    const Gap(10),
+                    SizedBox(
+                      height: 25,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.only(left: 15, right: 15),
+                          backgroundColor: Colors.green.shade800,
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: () async {
+                          final result = await Get.to(() =>
+                              const ChoiceDefaultRecitation(
+                                  forChangeReciter: true));
+                          if (result.runtimeType == ReciterInfoModel) {
+                            audioController.currentReciterModel.value =
+                                result as ReciterInfoModel;
+                            if (audioController.currentPlayingSurah.value !=
+                                -1) {
+                              if (audioController.isPlaying.value) {
+                                await ManageQuranAudio
+                                    .playMultipleSurahAsPlayList(
+                                  surahNumber:
+                                      audioController.currentPlayingSurah.value,
+                                );
+                              } else {
+                                await ManageQuranAudio
+                                    .playMultipleSurahAsPlayList(
+                                  surahNumber:
+                                      audioController.currentPlayingSurah.value,
+                                  playInstantly: false,
+                                );
+                              }
                             }
                           }
-                        }
-                      },
-                      child: const Text("Change"),
+                        },
+                        child: const Text("Change"),
+                      ),
+                    ),
+                  ],
+                ),
+                Obx(
+                  () => SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Text(
+                      audioController.currentReciterModel.value.name,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
-                ],
-              ),
-              Obx(
-                () => SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Text(
-                    audioController.currentReciterModel.value.name,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        Obx(
-          () => (homePageController.selectForPlaylistMode.value == false)
-              ? const SizedBox()
-              : Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                        color: Colors.grey.shade400.withValues(alpha: 0.5)),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  padding: const EdgeInsets.all(5),
-                  margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
-                  child: Column(
-                    children: [
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              const Text("Adding to"),
-                              const Gap(5),
-                              Text(
-                                homePageController.nameOfEditingPlaylist.value,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Gap(5),
-                          SizedBox(
-                            height: 25,
-                            child: Row(
+          Obx(
+            () => (homePageController.selectForPlaylistMode.value == false)
+                ? const SizedBox()
+                : Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Colors.grey.shade400.withValues(alpha: 0.5)),
+                      borderRadius: BorderRadius.circular(7),
+                    ),
+                    padding: const EdgeInsets.all(5),
+                    margin: const EdgeInsets.only(left: 5, right: 5, top: 5),
+                    child: Column(
+                      children: [
+                        Column(
+                          children: [
+                            Row(
                               children: [
+                                const Text("Adding to"),
+                                const Gap(5),
                                 Text(
-                                    "Selected: ${homePageController.selectedForPlaylist.length}"),
-                                const Spacer(),
-                                const Gap(5),
-                                OutlinedButton.icon(
-                                  style: TextButton.styleFrom(
-                                    padding: const EdgeInsets.only(
-                                        left: 7, right: 7),
+                                  homePageController
+                                      .nameOfEditingPlaylist.value,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  onPressed: () {
-                                    homePageController
-                                        .selectForPlaylistMode.value = false;
-                                    homePageController.selectedForPlaylist
-                                        .clear();
-                                  },
-                                  icon: const Icon(Icons.close),
-                                  label: const Text("Cancel"),
-                                ),
-                                const Gap(5),
-                                ElevatedButton.icon(
-                                  onPressed: () {
-                                    addSelectedDataToPlayList(context);
-                                  },
-                                  icon: const Icon(Icons.done),
-                                  label: const Text("Done"),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-        ),
-        Expanded(
-          child: Scrollbar(
-            controller: scrollController,
-            interactive: true,
-            child: ListView.builder(
-              controller: scrollController,
-              padding: const EdgeInsets.only(
-                  left: 10, right: 10, top: 5, bottom: 100),
-              itemCount: surahInfo.length,
-              itemBuilder: (context, index) {
-                PlayListModel currentPlaylist = PlayListModel(
-                  reciter: audioController.currentReciterModel.value,
-                  surahNumber: index,
-                );
-                return GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    int startAyah = 0;
-                    for (int i = 0; i < index; i++) {
-                      startAyah += surahAyahCount[i];
-                    }
-                    showPopUpForQuranWithTajweedText(context, index, startAyah);
-                  },
-                  child: Card(
-                    elevation: 0,
-                    margin: const EdgeInsets.only(bottom: 5),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7)),
-                    child: Obx(
-                      () => Row(
-                        children: [
-                          const Gap(3),
-                          SizedBox(
-                            height: 34,
-                            width: 34,
-                            child: getPlayButton(index, audioController),
-                          ),
-                          const Gap(10),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                ("${index + 1}. ${surahInfo[index]['name_simple'] ?? ""}")
-                                    .replaceAll("-", " "),
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              Text(
-                                (surahInfo[index]['revelation_place'] ?? "")
-                                    .capitalizeFirst,
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ],
-                          ),
-                          const Spacer(),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                (surahInfo[index]['name_arabic'] ?? "")
-                                    .capitalizeFirst,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              Text(
-                                surahAyahCount[index].toString(),
-                                style: Theme.of(context).textTheme.bodySmall,
-                              ),
-                            ],
-                          ),
-                          const Gap(5),
-                          if (homePageController.selectForPlaylistMode.value ==
-                              false)
-                            getPopUpButton(audioController, index, context,
-                                currentPlaylist),
-                          if (homePageController.selectForPlaylistMode.value ==
-                              true)
+                            const Gap(5),
                             SizedBox(
-                              height: 40,
-                              width: 40,
-                              child: Checkbox(
-                                value: homePageController.containsInPlaylist(
-                                    audioController.currentReciterModel.value,
-                                    index),
-                                onChanged: (value) {
-                                  if (value == true) {
-                                    homePageController.addToPlaylist(
-                                      audioController.currentReciterModel.value,
-                                      index,
-                                    );
-                                  } else {
-                                    homePageController.removeToPlaylist(
-                                        audioController
-                                            .currentReciterModel.value,
-                                        index);
-                                  }
-                                },
+                              height: 25,
+                              child: Row(
+                                children: [
+                                  Text(
+                                      "Selected: ${homePageController.selectedForPlaylist.length}"),
+                                  const Spacer(),
+                                  const Gap(5),
+                                  OutlinedButton.icon(
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.only(
+                                          left: 7, right: 7),
+                                    ),
+                                    onPressed: () {
+                                      homePageController
+                                          .selectForPlaylistMode.value = false;
+                                      homePageController.selectedForPlaylist
+                                          .clear();
+                                    },
+                                    icon: const Icon(Icons.close),
+                                    label: const Text("Cancel"),
+                                  ),
+                                  const Gap(5),
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      addSelectedDataToPlayList(context);
+                                    },
+                                    icon: const Icon(Icons.done),
+                                    label: const Text("Done"),
+                                  ),
+                                ],
                               ),
                             ),
-                          if (homePageController.selectForPlaylistMode.value ==
-                              true)
-                            const Gap(8),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                );
-              },
+          ),
+          Expanded(
+            child: Scrollbar(
+              controller: scrollController,
+              interactive: true,
+              child: ListView.builder(
+                controller: scrollController,
+                padding: const EdgeInsets.only(
+                    left: 10, right: 10, top: 5, bottom: 100),
+                itemCount: surahInfo.length,
+                itemBuilder: (context, index) {
+                  PlayListModel currentPlaylist = PlayListModel(
+                    reciter: audioController.currentReciterModel.value,
+                    surahNumber: index,
+                  );
+                  return GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      int startAyah = 0;
+                      for (int i = 0; i < index; i++) {
+                        startAyah += surahAyahCount[i];
+                      }
+                      showPopUpForQuranWithTajweedText(
+                          context, index, startAyah);
+                    },
+                    child: Card(
+                      elevation: 0,
+                      margin: const EdgeInsets.only(bottom: 5),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(7)),
+                      child: Obx(
+                        () => Row(
+                          children: [
+                            const Gap(3),
+                            SizedBox(
+                              height: 34,
+                              width: 34,
+                              child: getPlayButton(index, audioController),
+                            ),
+                            const Gap(10),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  ("${index + 1}. ${surahInfo[index]['name_simple'] ?? ""}")
+                                      .replaceAll("-", " "),
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                Text(
+                                  (surahInfo[index]['revelation_place'] ?? "")
+                                      .capitalizeFirst,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  (surahInfo[index]['name_arabic'] ?? "")
+                                      .capitalizeFirst,
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                                Text(
+                                  surahAyahCount[index].toString(),
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                            const Gap(5),
+                            if (homePageController
+                                    .selectForPlaylistMode.value ==
+                                false)
+                              getPopUpButton(audioController, index, context,
+                                  currentPlaylist),
+                            if (homePageController
+                                    .selectForPlaylistMode.value ==
+                                true)
+                              SizedBox(
+                                height: 40,
+                                width: 40,
+                                child: Checkbox(
+                                  value: homePageController.containsInPlaylist(
+                                      audioController.currentReciterModel.value,
+                                      index),
+                                  onChanged: (value) {
+                                    if (value == true) {
+                                      homePageController.addToPlaylist(
+                                        audioController
+                                            .currentReciterModel.value,
+                                        index,
+                                      );
+                                    } else {
+                                      homePageController.removeToPlaylist(
+                                          audioController
+                                              .currentReciterModel.value,
+                                          index);
+                                    }
+                                  },
+                                ),
+                              ),
+                            if (homePageController
+                                    .selectForPlaylistMode.value ==
+                                true)
+                              const Gap(8),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -399,7 +416,8 @@ class _PlayTabState extends State<PlayTab> {
   void addSelectedDataToPlayList(BuildContext context) async {
     await homePageController.saveToPlayList();
     homePageController.reloadPlayList();
-    widget.tabController.jumpToTab(1);
+
+    widget.tabController?.jumpToTab(1);
     toastification.show(
       context: context,
       title: const Text("Added to Playlist"),

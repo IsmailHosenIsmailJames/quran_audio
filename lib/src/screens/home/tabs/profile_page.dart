@@ -39,214 +39,226 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        FutureBuilder(
-          future: loggedInUser(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const Center(
-                child: Text("Error"),
-              );
-            } else {
-              User? user = snapshot.data;
-              if (user == null) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Text(
-                        "Get the best experience by logging in ->",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Text(
-                        "You can save your favorite playlist to the cloud. And continue listening from where you left off. No need to worry about losing your playlist. We got you covered.",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            await Get.to(() => const LoginPage());
-                            setState(() {});
-                          },
-                          iconAlignment: IconAlignment.end,
-                          child: const Row(
-                            children: [
-                              Spacer(),
-                              Text(
-                                'Login',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
-                              Spacer(),
-                              Icon(Icons.fast_forward_rounded),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: MediaQuery.of(context).size.width < 900
+          ? null
+          : AppBar(
+              backgroundColor: Colors.transparent,
+              title: const Text("Profile"),
+              centerTitle: true,
+            ),
+      body: ListView(
+        children: [
+          FutureBuilder(
+            future: loggedInUser(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return const Center(
+                  child: Text("Error"),
                 );
               } else {
-                return getUserUI(user);
+                User? user = snapshot.data;
+                if (user == null) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Text(
+                          "Get the best experience by logging in ->",
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          "You can save your favorite playlist to the cloud. And continue listening from where you left off. No need to worry about losing your playlist. We got you covered.",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              await Get.to(() => const LoginPage());
+                              setState(() {});
+                            },
+                            iconAlignment: IconAlignment.end,
+                            child: const Row(
+                              children: [
+                                Spacer(),
+                                Text(
+                                  'Login',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Spacer(),
+                                Icon(Icons.fast_forward_rounded),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return getUserUI(user);
+                }
               }
-            }
-          },
-        ),
-        const Gap(15),
-        Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                "Audio History",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                "Listened ${formatDuration(Duration(seconds: getTotalDurationInSeconds()))}",
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
-              ),
-              SizedBox(
-                height: 30,
-                width: 50,
-                child: PopupMenuButton(
-                    style: IconButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                    ),
-                    onSelected: (value) {
-                      setState(() {
-                        sortBy = value.toString();
-                      });
-                    },
-                    itemBuilder: (context) {
-                      return [
-                        PopupMenuItem(
-                          value: "surahIncreasing",
-                          child: Text(
-                            "Sort by increasing Surah Number",
-                            style: TextStyle(
-                              color: sortBy == "surahIncreasing"
-                                  ? Colors.green
-                                  : null,
-                            ),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: "surahDecreasing",
-                          child: Text(
-                            "Sort by decreasing Surah Number",
-                            style: TextStyle(
-                              color: sortBy == "surahDecreasing"
-                                  ? Colors.green
-                                  : null,
-                            ),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: "increasing",
-                          child: Text(
-                            "Sort by increasing surah duration",
-                            style: TextStyle(
-                              color:
-                                  sortBy == "increasing" ? Colors.green : null,
-                            ),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: "decreasing",
-                          child: Text(
-                            "Sort by decreasing surah duration",
-                            style: TextStyle(
-                              color:
-                                  sortBy == "decreasing" ? Colors.green : null,
-                            ),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: "increasingListened",
-                          child: Text(
-                            "Sort by increasing listened duration",
-                            style: TextStyle(
-                              color: sortBy == "increasingListened"
-                                  ? Colors.green
-                                  : null,
-                            ),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: "decreasingListened",
-                          child: Text(
-                            "Sort by decreasing listened duration",
-                            style: TextStyle(
-                              color: sortBy == "decreasingListened"
-                                  ? Colors.green
-                                  : null,
-                            ),
-                          ),
-                        ),
-                      ];
-                    }),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          margin: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.grey.withValues(alpha: 0.05),
-          ),
-          child: StreamBuilder(
-            stream: getPeriodicStream(),
-            builder: (context, snapshot) {
-              List<TrackingAudioModel> audioTrackingModelList =
-                  getAudioTrackingModelList();
-              return Column(
-                children: List.generate(
-                  audioTrackingModelList.length,
-                  (index) {
-                    TrackingAudioModel currentTrackingModel =
-                        audioTrackingModelList[index];
-                    bool isDone =
-                        currentTrackingModel.totalPlayedDurationInSeconds >=
-                            currentTrackingModel.totalDurationInSeconds - 2;
-                    bool didNotPlayed =
-                        currentTrackingModel.totalPlayedDurationInSeconds ==
-                                0 &&
-                            currentTrackingModel.totalDurationInSeconds == 1;
-                    return getAudioHistoryOfSurahs(
-                        currentTrackingModel, didNotPlayed, context, isDone);
-                  },
-                ),
-              );
             },
           ),
-        ),
-      ],
+          const Gap(15),
+          Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  "Audio History",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "Listened ${formatDuration(Duration(seconds: getTotalDurationInSeconds()))}",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+                SizedBox(
+                  height: 30,
+                  width: 50,
+                  child: PopupMenuButton(
+                      style: IconButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                      ),
+                      onSelected: (value) {
+                        setState(() {
+                          sortBy = value.toString();
+                        });
+                      },
+                      itemBuilder: (context) {
+                        return [
+                          PopupMenuItem(
+                            value: "surahIncreasing",
+                            child: Text(
+                              "Sort by increasing Surah Number",
+                              style: TextStyle(
+                                color: sortBy == "surahIncreasing"
+                                    ? Colors.green
+                                    : null,
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: "surahDecreasing",
+                            child: Text(
+                              "Sort by decreasing Surah Number",
+                              style: TextStyle(
+                                color: sortBy == "surahDecreasing"
+                                    ? Colors.green
+                                    : null,
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: "increasing",
+                            child: Text(
+                              "Sort by increasing surah duration",
+                              style: TextStyle(
+                                color: sortBy == "increasing"
+                                    ? Colors.green
+                                    : null,
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: "decreasing",
+                            child: Text(
+                              "Sort by decreasing surah duration",
+                              style: TextStyle(
+                                color: sortBy == "decreasing"
+                                    ? Colors.green
+                                    : null,
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: "increasingListened",
+                            child: Text(
+                              "Sort by increasing listened duration",
+                              style: TextStyle(
+                                color: sortBy == "increasingListened"
+                                    ? Colors.green
+                                    : null,
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: "decreasingListened",
+                            child: Text(
+                              "Sort by decreasing listened duration",
+                              style: TextStyle(
+                                color: sortBy == "decreasingListened"
+                                    ? Colors.green
+                                    : null,
+                              ),
+                            ),
+                          ),
+                        ];
+                      }),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.grey.withValues(alpha: 0.05),
+            ),
+            child: StreamBuilder(
+              stream: getPeriodicStream(),
+              builder: (context, snapshot) {
+                List<TrackingAudioModel> audioTrackingModelList =
+                    getAudioTrackingModelList();
+                return Column(
+                  children: List.generate(
+                    audioTrackingModelList.length,
+                    (index) {
+                      TrackingAudioModel currentTrackingModel =
+                          audioTrackingModelList[index];
+                      bool isDone =
+                          currentTrackingModel.totalPlayedDurationInSeconds >=
+                              currentTrackingModel.totalDurationInSeconds - 2;
+                      bool didNotPlayed =
+                          currentTrackingModel.totalPlayedDurationInSeconds ==
+                                  0 &&
+                              currentTrackingModel.totalDurationInSeconds == 1;
+                      return getAudioHistoryOfSurahs(
+                          currentTrackingModel, didNotPlayed, context, isDone);
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -254,6 +266,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Padding getAudioHistoryOfSurahs(TrackingAudioModel currentTrackingModel,
       bool didNotPlayed, BuildContext context, bool isDone) {
+    double width = MediaQuery.of(context).size.width;
+    if (width > 800) {
+      width = width / 3;
+    }
     return Padding(
       padding: const EdgeInsets.all(5),
       child: Row(
@@ -309,7 +325,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.75 -
+                      width: width * 0.75 -
                           ((isDone && didNotPlayed == false) ? 30 : 0),
                       child: LinearProgressIndicator(
                         value:
