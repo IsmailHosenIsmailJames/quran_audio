@@ -4,7 +4,6 @@ import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitation_info_model.dart';
 import 'package:al_quran_audio/src/core/recitation_info/recitations.dart';
-import 'package:al_quran_audio/src/screens/home/home_page.dart';
 import 'package:al_quran_audio/src/screens/setup/pages/choice_default_recitation.dart';
 import 'package:al_quran_audio/src/screens/setup/pages/intro_page.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +92,7 @@ class _SetupPageState extends State<SetupPage> {
                               } else {
                                 audioController.isReadyToControl.value = false;
                               }
-                              Get.off(() => const HomePage());
+                              Get.toNamed("/home");
                             } catch (e) {
                               toastification.show(
                                 context: context,

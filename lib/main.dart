@@ -12,6 +12,10 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:toastification/toastification.dart';
 
+import 'src/screens/auth/login/login_page.dart';
+import 'src/screens/home/settings/settings_page.dart';
+import 'src/screens/setup/pages/choice_default_recitation.dart';
+import 'src/screens/setup/pages/intro_page.dart';
 import 'src/theme/theme_controller.dart';
 
 Future<void> main() async {
@@ -74,6 +78,36 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
+        getPages: [
+          GetPage(
+            name: "/home",
+            page: () => const ViewWarper(),
+          ),
+          GetPage(
+            name: "/setup",
+            page: () => const SetupPage(),
+          ),
+          GetPage(
+            name: "/intro",
+            page: () => const IntroPage(),
+          ),
+          GetPage(
+            name: "/choice_default_reciter",
+            page: () => const ChoiceDefaultRecitation(),
+          ),
+          GetPage(
+            name: "/settings",
+            page: () => const SettingsPage(),
+          ),
+          GetPage(
+            name: "/login",
+            page: () => const LoginPage(),
+          ),
+          GetPage(
+            name: "/signup",
+            page: () => const LoginPage(),
+          ),
+        ],
         defaultTransition: Transition.leftToRight,
         home: Hive.box('info').get('default_reciter') == null
             ? const SetupPage()

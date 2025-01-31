@@ -46,6 +46,7 @@ class _PlayTabState extends State<PlayTab> {
               backgroundColor: Colors.transparent,
               title: const Text("Play Quran"),
               centerTitle: true,
+              automaticallyImplyLeading: false,
             ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,

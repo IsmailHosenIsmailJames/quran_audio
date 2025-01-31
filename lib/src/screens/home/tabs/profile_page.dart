@@ -47,6 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
               backgroundColor: Colors.transparent,
               title: const Text("Profile"),
               centerTitle: true,
+              automaticallyImplyLeading: false,
             ),
       body: ListView(
         children: [

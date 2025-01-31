@@ -45,6 +45,7 @@ class _PlayListPageState extends State<PlayListPage> {
               backgroundColor: Colors.transparent,
               title: const Text("PlayList"),
               centerTitle: true,
+              automaticallyImplyLeading: false,
             ),
       body: Obx(
         () {
