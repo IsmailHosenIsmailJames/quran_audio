@@ -1,5 +1,4 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
-import 'package:al_quran_audio/src/core/audio/full_screen_mode/full_screen_mode.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/surah_ayah_count.dart';
 import 'package:al_quran_audio/src/functions/get_uthmani_tajweed.dart';
@@ -422,9 +421,7 @@ class _WidgetAudioControllerState extends State<WidgetAudioController>
                         if (audioController.isFullScreenMode.value) {
                           Get.back();
                         } else {
-                          Get.to(
-                            () => const FullScreenAudioMode(),
-                          );
+                          Get.toNamed('/full_audio');
                         }
                       },
                       icon: Icon(

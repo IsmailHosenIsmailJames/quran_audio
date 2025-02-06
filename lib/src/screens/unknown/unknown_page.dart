@@ -1,4 +1,3 @@
-import 'package:al_quran_audio/src/screens/home/view_warper.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -44,9 +43,8 @@ class UnknownPage extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Get.to(
-                    () => const ViewWarper(),
-                    routeName: 'home',
+                  Get.toNamed(
+                    '/home',
                   );
                 },
                 child: const Text(

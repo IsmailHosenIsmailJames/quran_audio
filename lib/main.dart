@@ -1,4 +1,5 @@
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
+import 'package:al_quran_audio/src/core/audio/full_screen_mode/full_screen_mode.dart';
 import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/functions/get_uthmani_tajweed.dart';
 import 'package:al_quran_audio/src/screens/auth/auth_controller/auth_controller.dart';
@@ -120,6 +121,10 @@ class MyApp extends StatelessWidget {
           GetPage(
             name: "/signup",
             page: () => const LoginPage(),
+          ),
+          GetPage(
+            name: '/full_audio',
+            page: () => const FullScreenAudioMode(),
           ),
         ],
         defaultTransition: Transition.leftToRight,

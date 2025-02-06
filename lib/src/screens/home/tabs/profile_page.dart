@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:al_quran_audio/src/core/audio/controller/audio_controller.dart';
 import 'package:al_quran_audio/src/functions/audio_tracking/model.dart';
 import 'package:al_quran_audio/src/screens/auth/auth_controller/auth_controller.dart';
-import 'package:al_quran_audio/src/screens/auth/login/login_page.dart';
 import 'package:al_quran_audio/src/screens/home/controller/home_page_controller.dart';
 import 'package:al_quran_audio/src/screens/home/resources/surah_list.dart';
 import 'package:appwrite/models.dart';
@@ -94,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           height: 50,
                           child: ElevatedButton(
                             onPressed: () async {
-                              await Get.to(() => const LoginPage());
+                              await Get.toNamed('/login');
                               setState(() {});
                             },
                             iconAlignment: IconAlignment.end,

@@ -17,7 +17,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/recitation_info/recitation_info_model.dart';
 import '../../../core/surah_ayah_count.dart';
 import '../../../functions/get_uthmani_tajweed.dart';
-import '../../setup/pages/choice_default_recitation.dart';
 import '../controller/home_page_controller.dart';
 import '../home_page.dart';
 
@@ -82,9 +81,10 @@ class _PlayTabState extends State<PlayTab> {
                           foregroundColor: Colors.white,
                         ),
                         onPressed: () async {
-                          final result = await Get.to(() =>
-                              const ChoiceDefaultRecitation(
-                                  forChangeReciter: true));
+                          final result = await Get.toNamed(
+                            '/choice_default_reciter',
+                            parameters: {'forChangeReciter': 'true'},
+                          );
                           if (result.runtimeType == ReciterInfoModel) {
                             audioController.currentReciterModel.value =
                                 result as ReciterInfoModel;

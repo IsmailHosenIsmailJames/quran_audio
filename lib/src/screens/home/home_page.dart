@@ -3,7 +3,6 @@ import 'package:al_quran_audio/src/core/audio/play_quran_audio.dart';
 import 'package:al_quran_audio/src/core/audio/widget_audio_controller.dart';
 import 'package:al_quran_audio/src/screens/auth/auth_controller/auth_controller.dart';
 import 'package:al_quran_audio/src/screens/home/controller/home_page_controller.dart';
-import 'package:al_quran_audio/src/screens/home/settings/settings_page.dart';
 import 'package:al_quran_audio/src/screens/home/tabs/play_list_page.dart';
 import 'package:al_quran_audio/src/screens/home/tabs/play_tab.dart';
 import 'package:al_quran_audio/src/screens/home/tabs/profile_page.dart';
@@ -45,9 +44,7 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             onPressed: () async {
-              await Get.to(
-                () => const SettingsPage(),
-              );
+              await Get.toNamed('/settings');
               setState(() {});
             },
             icon: const Icon(

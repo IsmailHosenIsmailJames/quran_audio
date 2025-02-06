@@ -10,7 +10,6 @@ import '../../core/audio/widget_audio_controller.dart';
 import '../../theme/theme_controller.dart';
 import '../auth/auth_controller/auth_controller.dart';
 import 'controller/home_page_controller.dart';
-import 'settings/settings_page.dart';
 import 'tabs/play_list_page.dart';
 import 'tabs/play_tab.dart';
 import 'tabs/profile_page.dart';
@@ -46,9 +45,7 @@ class _HomeDesktopPageState extends State<HomeDesktopPage> {
         actions: [
           IconButton(
             onPressed: () async {
-              await Get.to(
-                () => const SettingsPage(),
-              );
+              await Get.toNamed('/settings');
               setState(() {});
             },
             icon: const Icon(
