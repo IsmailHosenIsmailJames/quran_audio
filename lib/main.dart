@@ -4,6 +4,7 @@ import 'package:al_quran_audio/src/functions/get_uthmani_tajweed.dart';
 import 'package:al_quran_audio/src/screens/auth/auth_controller/auth_controller.dart';
 import 'package:al_quran_audio/src/screens/home/view_warper.dart';
 import 'package:al_quran_audio/src/screens/setup/setup_page.dart';
+import 'package:al_quran_audio/src/screens/unknown/unknown_page.dart';
 import 'package:al_quran_audio/src/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -78,7 +79,20 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
+        initialRoute: '/',
+        unknownRoute: GetPage(
+          name: '/404',
+          page: () => const UnknownPage(),
+        ),
         getPages: [
+          GetPage(
+            name: "/",
+            page: () =>
+                Hive.box('info').get('default_reciter', defaultValue: null) ==
+                        null
+                    ? const SetupPage()
+                    : const ViewWarper(),
+          ),
           GetPage(
             name: "/home",
             page: () => const ViewWarper(),
