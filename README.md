@@ -3,6 +3,11 @@
 
 **"Al Quran Audio"** is your ultimate companion for listening to the holy Quran. Immerse yourself in the divine beauty of the Quran with a vast collection of recitations from 79 world-renowned reciters, offering various styles and tones. Whether you seek tranquility, spiritual reflection, or inspiration, this app is designed to meet your needs with ease and excellence.
 
+#### Now available on Google Play Store
+https://play.google.com/store/apps/details?id=com.ismail_hosen.quran_audio&pcampaignid=web_share
+
+![Untitled-2](https://github.com/user-attachments/assets/1728a976-f693-4ed4-8982-6bb9d4b57f6c)
+
 With a clean, user-friendly interface and seamless streaming capabilities, the app ensures an uninterrupted listening experience, even for extended sessions. Each recitation is available with high-quality audio, allowing users to feel the essence of the Quranic verses in their purest form.
 
 #### Key Features
@@ -18,3 +23,4 @@ With a clean, user-friendly interface and seamless streaming capabilities, the a
 The Quran Audio Recitation App brings together a curated collection of 79 reciters, providing an immersive auditory experience of the Quran. With a focus on simplicity, accessibility, and quality, the app caters to users of all ages and preferences. Whether you are at home, commuting, or meditating, this app lets you carry the soul of the Quran wherever you go.
 
 **Discover, Listen, Reflect.**
+
